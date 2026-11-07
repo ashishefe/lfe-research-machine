@@ -79,7 +79,7 @@ test('large finite time-path chart, initial wall, and G below one',()=>{
  app.listeners.click({target:{closest:s=>s==='[data-reset]'?{}:null}});
  app.input('sigma',.5);assert.match(app.nodes.get('chart-time').innerHTML,/Wall at year 0/);
  app.input('sigma',1);app.input('X',1);app.input('k',2);
- assert.match(app.nodes.get('equations').innerHTML.replace(/<[^>]+>/g,''),/D\(5\) ≈ 0\s+A\(5\) ≈ 1/);
+ assert.match(app.nodes.get('equations').innerHTML.replace(/<[^>]+>/g,''),/D\(5\) ≈ −1\s+A\(5\) ≈ 1.1892/);
 });
 
 const textOf=html=>html.replace(/<[^>]+>/g,'');
@@ -123,10 +123,10 @@ test('phase card, sensitivity, negative progress and readable statuses',()=>{
  assert.match(textOf(app.nodes.get('equations').innerHTML),/At year 5:[\s\S]*400x/);
  assert.match(app.nodes.get('time-sensitivity').textContent,/T₀ = 1.*T₀ = 6/);
  for(const [k,v] of Object.entries({k:.5,phi0:.05,phi1:.95,W:.5,T0:1,L:.5,A:.3,s:.1,h:.3,b:.5}))app.input(k,v);
- const sentence='No progress in this setting: the cut in training compute outweighs research.';
+ const sentence='The reported index would fall in this setting. The cut in training compute outweighs research.';
  assert.equal(app.nodes.get('forward-readout').innerHTML,sentence);
  assert.ok(app.nodes.get('compact-readout').textContent.startsWith(sentence));
- assert.match(textOf(app.nodes.get('diagram-machine').innerHTML),/No progress in this setting: the cut in training compute outweighs research\./);
+ assert.match(textOf(app.nodes.get('diagram-machine').innerHTML),/The reported index would fall in this setting\. The cut in training compute outweighs research\./);
  assert.doesNotMatch(app.nodes.get('diagram-machine').innerHTML,/-[\d.]+x/);
  app.listeners.click({target:{closest:s=>s==='[data-reset]'?{}:null}});
  app.input('sigma',.5);
@@ -171,21 +171,21 @@ test('nonpositive wall ceiling uses words in every result and derivation',()=>{
  for(const id of ['forward-readout','inverse-readout','compact-readout','time-sensitivity','derivation','equations','diagram-machine']) {
   const e=app.nodes.get(id);assert.doesNotMatch(textOf(e.innerHTML+' '+e.textContent),/[−-][\d,.]+x/,id);
  }
- assert.match(app.nodes.get('inverse-readout').innerHTML,/No progress in this setting/);
+ assert.equal(app.nodes.get('inverse-readout').innerHTML,"No amount of research labour reaches METR's 2x here.");
 });
 
 
 test('index mapping can stop progress without cutting training',()=>{
  const app=boot();for(const [k,v] of Object.entries({h:.3,b:.5,L:.5}))app.input(k,v);
- const sentence='No progress in this setting: at these values of h and b, the reported index reading falls to zero or below.';
+ const sentence='The reported index would fall in this setting. At these values of h and b, the reported index reading falls to zero or below.';
  assert.equal(app.nodes.get('forward-readout').innerHTML,sentence);
  assert.ok(app.nodes.get('compact-readout').textContent.startsWith(sentence));
- assert.match(app.nodes.get('diagram-machine').innerHTML,/at these values of h and b/);
- assert.match(app.nodes.get('chart-forward').innerHTML,/No progress in this setting: at these values/);
+ assert.match(app.nodes.get('diagram-machine').innerHTML,/[Aa]t these values of h and b/);
+ assert.match(app.nodes.get('chart-forward').innerHTML,/The reported index would fall in this setting\. At these values/);
  assert.doesNotMatch(app.nodes.get('chart-forward').innerHTML,/, No progress/);
 });
 test('time card, chart and sensitivity all stop at the first wall',()=>{
- const app=boot();assert.match(textOf(app.nodes.get('equations').innerHTML),/L\(5\) = 1,131.37x/);
+ const app=boot();assert.match(textOf(app.nodes.get('equations').innerHTML),/L\(5\) = 1,130x/);
  app.input('sigma',.75);
  for(const id of ['equations','chart-time']) assert.match(textOf(app.nodes.get(id).innerHTML),/Wall at year/);
  assert.doesNotMatch(textOf(app.nodes.get('equations').innerHTML),/D\(5\) ≈|L\(5\) =|ceiling/);
@@ -255,9 +255,9 @@ test('E counts once after a changed compute split or pool',()=>{
 });
 
 
-test('experiment-only preset counts as one setting',()=>{
+test('experiment-only preset counts E and its solved labour',()=>{
  const app=boot();app.nodes.get('scenarios').listeners.click({target:{closest:()=>({dataset:{case:'2'}})}});
- assert.match(app.nodes.get('changed').innerHTML,/1 setting differs/);
+ assert.match(app.nodes.get('changed').innerHTML,/2 settings differ/);
 });
 
 
@@ -274,17 +274,17 @@ test('distinguish a causal training cut from an index-mapping failure',()=>{
  for(const mobile of [false,true]) {
   const app=boot(mobile,false,true);
   for(const [k,v] of Object.entries({h:.3,b:.5,L:.5,phi1:.51}))app.input(k,v);
-  assert.match(app.nodes.get('forward-readout').innerHTML,/at these values of h and b/);
+  assert.match(app.nodes.get('forward-readout').innerHTML,/[Aa]t these values of h and b/);
   for(const id of ['diagram-machine','diagram-workings']) {
    const desc=app.nodes.get(id).querySelector('desc').textContent;
-   assert.match(desc,/\. No progress in this setting: at these values/);
+   assert.match(desc,/\. The reported index would fall in this setting\. At these values/);
    assert.doesNotMatch(desc,/produce No progress/);
   }
   // A cut that turns otherwise positive index progress nonpositive.
   for(const [k,v] of Object.entries({h:1,b:1,k:.5,W:.5,phi1:.5,L:.5}))app.input(k,v);
-  assert.match(app.nodes.get('forward-readout').innerHTML,/the cut in training compute/);
+  assert.match(app.nodes.get('forward-readout').innerHTML,/[Tt]he cut in training compute/);
   app.input('b',2);
-  assert.match(app.nodes.get('forward-readout').innerHTML,/AI progress runs at/);
+  assert.match(app.nodes.get('forward-readout').innerHTML,/the reported pace would be/);
   for(const id of ['diagram-machine','diagram-workings']) {
    const values=app.nodes.get(id).querySelectorAll('text.value');
    assert.match(values[6].textContent,/Pace |C × S/);
@@ -297,7 +297,7 @@ test('no-progress accessible description is a complete sentence',()=>{
  const app=boot();for(const [k,v] of Object.entries({h:.3,b:.5,L:.5}))app.input(k,v);
  for(const id of ['diagram-machine','diagram-workings']) {
   const desc=app.nodes.get(id).innerHTML.match(/<desc[^>]*>(.*?)<\/desc>/)[1];
-  assert.match(desc,/\. No progress in this setting:/);assert.doesNotMatch(desc,/produce No progress/);
+  assert.match(desc,/\. The reported index would fall in this setting\./);assert.doesNotMatch(desc,/produce No progress/);
  }
 });
 test('uncertainty label sits inside the capability node below the meter',()=>{
@@ -386,7 +386,7 @@ function helpHarness(mobile=false) {
 
 test('focus then click stays open; live values, one popover, Close and Esc restore focus',()=>{
  const a=helpHarness(),L=a.trigger('L',true);L.focus();a.click(L);
- assert.equal(a.popover.hidden,false);assert.match(a.content.innerHTML,/Now: 6.25/);assert.match(a.content.innerHTML,/Turn it up: A faster pace of new methods, usually with less from each extra unit\./);
+ assert.equal(a.popover.hidden,false);assert.match(a.content.innerHTML,/Now: 6.25/);assert.match(a.content.innerHTML,/Turn it up: A faster pace of new methods\. With default weights and λ = 1, each extra unit adds less\./);
  const beta=a.trigger('beta',true);beta.focus();a.click(beta);assert.equal(L.attrs['aria-expanded'],'false');assert.equal(beta.attrs['aria-expanded'],'true');assert.match(a.content.innerHTML,/2<sup>−<var>β<\/var><\/sup>/);
  const close={closest:s=>s==='[data-help-close]'?{}:null};a.click(close);assert.equal(a.popover.hidden,true);assert.equal(a.document.activeElement,beta);
  L.focus();a.events.keydown({key:'Escape'});assert.equal(a.popover.hidden,true);assert.equal(a.document.activeElement,L);
@@ -429,7 +429,7 @@ test('phone help fits above or below its source without shifting the page',()=>{
 });
 test('live help uses the target in derivations and words for no progress',()=>{
  const a=helpHarness(),M=a.H;
- M.setState({L:.5,h:.3,b:.5});const out=a.trigger('X_out');out.focus();assert.match(a.content.innerHTML,/Now: No progress/);
+ M.setState({L:.5,h:.3,b:.5});const out=a.trigger('X_out');out.focus();assert.match(a.content.innerHTML,/Now: The reported index would fall in this setting/);
  M.setState({L:1});const xe=a.trigger('Xe');xe.focus();assert.match(a.content.innerHTML,/Now: 1<\/p>/);
  const needed=a.trigger('L');needed.closest=s=>s==='[data-help]'?needed:s==='#derivation'?{}:null;needed.focus();assert.match(a.content.innerHTML,/Now: 6.25<\/p>/);
  const derivation=a.trigger('Xe');derivation.closest=s=>s==='[data-help]'?derivation:s==='#derivation'?{}:null;derivation.focus();assert.match(a.content.innerHTML,/Now: 2<\/p>/);
@@ -445,7 +445,7 @@ test('exact corrected copy and independent phi entries',()=>{
  assert.equal(H.entries.a.turn,'Labour matters more. Labour needed falls if it is above E and rises if it is below E.');
  assert.equal(H.entries.lambda.meaning,'How the pace of new methods responds when both inputs grow together. 1 means in step. Below 1, researchers start to duplicate each other. Above 1, the pace outruns the inputs.');
  assert.equal(H.entries.lambda.turn,'With inputs above baseline the pace rises. With inputs below baseline it falls further.');
- for(const k of ['L','E'])assert.equal(H.entries[k].turn,'A faster pace of new methods, usually with less from each extra unit.');
+ for(const k of ['L','E'])assert.equal(H.entries[k].turn,'A faster pace of new methods. With default weights and λ = 1, each extra unit adds less.');
  assert.equal(H.entries.W.turn,'The same change moves yearly training growth less.');
  assert.equal(H.entries.inner.meaning,'A working term in the CES solution.');
  assert.equal(H.entries.log2.meaning,'How many doublings a ratio equals.');
@@ -455,8 +455,8 @@ test('exact corrected copy and independent phi entries',()=>{
  assert.ok(H.plain.research.includes('With equal weights and λ = 1, neither input can do the work alone: four times the labour only doubles the pace.'));
  assert.ok(H.researchCES.includes('past some point more labour adds little. Above 1, either input can do it alone.'));
  assert.ok(H.plain['final-sector'].includes('That lets us split baseline growth: s to software, 1 − s to training. Tejas supposes two-thirds and one-third.'));
- assert.ok(H.plain['compute-link'].includes('A change in training takes W years to show in full.'));
- assert.ok(H.plain['time-link'].includes('Going faster uses up the easy ideas faster. Unless β is 0, A keeps falling while the fast pace lasts, so the labour needed climbs. A cut in training compute can make it drop once, at year W.'));
+ assert.ok(H.plain['compute-link'].includes("We assume training's effect on models arrives over W years."));
+ assert.ok(H.plain['time-link'].includes('D(t) is how many more doublings S has had by year t than on the baseline path. It is negative if S has fallen behind.'));
 });
 
 test('disclosure state survives every slider rerender',()=>{
@@ -521,7 +521,7 @@ test('fixed engine-derived takeaway and exact preset labour',()=>{
 
 test('added operators are explained; CES inner has its live value',()=>{
  const a=boot();a.input('sigma',.75);
- for(const [id,key] of [['equations','log2'],['equations','max'],['equations','min'],['derivation','inner']])assert.ok(a.nodes.get(id).innerHTML.includes(`data-help="${key}"`));
+ for(const [id,key] of [['equations','log2'],['equations','max'],['equations','G_actual'],['derivation','inner']])assert.ok(a.nodes.get(id).innerHTML.includes(`data-help="${key}"`));
  const h=helpHarness();h.H.setState({sigma:.75});h.trigger('inner').focus();
  const r=h.context.window.ResearchMachine.inverse({sigma:.75}),rho=-1/3;
  const expected=h.context.window.ResearchMachine.format((Math.pow(r.Tg,rho)-.5*Math.pow(r.E,rho))/.5,4);
@@ -613,7 +613,7 @@ test('one masthead message, quiet credit and static model origin',()=>{
  assert.equal((hero.match(/<p\b/g)||[]).length,2);
  assert.equal((html.match(/id="takeaway-lead"/g)||[]).length,1);
  const credit=hero.match(/<p class="quiet source-credit">([\s\S]*?)<\/p>/)[1];
- assert.equal(credit,"Based on <a href=\"https://x.com/TejasReal/status/2118873231872643552\">a short model</a> by Tejas Subramaniam, using METR's estimate that Anthropic's models are improving about twice as fast as before.");
+ assert.equal(credit,"Based on <a href=\"https://x.com/TejasReal/status/2118873231872643552\">a short model</a> by Tejas Subramaniam, using METR's estimate that Anthropic's models are improving about twice as fast as before on well-specified tasks.");
  assert.match(fs.readFileSync(dir+'styles.css','utf8'),/\.source-credit \{ font-size: \.9rem; \}/);
  const machine=html.match(/<section id="machine"[\s\S]*?(?=<section id="workings")/)[0];
  assert.match(machine,/<div class="takeaway">\s*<table class="takeaway-ladder">/);
@@ -659,7 +659,7 @@ test('all card and derivation explanations name visible symbols or explain their
  const routes={
   research:{S:['g',/how fast S grows/]},
   'compute-link':{K:['k',/k is the total compute pool K divided by its baseline/]},
-  'index-link':{X:['Xe',/target X enters through Xe/]},
+  'index-link':{X:['Xe',/target X enters through Xe/],A:['G',/Research productivity A enters through G in the research sector\./]},
   'time-link':{S:['D',/S is software, whose excess doublings enter through D\(t\)/],E:['A',/experiment compute E stays at its new level and enters the inverse research function/]}
  };
  const a=boot();
@@ -725,7 +725,11 @@ test('verbatim labour copy, help, caveat and both forms',()=>{
    assert.doesNotMatch(list,/<p>|[=;]/);
    for(const [,entry] of list.matchAll(/<li>([\s\S]*?)<\/li>/g)){
     assert.equal(textOf(entry).split(' — ').length,2);
-    assert.ok(textOf(entry).split(' — ')[1].split(/\s+/).length<=8,entry);
+    const [symbol,meaning]=textOf(entry).split(' — ');
+    if(symbol==='D(t)')assert.equal(meaning,'How many more doublings S has had by year t than on the baseline path. It is negative if S has fallen behind.');
+    else if(symbol==='Xout')assert.equal(meaning,'The reported index speedup implied by the inputs, given b and h');
+    else if(symbol==='E')assert.equal(meaning,'Experiment compute compared with baseline. Compute per unit of time');
+    else assert.ok(meaning.split(/\s+/).length<=8,entry);
    }
   }
  }
@@ -734,10 +738,10 @@ test('verbatim labour copy, help, caveat and both forms',()=>{
   const plain=textOf(card.match(/<summary>In plain English<\/summary><p>([\s\S]*?)<\/p>/)[1]);
   const prefix=id==='compute-link'?'The experiment dial':'Only b × h';
   const expected=quoted.find(s=>s.startsWith(prefix)).replace('C_r','Cr').replace('X_e','Xe');
-  assert.ok(plain.endsWith(expected),plain);
+  assert.ok(plain.includes(expected),plain);
   assert.match(card,id==='compute-link'?/<var>C<\/var><sub>r<\/sub>/:/<var>X<\/var><sub>e<\/sub> = 1/);
  }
- const sources=['app.js','help.js','index.html'].map(file=>fs.readFileSync(dir+file,'utf8')).join('\n').replace('A 6.25 does not mean 6.25 times the staff.','');
+ const sources=['app.js','help.js','index.html'].map(file=>fs.readFileSync(dir+file,'utf8')).join('\n').replaceAll('A 6.25 is the total, including the original 1, and it does not mean 6.25 times the staff.','');
  assert.doesNotMatch(sources,/\b(?:people|person|staff)\b/i);
 });
 
@@ -756,4 +760,225 @@ test('snapshots export the experiment dial as E and describe unreachable targets
  const {commentsToMarkdown}=require('../review/feedback.js');
  const md=commentsToMarkdown({name:'',date:'',buildId:'',comments:[{where:'Here',text:'Check',snapshot:snapshot()}]});
  assert.match(md,/labour needed for target never reaches 2x, stops at 1.67x/);
+});
+
+test('outside review copy appears verbatim in live and static views',()=>{
+ const a=boot(),H=a.window.ResearchHelp,html=fs.readFileSync(dir+'index.html','utf8');
+ const lead="If AI has doubled Anthropic's pace, Tejas's model says that's like having about 6 times the research workforce.<br>On the same model, doubling the pace again would take about 30 times the original workforce.";
+ assert.equal(a.nodes.get('takeaway-lead').innerHTML,lead);
+ for(const attr of ['name="description"','property="og:description"'])assert.ok(html.includes(`<meta ${attr} content="${lead.replace('<br>',' ')}">`));
+ const range="METR would not be surprised by 1.3x or 3x. Through this model that is about 2x to 16x the research labour. This is our calculation, not METR's.";
+ assert.equal(a.nodes.get('takeaway-range').innerHTML,range);assert.ok(html.includes(range));
+ for(const copy of [
+ "Old pace means METR's baseline, March 2024 to October 2025. We assume that trend would have continued. It is not an observed world without AI.",
+ 'Every ratio compares with the assumed continuation of METR\'s baseline trend at the same date.',
+ "The compute split, the bridge and the time path are this page's own extensions. The paper does not calibrate β here.",
+ 'This is a sensitivity exercise. We did not estimate these parameters for Anthropic, and the chart does not predict labour supply or model AI feeding back into research labour.'
+ ])assert.ok(html.includes(copy),copy);
+ assert.ok(html.includes('href="https://doi.org/10.1257/aer.20180338"'));
+ const signed='How many more doublings S has had by year t than on the baseline path. It is negative if S has fallen behind.';
+ assert.equal(H.entries['D(t)'].meaning,signed);assert.ok(H.plain['time-link'].includes('D(t) is '+signed[0].toLowerCase()+signed.slice(1)));
+ assert.ok(H.plain['time-link'].includes('If D is negative, A rises above its starting ratio.'));
+ assert.equal(H.entries.h.meaning,"The assumed share of the acceleration that AI caused. It gives a labour equivalent for that part, and does not identify the actual uplift.");
+ assert.equal(H.entries.b.meaning,'An assumed link between the index speedup and the effective compute speedup. We have no estimate of it.');
+ const compute="Experiments use a change at once. We assume training's effect on models arrives over W years. So E measures compute in use now, and Cr measures training compute already showing in models. During those years the two need not add up to the pool.";
+ assert.ok(textOf(H.plain['compute-link']).includes(compute));
+ assert.equal(H.entries.Cr.meaning,'Training compute showing in models, against baseline');
+ assert.ok(H.entries.E.meaning.includes('Compute per unit of time'));
+ assert.ok(H.charts['chart-time-help'].includes('Each ratio compares with the baseline workforce at that date.'));
+ for(const markup of [html,a.nodes.get('scenarios').innerHTML])assert.doesNotMatch(markup,/Ideas (?:get )?20% harder/);
+ assert.equal((a.nodes.get('scenarios').innerHTML.match(/class="scenario-name">Research productivity falls 20%/g)||[]).length,2);
+ assert.ok(a.nodes.get('scenarios').innerHTML.includes("METR's guess. This is the labour equivalent of AI's part only, and it depends on where the other causes act."));
+});
+
+test('all eleven presets preserve numeric answers and load their labour into both dials',()=>{
+ const a=boot(),M=a.window.ResearchMachine;
+ const expected=[6.25,9.765625,3.125,2,4.84,9.413047667452211,null,30.25,15.125,7.5625,47.265625];
+ for(let i=0;i<11;i++){
+  a.nodes.get('scenarios').listeners.click({target:{closest:()=>({dataset:{case:String(i)}})}});
+  const state=a.window.ResearchMachineApp.snapshot().settings,r=M.inverse(state);
+  for(const id of ['simple-L','work-L'])assert.equal(Number(a.nodes.get(id).value),state.L);
+  assert.ok(state.L>=.5&&state.L<=60);
+  if(expected[i]===null){assert.equal(r.status,'wall');assert.equal(state.L,6.25);}
+  else {
+   assert.ok(Math.abs(r.L_needed-expected[i])<1e-9,`${i}: ${r.L_needed}`);
+   assert.equal(state.L,r.L_needed);assert.ok(Math.abs(M.forward(state).X_out-state.X)<1e-12);
+  }
+ }
+ for(const id of ['simple-L','work-L']){
+  assert.equal(a.nodes.get(id).max,'60');assert.equal(a.nodes.get(id).min,'0.5');
+  assert.equal(a.nodes.get(id).attrs.step,'any');
+ }
+ a.input('L',60);assert.equal(a.window.ResearchMachineApp.snapshot().settings.L,60);
+ assert.match(a.nodes.get('chart-forward').innerHTML,/>60<\/text>/);assertFiniteMarkup(a);
+ a.input('L',6.25);assert.equal(a.window.ResearchMachineApp.snapshot().settings.L,6.25);
+ // Exercise the no-labour branch with a synthetic preset within the supported dial bounds.
+ Object.assign(M.cases[1].change,{k:8,W:.5});
+ a.nodes.get('scenarios').listeners.click({target:{closest:()=>({dataset:{case:'1'}})}});
+ assert.equal(M.inverse(a.window.ResearchMachineApp.snapshot().settings).L_needed,0);
+ assert.equal(Number(a.nodes.get('work-L').value),Number(a.nodes.get('work-L').min));
+});
+
+test('attribution and index bridge copy follows h, b and target on desktop and phone',()=>{
+ for(const mobile of [false,true])for(const X of [2,3,4]){
+  const a=boot(mobile),M=a.window.ResearchMachine;
+  a.input('X',X);
+  for(const [h,b] of [[.8,1],[.8,.5],[.8,2],[1,.5],[1,2],[.5,2],[1,1],[1,1+Number.EPSILON]]){
+   a.input('h',h);a.input('b',b);
+   const state=a.window.ResearchMachineApp.snapshot().settings,d=M.forward(state),r=M.inverse(state);
+   const target=X===2?"METR's 2x":`the ${X}x target`;
+   const attribution=h<1&&b*h<1,bridge=b*h!==1;
+   const forward=attribution?`With these inputs, the reported pace would be ${M.format(d.X_out)}x its old pace, because we assume they explain only part of the speedup.`:bridge?`Under this index bridge, the reported pace would be ${M.format(d.X_out)}x its old pace.`:`With these inputs, AI progress runs at ${M.format(d.X_out)}x its old pace.`;
+   const inverse=attribution?`The labour equivalent of AI's part of ${target} is ${M.format(r.L_needed)}x. The model does not say where the other causes act.`:bridge?`To reach the ${X}x target under this bridge, research labour must be ${M.format(r.L_needed)}x its old level.`:`To reach ${target} with everything else as set, research labour must be ${M.format(r.L_needed)}x its old level.`;
+   assert.equal(textOf(a.nodes.get('forward-readout').innerHTML),forward);
+   assert.equal(textOf(a.nodes.get('inverse-readout').innerHTML),inverse);
+   assert.equal(a.nodes.get('compact-readout').textContent,bridge?forward+' '+inverse:`Progress ${M.format(d.X_out)}x · Labour ${M.format(r.L_needed)}x`);
+   if(bridge)for(const id of ['diagram-machine','diagram-workings']){
+    const desc=a.nodes.get(id).innerHTML.match(/<desc[^>]*>(.*?)<\/desc>/)[1];
+    assert.ok(desc.includes(forward));assert.ok(desc.includes(inverse));
+   }
+   assert.equal(a.nodes.get('chart-time').innerHTML.includes("This path counts AI's part only."),h<1);
+   assert.ok(a.nodes.get('chart-forward').innerHTML.includes(`At ${M.format(state.L)}x labour, ${bridge?'reported pace':'index progress'} is ${M.format(d.X_out)}x.`));
+   assert.equal(textOf(a.nodes.get('target-note').innerHTML),`Target: ${target}. Change it in the workings.`);
+   if(X!==2)for(const id of ['forward-readout','inverse-readout','compact-readout','diagram-machine','diagram-workings','target-note']){
+    const node=a.nodes.get(id);assert.doesNotMatch(node.innerHTML+node.textContent,/METR's/);
+   }
+  }
+ }
+});
+
+test('fixed engine-derived examples, signed time results and three-significant-figure displays',()=>{
+ const a=boot(),M=a.window.ResearchMachine;
+ assert.ok(Math.abs(M.inverse({A:1.3}).L_needed-3.698224852071006)<1e-12);
+ assert.equal(Math.round(M.inverse({X:1.3}).L_needed),2);assert.equal(Math.round(M.inverse({X:3}).L_needed),16);
+ const example='For example, if other causes raised A to 1.3 and AI supplied the rest of a 2x pace, labour would need about 3.7x, against 4.84x with h = 0.8 and A = 1.';
+ for(const settings of [{},{k:4,W:.5},{k:2,W:1},{X:1,A:1.5,k:8,beta:0}]){
+  a.listeners.click({target:{closest:s=>s==='[data-reset]'?{}:null}});
+  for(const [k,v] of Object.entries(settings))a.input(k,v);
+  const state=a.window.ResearchMachineApp.snapshot().settings,walk=M.walkTimePath(state);
+  const displayed=walk.L5.toLocaleString('en-GB',{maximumSignificantDigits:3});
+  for(const id of ['equations','chart-time'])assert.ok(textOf(a.nodes.get(id).innerHTML).includes(`L(5) = ${displayed}x`));
+  assert.ok(textOf(a.nodes.get('equations').innerHTML).includes(example));
+  if(settings.k===4){assert.equal(walk.last.D,13);assert.match(textOf(a.nodes.get('equations').innerHTML),/D\(5\) ≈ 13/);}
+ }
+ const html=fs.readFileSync(dir+'index.html','utf8');assert.ok(html.includes(example));
+ assert.match(html,/L\(5\) = 1,130x/);assert.doesNotMatch(html,/1,131\.37x/);
+});
+
+test('zero labour can exceed the target and its faster growth is retained in time descriptions',()=>{
+ const a=boot();
+ for(const [k,v] of Object.entries({sigma:2,k:8,W:2}))a.input(k,v);
+ const M=a.window.ResearchMachine,p=a.window.ResearchMachineApp.snapshot().settings,start=M.timePoint(p,0);
+ assert.equal(start.G_required,1.75);assert.ok(Math.abs(start.G_actual-2)<1e-12);
+ assert.equal(a.nodes.get('inverse-readout').innerHTML,'No research labour is needed: these inputs already beat the target.');
+ assert.match(a.nodes.get('chart-time').innerHTML,/With no labour, the lab keeps the faster growth\./);
+ assert.match(a.nodes.get('diagram-workings').innerHTML,/during the transition/);
+ const h=helpHarness();h.H.setState(p);h.trigger('c').focus();assert.match(h.content.innerHTML,/during the transition/);
+});
+
+test('exact zero remains No progress while a negative index is described as a decline',()=>{
+ const a=boot();
+ for(const [k,v] of Object.entries({s:.5,T0:2,k:.5,W:.5,L:2,A:1}))a.input(k,v);
+ const M=a.window.ResearchMachine;
+ assert.equal(M.forward(a.window.ResearchMachineApp.snapshot().settings).X_out,0);
+ for(const id of ['forward-readout','compact-readout','diagram-machine','diagram-workings']){
+  const el=a.nodes.get(id),text=el.innerHTML+' '+el.textContent;
+  assert.match(text,/No progress/);assert.doesNotMatch(text,/index would fall/i);
+ }
+ a.input('L',1);
+ assert.ok(M.forward(a.window.ResearchMachineApp.snapshot().settings).X_out<0);
+ for(const id of ['forward-readout','compact-readout','diagram-machine','diagram-workings']){
+  const el=a.nodes.get(id),text=el.innerHTML+' '+el.textContent;
+  assert.match(text,/The reported index would fall in this setting\./);
+  assert.match(text,/[Tt]he cut in training compute outweighs research/);
+ }
+});
+
+test('each effective state has one shared path calculation per update, including matching sensitivity states',()=>{
+ const a=boot(),M=a.window.ResearchMachine,walk=M.walkTimePath,calls=[];
+ M.walkTimePath=p=>{calls.push(JSON.stringify(p));return walk(p);};
+ for(const [key,value] of [['L',7],['T0',1],['beta',0]]){
+  calls.length=0;a.input(key,value);
+  assert.equal(calls.length,new Set(calls).size);
+  const current=JSON.stringify(a.window.ResearchMachineApp.snapshot().settings);
+  assert.equal(calls.filter(p=>p===current).length,1);
+ }
+ const h=helpHarness(),HM=h.context.window.ResearchMachine,p=HM.state(),cached=HM.walkTimePath(p);
+ HM.walkTimePath=()=>{throw Error('Help should reuse the current path');};
+ h.H.setState(p,cached);h.trigger('G1').focus();assert.match(h.content.innerHTML,/Now: 2.5/);
+});
+
+
+test('time summary rounds starting labour as well as year five without rounding preset answers',()=>{
+ const a=boot();
+ for(const index of [1,4,10]){
+  a.nodes.get('scenarios').listeners.click({target:{closest:()=>({dataset:{case:String(index)}})}});
+  const M=a.window.ResearchMachine,p=a.window.ResearchMachineApp.snapshot().settings;
+  const expected=M.inverse(p).L_needed.toLocaleString('en-GB',{maximumSignificantDigits:3});
+  assert.ok(textOf(a.nodes.get('chart-time').innerHTML).includes(`At year 0: ${expected}x.`));
+  assert.doesNotMatch(textOf(a.nodes.get('chart-time').innerHTML),/\.\./);
+ }
+ assert.match(a.nodes.get('scenarios').innerHTML,/47.27x/);
+ for(const [k,v] of Object.entries({X:1,sigma:2,k:8,W:2}))a.input(k,v);
+ assert.doesNotMatch(textOf(a.nodes.get('chart-time').innerHTML),/\.\./);
+});
+
+
+test('declining index retains the AI attribution caveat in both diagram descriptions',()=>{
+ for(const dom of [false,true]){
+  const a=boot(false,false,dom);
+  for(const [k,v] of Object.entries({h:.3,b:.5,L:.5}))a.input(k,v);
+  const inverse=textOf(a.nodes.get('inverse-readout').innerHTML);
+  for(const id of ['diagram-machine','diagram-workings']){
+   const node=a.nodes.get(id),desc=dom?node.querySelector('desc').textContent:node.innerHTML.match(/<desc[^>]*>(.*?)<\/desc>/)[1];
+   assert.ok(desc.includes('The reported index would fall in this setting.'));
+   assert.ok(desc.includes(inverse));
+   assert.ok(desc.includes('The model does not say where the other causes act.'));
+  }
+ }
+});
+
+test('fix list 16 exact explanations and static fallback use the supplied copy',()=>{
+ const a=boot(),H=a.window.ResearchHelp,html=fs.readFileSync(dir+'index.html','utf8');
+ const meaning='The reported index speedup implied by the inputs, given b and h';
+ assert.equal(H.entries.X_out.meaning,meaning);
+ const h=helpHarness();h.trigger('X_out').focus();assert.ok(textOf(h.content.innerHTML).includes(meaning));
+ for(const copy of [
+  'D(t) is how many more doublings S has had by year t than on the baseline path. It is negative if S has fallen behind.',
+  'If the other inputs beat the target with no labour, the lab keeps the faster growth.',
+  'A change in training compute makes labour jump once, at year W: down after a cut, up after an increase.'
+ ]){
+  assert.ok(H.plain['time-link'].includes(copy));
+  assert.ok(textOf(a.nodes.get('equations').innerHTML).includes(copy));
+  assert.ok(textOf(html).includes(copy));
+ }
+ assert.ok(textOf(html).includes('Adding research labour adds no experiment compute.'));
+ const mistakes=fs.readFileSync(__dirname+'/../WHAT-WE-GOT-WRONG.md','utf8');
+ assert.doesNotMatch(mistakes,/behavior/);assert.match(mistakes,/preset behaviour/);
+});
+
+test('training increases and cuts show during the transition at every live site',()=>{
+ for(const mobile of [false,true])for(const k of [.5,1,2]){
+  const a=boot(mobile);a.input('k',k);
+  const cards=a.nodes.get('equations').innerHTML;
+  const compute=cards.match(/id="compute-link">([\s\S]*?)<\/article>/)[1];
+  const footer=[...a.nodes.get('diagram-workings').innerHTML.matchAll(/class="live-footer"[^>]*>(.*?)<\/text>/g)].map(m=>m[1]).join(' ');
+  const h=helpHarness();h.H.setState(h.context.window.ResearchMachine.state({k}));h.trigger('c').focus();
+  for(const content of [compute,footer,h.content.innerHTML])assert.equal(content.includes('during the transition'),k!==1,JSON.stringify({mobile,k,content}));
+ }
+});
+
+test('phone wall readout reports declining index once for the supplied settings',()=>{
+ const a=boot(true);
+ for(const [key,value] of Object.entries({sigma:.5,k:.5,W:.5,A:.3,h:.3}))a.input(key,value);
+ const M=a.window.ResearchMachine,state=a.window.ResearchMachineApp.snapshot().settings;
+ assert.equal(M.inverse(state).status,'wall');assert.ok(M.inverse(state).X_max<0);
+ const forward=textOf(a.nodes.get('forward-readout').innerHTML);
+ const inverse=textOf(a.nodes.get('inverse-readout').innerHTML);
+ assert.equal(inverse,"No amount of research labour reaches METR's 2x here.");
+ assert.equal(a.nodes.get('compact-readout').textContent,forward+' '+inverse);
+ assert.equal((a.nodes.get('compact-readout').textContent.match(/The reported index would fall in this setting\./g)||[]).length,1);
+ const sentences=a.nodes.get('compact-readout').textContent.split(/\. (?=[A-Z])/);
+ assert.equal(new Set(sentences).size,sentences.length);
+ a.input('X',4);assert.equal(a.nodes.get('inverse-readout').innerHTML,'No amount of research labour reaches the 4x target here.');
 });

@@ -58,27 +58,64 @@
     }
     return {...base,logL,L_needed:logL<Math.log(Number.MAX_VALUE)?Math.exp(logL):null,status:logL<Math.log(Number.MAX_VALUE)?'ok':'out-of-range'};
   }
-  function timePoint(input, t) {
+  // Within a phase, the required pace is constant. When the zero-labour
+  // floor binds, y = exp(beta * ln(2) * D) satisfies y' = q*g0*(K-y).
+  // Solve that branch and its single possible crossing with the target
+  // exactly, rather than letting chart sampling determine the trajectory.
+  function timeEvaluator(input) {
     const p=state(input), d=compute(p), Xe=1+p.b*p.h*(p.X-1);
     const G1=(Xe*p.T0-d.c)/d.g0, G2=(Xe*p.T0-d.c0)/d.g0;
-    const D=Math.max(0,G1-1)*d.g0*Math.min(t,p.W)+Math.max(0,G2-1)*d.g0*Math.max(0,t-p.W);
-    const logA=Math.log(p.A)-p.beta*D*Math.LN2;
-    return {t,A:Math.exp(logA),D,G1,G2,...inverse(p,logA,t<=p.W?d.c:d.c0)};
+    const q=p.beta*Math.LN2, logK=Math.log(p.A)+p.lambda*logF(0,d.E,p.a,p.sigma);
+    function advance(D, duration, required) {
+      if(duration<=0)return D;
+      const floor=Math.exp(logK-q*D);
+      if(q===0)return D+d.g0*(Math.max(required,floor)-1)*duration;
+      if(floor===0)return D+d.g0*(Math.max(required,0)-1)*duration;
+      const rate=q*d.g0;
+      const floorAdvance=dt=>D+Math.log1p((floor-1)*(-Math.expm1(-rate*dt)))/q;
+      if(floor>required) {
+        if(required>1) {
+          const crossing=Math.log(required*(floor-1)/(floor*(required-1)))/rate;
+          if(crossing<duration) {
+            const atCrossing=(logK-Math.log(required))/q;
+            return atCrossing+d.g0*(required-1)*(duration-crossing);
+          }
+        }
+        return floorAdvance(duration);
+      }
+      if(required<1 && required>0) {
+        const crossing=Math.log(floor/required)/(rate*(required-1));
+        if(crossing<duration) {
+          const atCrossing=(logK-Math.log(required))/q;
+          return atCrossing+Math.log1p((required-1)*(-Math.expm1(-rate*(duration-crossing))))/q;
+        }
+      }
+      return D+d.g0*(required-1)*duration;
+    }
+    const atW=advance(0,p.W,G1);
+    return t=>{
+      const D=t<=p.W?advance(0,t,G1):advance(atW,t-p.W,G2);
+      const logA=Math.log(p.A)-q*D;
+      const G_required=t<=p.W?G1:G2, G_floor=Math.exp(logK-q*D);
+      const G_actual=Math.max(G_required,G_floor);
+      return {t,A:Math.exp(logA),D,G1,G2,G_required,G_floor,G_actual,...inverse(p,logA,t<=p.W?d.c:d.c0)};
+    };
   }
+  function timePoint(input, t) { return timeEvaluator(input)(t); }
   function timePath(input, steps=100) {
-    const p=state(input), points=[];
+    const p=state(input), points=[], point=timeEvaluator(p);
     // Include both sides of the phase change so the chart shows the jump.
     const times=[...new Set([...Array.from({length:steps+1},(_,i)=>5*i/steps),p.W, ...(p.W<5?[p.W+1e-9]:[])])].sort((a,b)=>a-b);
     for(const t of times) {
-      let answer=timePoint(p,t);
+      let answer=point(t);
       if(answer.status==='wall' && points.length) {
         let low=points.at(-1).t, high=t;
         // Find the first wall inside this interval, including a jump after W.
         for(let i=0;i<60 && high-low>1e-12;i++) {
           const mid=low+(high-low)/2;
-          if(timePoint(p,mid).status==='wall') high=mid; else low=mid;
+          if(point(mid).status==='wall') high=mid; else low=mid;
         }
-        answer=timePoint(p,high);
+        answer=point(high);
       }
       points.push(answer);
       if(answer.status==='wall'||answer.status==='out-of-range') break;
@@ -92,10 +129,10 @@
   }
   const cases = Object.freeze([
     {name:"Tejas's model",change:{}},
-    {name:'Ideas 20% harder',change:{A:.8}},
+    {name:'Research productivity falls 20%',change:{A:.8}},
     {name:'Experiment compute doubled',E:2},
     {name:'All compute doubled',change:{k:2}},
-    {name:'80% due to AI',change:{h:.8}},
+    {name:'AI caused 80% of the speedup',change:{h:.8}},
     {name:'Harder to swap',change:{sigma:.75}},
     {name:'Very hard to swap',change:{sigma:.5}}
   ]);

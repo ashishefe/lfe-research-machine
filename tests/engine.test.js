@@ -56,7 +56,7 @@ function finiteTree(x) {
   else if(x && typeof x==='object') Object.values(x).forEach(finiteTree);
 }
 test('slider extremes stay finite or explicitly absent, including time paths',()=>{
-  const ranges={X:[1,4],s:[.1,.9],L:[.5,40],A:[.3,1.5],k:[.5,8],phi0:[.05,.95],phi1:[.05,.95],a:[.1,.9],sigma:[.2,3],lambda:[.3,1.5],h:[.3,1],b:[.5,2],T0:[1,6],W:[.5,5],beta:[0,1]};
+  const ranges={X:[1,4],s:[.1,.9],L:[.5,60],A:[.3,1.5],k:[.5,8],phi0:[.05,.95],phi1:[.05,.95],a:[.1,.9],sigma:[.2,3],lambda:[.3,1.5],h:[.3,1],b:[.5,2],T0:[1,6],W:[.5,5],beta:[0,1]};
   for(const [key,range] of Object.entries(ranges)) for(const value of range) {
     const p={[key]:value}; finiteTree(m.forward(p));finiteTree(m.inverse(p));finiteTree(m.timePath(p));
   }
@@ -117,4 +117,83 @@ test('bisect first wall independently of the sampling step',()=>{
  // A discontinuous wall after the training boost ends must stay at W.
  const jump=m.walkTimePath({sigma:.5,k:2,beta:0,X:3});
  close(jump.wallYear,1,1e-8);assert.ok(jump.wallYear>1);
+});
+
+test('signed excess lets productivity recover before the training transition ends',()=>{
+ const p={k:4,W:.5};
+ const start=m.timePoint(p,0), transition=m.timePoint(p,.5), end=m.timePoint(p,5);
+ close(start.G1,.5);close(start.G2,2.5);
+ close(transition.D,-.5);close(transition.A,2**.125);
+ assert.ok(transition.A>1);
+ close(end.D,13);close(end.L_needed,141.4213562373095);
+ close(m.timePoint({k:2,W:1},5).L_needed,400);
+ close(m.timePoint({},5).L_needed,1131.370849898476);
+});
+
+test('actual growth respects the zero-labour floor and exposes the requested pace separately',()=>{
+ const p={sigma:2,k:8,W:2};
+ const start=m.timePoint(p,0);
+ close(start.G_required,1.75);close(start.G_floor,2);close(start.G_actual,2);
+ assert.equal(start.status,'compute-alone');close(start.L_needed,0);
+ const dt=1e-5;
+ close((m.timePoint(p,dt).D-start.D)/dt,2,1e-5);
+ for(const t of [0,.2,1,2,2+1e-8,5]) {
+  const q=m.timePoint(p,t);
+  close(q.G_floor,q.A*m.F(0,q.E,.5,2));
+  close(q.G_actual,Math.max(q.G_required,q.G_floor));
+  if(q.L_needed>0)close(m.forward({...p,A:q.A,L:q.L_needed}).G,q.G_actual);
+ }
+ for(const sigma of [.5,1]) {
+  const q=m.timePoint({sigma,k:8,W:.5},.25);
+  assert.ok(q.G_required<0);close(q.G_floor,0);close(q.G_actual,0);
+  close(q.D,-.5);close(q.A,2**.125);
+ }
+ const fixed=m.timePoint({...p,beta:0},2);
+ close(fixed.G_actual,2);close(fixed.D,4);close(fixed.A,1);
+});
+
+// Independent integration checks both floor/target crossings. Split at W so
+// the integration never averages across the discontinuity in required growth.
+function integratedExcess(input,t) {
+ const p=m.state(input), d=m.compute(p), Xe=1+p.b*p.h*(p.X-1);
+ const floor0=p.A*m.F(0,d.E,p.a,p.sigma)**p.lambda;
+ let D=0;
+ for(const [duration,c] of [[Math.min(t,p.W),d.c],[Math.max(0,t-p.W),d.c0]]) {
+  const required=(Xe*p.T0-c)/d.g0, steps=Math.ceil(duration*10000), h=duration/steps;
+  const slope=value=>(Math.max(required,floor0*2**(-p.beta*value))-1)*d.g0;
+  for(let i=0;i<steps;i++) {
+   const a=slope(D),b=slope(D+h*a/2),c=slope(D+h*b/2),e=slope(D+h*c);
+   D+=h*(a+2*b+2*c+e)/6;
+  }
+ }
+ return D;
+}
+test('closed-form time path agrees with independent integration through both floor crossings',()=>{
+ for(const p of [
+  {sigma:2,k:8,W:2}, // floor falls below the required pace
+  {sigma:2,k:8,W:5,X:1,A:.3,beta:1}, // recovery raises floor above the required pace
+  {sigma:3,k:8,W:.5,X:1,beta:.8}, // negative required pace, positive actual growth
+  {sigma:2,k:4,W:2,X:1,beta:.25}, // equilibrium floor
+  {sigma:2,k:8,W:2,beta:0}
+ ]) for(const t of [.1,1,2,5]) close(m.timePoint(p,t).D,integratedExcess(p,t),2e-8);
+ const p={sigma:2,k:8,W:2};
+ const low=m.walkTimePath(p,10),high=m.walkTimePath(p,500);
+ close(low.L5,high.L5);close(low.last.D,high.last.D);
+ const boundary=m.timePoint(p,2), after=m.timePoint(p,2+1e-8);
+ close(boundary.D,after.D,1e-7);close(boundary.G_required,1.75);close(after.G_required,2.5);
+});
+
+test('all eleven preset answers and explanatory examples retain their numeric basis',()=>{
+ const inputs=[...m.cases.map((_,i)=>m.scenario(i)),{X:4},m.experimentDial({X:4},2),m.experimentDial({X:4},4),{X:4,A:.8}];
+ const expected=[6.25,9.765625,3.125,2,4.84,9.41081592787378,null,30.25,15.125,7.5625,47.265625];
+ inputs.forEach((p,i)=>{
+  if(expected[i]===null)assert.equal(m.inverse(p).status,'wall');
+  else close(m.inverse(p).L_needed,expected[i],i===5?.001:1e-9);
+ });
+ close(m.inverse({A:1.3}).L_needed,3.698224852071006);
+ close(m.inverse({h:.8}).L_needed,4.84);
+ close(m.inverse({X:1.3}).L_needed,2.1025);
+ close(m.inverse({X:3}).L_needed,16);
+ close(m.forward({L:6.25}).X_out,2);
+ assert.ok(m.forward({L:60}).X_out>m.forward({L:40}).X_out);
 });

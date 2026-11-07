@@ -2,7 +2,7 @@
 .masthead { padding: 3.7rem 0 2rem; }
 h1 { max-width: none; font-size: clamp(2.7rem,6vw,5.4rem); }
 p { max-width: 70ch; }
-.subheading { font-size: clamp(1.2rem,2.2vw,1.8rem); line-height: 1.4; margin-block: 1.4rem; max-width: none; }
+.subheading { font-size: clamp(1.2rem,2vw,1.6rem); line-height: 1.4; margin-block: 1.4rem; max-width: none; }
 button, input, select { font: inherit; color: inherit; }
 button { border: 1px solid var(--hairline); border-radius: 0; background: transparent; padding: .45rem .7rem; cursor: pointer; }
 button:hover { border-color: var(--muted); }

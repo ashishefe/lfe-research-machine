@@ -159,3 +159,43 @@
 **How we found it:** We inspected the build inputs and the test's dependence on generated files.
 
 **The fix:** The build accepts an optional reviewer name. Unnamed copies use a generic banner and an empty name field. Tests build their own copy in memory and do not depend on an existing output folder. Optional browser checks keep their generated files in the ignored QA folder.
+
+## Outside review: the time path discarded periods below baseline
+
+**The mistake:** We counted only extra software doublings above baseline. If software fell behind during a training-compute increase, the calculation discarded that shortfall. This understated later productivity and overstated the labour needed.
+
+**How we found it:** An outside review reproduced the core model and found this error in our time-path extension. With four times the compute and a half-year transition, required software growth starts at 0.5 times baseline, then rises to 2.5. The signed difference after five years is 13 doublings.
+
+**The fix:** The difference can now be negative. When it is, research productivity rises above its starting ratio. This example needs about 141.42 times baseline labour at year five. The default remains about 1,131.37, and doubling all compute over one year gives 400. The page rounds the five-year display to at most three significant figures.
+
+## Outside review: the lab could produce more than the target required
+
+**The mistake:** The time path used required growth even when experiment compute could produce faster growth with no labour. It then understated the extra software doublings and their effect on productivity.
+
+**How we found it:** The outside review tested substitution of 2, eight times the compute and a two-year transition. Required growth starts at 1.75, but zero-labour growth is already 2.
+
+**The fix:** The path uses the larger of required growth and growth at zero labour. Exact solutions cover each phase and the point where the binding condition changes. Tests compare them with a separate numerical integration. The chart, card and sensitivity note share each state's path result, and the search for the first labour wall remains in place.
+
+## Outside review: compute labels mixed current use with effects on models
+
+**The mistake:** Our labels suggested that experiment compute and training compute showing in models were two current allocations that must add up to the pool. The training effect arrives over a transition, so those quantities can refer to different stages.
+
+**How we found it:** The outside review checked the meaning of the compute ratios against the transition equations.
+
+**The fix:** The page states that experiment compute is in use now, while the training ratio measures compute already showing in models. Short readouts identify faster training growth as occurring during the transition.
+
+## Outside review: the AI share did not identify actual labour uplift
+
+**The mistake:** Our readouts described the labour equivalent of AI's attributed part as if it identified the actual uplift. The model does not say where other causes of faster progress act. Our headline also omitted the model attribution, and the baseline wording did not explain the assumed continuation.
+
+**How we found it:** The outside review compared different explanations for the same reported pace. If other causes raise research productivity to 1.3 and AI supplies the rest of a doubled pace, the model needs about 3.698 times the labour. That differs from the 4.84 labour equivalent in the 80% attribution case.
+
+**The fix:** Readouts, phone text, diagram descriptions and help state the attribution limit. The example is calculated by the engine. The headline names Tejas's model, and the baseline text explains that its continuation is assumed. The page also identifies the bridge, compute split and time path as our extensions and explains that the five-year chart is a sensitivity exercise.
+
+## Outside review: labour and decline labels misdescribed the results
+
+**The mistake:** We said that replacing human researchers with AI raised effective labour even when capacity was unchanged. Presets changed the target assumptions while leaving the forward labour dial at 6.25. We also labelled negative index growth as no progress, and called a productivity fall of 20% an increase in difficulty of 20%.
+
+**How we found it:** The outside review checked the definitions, preset behaviour and negative-growth cases against the calculations.
+
+**The fix:** Equal-capacity replacement now leaves effective labour unchanged in the explanation. Presets load their solved labour into the dial, with explicit handling for walls and zero labour. The dial and chart extend to 60. Negative growth is described as a decline; exactly zero remains no progress. The productivity preset now names the quantity that actually falls. All eleven starting preset answers remain unchanged.

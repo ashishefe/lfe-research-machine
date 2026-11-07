@@ -17,20 +17,20 @@
       return {settings, changed, speedup:M.forward(settings).X_out, labour};
     }
   });
-  // Keep page presets outside the unchanged engine.
+  // The page groups the core presets with the four higher-target cases.
   const groups=['To double the pace (2x)','To double the pace again (4x)'];
   const labels=[
     ["Tejas's model",'His assumptions, unchanged.'],
-    ['Ideas get 20% harder to find','The same effort finds 20% less.'],
+    ['Research productivity falls 20%','The same effort finds 20% less.'],
     ['Twice the experiment compute','Training compute stays on its old path.'],
     ['Twice the compute everywhere','Experiments and training both double. Depends on our illustrative T₀ and W. METR is confident the acceleration was not due to faster training compute scaling.'],
-    ['AI caused 80% of the speedup',"METR's guess. Something else explains the rest, so labour has less to do."],
+    ['AI caused 80% of the speedup',"METR's guess. This is the labour equivalent of AI's part only, and it depends on where the other causes act."],
     ["Thinking can't fully replace experiments",'Researchers, human or AI, share experiment compute, so extra labour helps less (σ = 0.75).'],
     ['Thinking can barely replace experiments','Past a point, more researchers, human or AI, add almost nothing, and experiment compute sets a limit (σ = 0.5).'],
     ["Tejas's model",'His assumptions, with the target at 4x.'],
     ['Twice the experiment compute',"The labour needed halves."],
     ['Four times the experiment compute',"The labour needed falls to a quarter."],
-    ['Ideas get 20% harder to find','The same effort finds 20% less.']
+    ['Research productivity falls 20%','The same effort finds 20% less.']
   ];
   const cases=[...M.cases,
     {change:{X:4}},
@@ -40,31 +40,37 @@
   ].map((c,i)=>({...c,name:labels[i][0],gloss:labels[i][1],group:i<7?0:1}));
   const scenario=index=>{const c=cases[index], base=M.state(c.change);return c.E?M.experimentDial(base,c.E):base;};
   const ladder=[1,2,4].map(X=>({X,months:6/X,labour:M.inverse({...M.defaults,X}).L_needed}));
-  const lead=`If AI has doubled Anthropic's pace, that's like having about ${Math.round(ladder[1].labour)} times the research workforce.<br>Doubling the pace again would take about ${Math.round(ladder[2].labour)} times the original workforce.`;
+  const uncertainty=[1.3,3].map(X=>Math.round(M.inverse({...M.defaults,X}).L_needed));
+  $('takeaway-range').innerHTML=`METR would not be surprised by 1.3x or 3x. Through this model that is about ${uncertainty[0]}x to ${uncertainty[1]}x the research labour. This is our calculation, not METR's.`;
+  const lead=`If AI has doubled Anthropic's pace, Tejas's model says that's like having about ${Math.round(ladder[1].labour)} times the research workforce.<br>On the same model, doubling the pace again would take about ${Math.round(ladder[2].labour)} times the original workforce.`;
   $('takeaway-lead').innerHTML=lead;
   $('takeaway-rows').innerHTML=ladder.map((row,i)=>`<tr${i===1?' class="current"':''}><td>${f(row.months)} months</td><td>${row.X}x</td><td>${i?'about '+Math.round(row.labour):f(row.labour)}x</td></tr>`).join('');
+  const bridgeChanged=()=>p.b*p.h!==1;
+  const partial=()=>p.h<1 && p.b*p.h<1;
+  const targetName=()=>p.X===2?"METR's 2x":`the ${times(p.X)} target`;
+  const forwardText=d=>d.X_out<=0?noProgress():partial()?`With these inputs, the reported pace would be ${times(d.X_out)} its old pace, because we assume they explain only part of the speedup.`:bridgeChanged()?`Under this index bridge, the reported pace would be ${times(d.X_out)} its old pace.`:`With these inputs, AI progress runs at <strong>${times(d.X_out)}</strong> its old pace.`;
   const noProgress=()=> {
     const d=M.forward(p);
     const withoutTrainingCut=1+((d.G*d.g0+d.c0)/p.T0-1)/(p.b*p.h);
-    return d.Cr<1 && withoutTrainingCut>0
-    ?'No progress in this setting: the cut in training compute outweighs research.'
-    :'No progress in this setting: at these values of h and b, the reported index reading falls to zero or below.';
+    const cause=d.Cr<1 && withoutTrainingCut>0?'the cut in training compute outweighs research.':'at these values of h and b, the reported index reading falls to zero or below.';
+    return d.X_out<0?'The reported index would fall in this setting. '+cause[0].toUpperCase()+cause.slice(1):'No progress in this setting: '+cause;
   };
   const pathText=(walk,sentence=true)=> {
     const text=walk.wallYear!==null
     ?(walk.wallYear===0?'wall from the start':`wall at year ${f(walk.wallYear)}`)
-    :walk.status==='out-of-range'?`labour exceeds numeric range at year ${f(walk.last.t)}`:`L(5) = ${times(walk.L5)}`;
+    :walk.status==='out-of-range'?`labour exceeds numeric range at year ${f(walk.last.t)}`:`L(5) = ${timeTimes(walk.L5)}`;
     return sentence?text[0].toUpperCase()+text.slice(1):text;
   };
   const signed=(value,subtract=false)=>`${value<0?(subtract?'+':'−'):(subtract?'−':'+')} ${f(Math.abs(value))}`;
   const narrow=matchMedia('(max-width: 760px)'), reduced=matchMedia('(prefers-reduced-motion: reduce)');
   const times = value => `${f(value)}x`;
+  const timeTimes=value=>`${Math.abs(value)>=1e6||(value!==0&&Math.abs(value)<.001)?value.toExponential(2):value.toLocaleString('en-GB',{maximumSignificantDigits:3})}x`;
   // Typeset only authored mathematical text; identifiers in attributes stay intact.
   function math(text, variables=true) {
     text=text.replace(/-(?=\d)/g,'−');
     let i=0;
     const render=token=>{
-      const names={X_out:['X','out'],F_max:['F','max'],G_max:['G','max'],X_max:['X','max'],Tg:['T','g'],Xe:['X','e'],Cr:['C','r'],log2:['log','2']};
+      const names={G_actual:['G','actual'],G_required:['G','required'],G_floor:['G','floor'],X_out:['X','out'],F_max:['F','max'],G_max:['G','max'],X_max:['X','max'],Tg:['T','g'],Xe:['X','e'],Cr:['C','r'],log2:['log','2']};
       const pair=names[token]||(/^[TGgcφLK][012]$/.test(token)?[token[0],token[1]]:null);
       if(pair)return `<${pair[0]==='log'?'span':'var'}>${pair[0]}</${pair[0]==='log'?'span':'var'}><sub>${pair[1]}</sub>`;
       return variables&&/^[ACDEFGKLSTWXabchkgstσρλφβ]$/.test(token)?`<var>${token}</var>`:token;
@@ -100,19 +106,22 @@
   const equationLines=text=>text.split('; ').map(line=>`<span class="equation-line">${math(line)}</span>`).join('\n');
   const formula=(id,title,equation,substitution,definitions,plain=H.plain[id],note='')=>`<article class="formula-card" id="${id}"><h3>${title}</h3><p class="formula">${H.equation(equationLines(equation))}</p>${note}<p class="formula substitution">${equationLines(substitution)}</p><details><summary>In plain English</summary><p>${plain}</p><h4>Symbols</h4><ul class="definitions">${definitions.map(([symbol,name])=>`<li>${math(symbol)} — ${name}</li>`).join('')}</ul></details></article>`;
   function inverseText(r,short=false) {
-    if(r.status==='wall' && r.X_max<=0)return short?'No finite labour; no progress at the ceiling':`No amount of research labour reaches ${times(p.X)} here. ${noProgress()}`;
-    if(r.status==='wall') return short?`No finite labour; ceiling ${times(r.X_max)}`:`No amount of research labour reaches ${times(p.X)} here. The ceiling is <strong>${times(r.X_max)}</strong>.`;
+    if(r.status==='wall' && r.X_max<=0)return short?'No finite labour; no progress at the ceiling':`No amount of research labour reaches ${targetName()} here.`;
+    if(r.status==='wall') return short?`No finite labour; ceiling ${times(r.X_max)}`:`No amount of research labour reaches ${targetName()} here. The ceiling is <strong>${times(r.X_max)}</strong>.`;
+    if(r.L_needed===0 && M.forward({...p,L:0}).X_out>p.X+1e-12)return 'No research labour is needed: these inputs already beat the target.';
     if(r.status==='none-needed') return short?'No labour needed':'Training compute alone reaches the target. No research labour is needed.';
     if(r.status==='compute-alone') return short?'Experiments alone suffice':'Experiment compute alone is enough for the target. No research labour is needed.';
     if(r.status==='out-of-range') return short?'Beyond numeric range':'The labour required exceeds the numeric range of this calculation.';
-    return short?times(r.L_needed):`To reach ${p.X===2?"METR's 2x":`the ${times(p.X)} target`} with everything else as set, research labour must be <strong>${times(r.L_needed)}</strong> its old level.`;
+    if(partial())return `The labour equivalent of AI's part of ${targetName()} is ${times(r.L_needed)}. The model does not say where the other causes act.`;
+    if(bridgeChanged())return `To reach the ${times(p.X)} target under this bridge, research labour must be ${times(r.L_needed)} its old level.`;
+    return short?times(r.L_needed):`To reach ${targetName()} with everything else as set, research labour must be <strong>${times(r.L_needed)}</strong> its old level.`;
   }
   function drawMachine(id,symbols) {
     const d=M.forward(p), mobile=narrow.matches, w=mobile?330:900, h=mobile?(symbols?1110:1045):620;
     const positions=mobile?[[10,15],[10,150],[10,280],[170,280],[10,420],[10,550],[170,690],[10,840]]:[[15,25],[15,285],[260,190],[330,340],[350,25],[660,25],[660,240],[660,420]];
     const widths=mobile?[145,145,145,145,145,145,150,310]:Array(8).fill(220);
     const labels=['Researchers','Compute pool','Experiments','Training','Research lab','Stock of methods','Training run','AI capability'];
-    const values=[`${symbols?'L = ':''}${times(p.L)}`,`${symbols?'K/K₀ = ':''}${times(p.k)}`,`${symbols?'E = ':''}${times(d.E)}`,`${symbols?'Cᵣ = ':''}${times(d.Cr)}`,`${symbols?'g/g₀ = ':''}${times(d.G)}`,`${symbols?'S · ':''}growth ${times(d.G)}`,d.X_out<=0?'No progress':`${symbols?'C × S · ': 'Pace '}${times(d.Xe)}`,d.X_out<=0?'No progress':times(d.X_out)];
+    const values=[`${symbols?'L = ':''}${times(p.L)}`,`${symbols?'K/K₀ = ':''}${times(p.k)}`,`${symbols?'E = ':''}${times(d.E)}`,`${symbols?'Cᵣ = ':''}${times(d.Cr)}`,`${symbols?'g/g₀ = ':''}${times(d.G)}`,`${symbols?'S · ':''}growth ${times(d.G)}`,d.X_out<0?'Index would fall':d.X_out===0?'No progress':`${symbols?'C × S · ': 'Pace '}${times(d.Xe)}`,d.X_out<0?'Index would fall':d.X_out===0?'No progress':times(d.X_out)];
     const keys=['research','compute-link','compute-link','compute-link','research','final-sector','final-sector','index-link'];
     const edges=mobile?[
       [0,4,'M82 87 L82 115 L4 115 L4 455 L10 455',p.L],
@@ -127,7 +136,7 @@
       [3,6,'M550 376 L620 376 L620 276 L660 276',d.Cr],[6,7,'M770 312 L770 420',d.X_out]
     ];
     const pipeId=id+'-arrow';
-    let svg=`<svg viewBox="0 0 ${w} ${h}" role="group" aria-labelledby="${id}-title ${id}-desc"><title id="${id}-title">The research machine${symbols?' with symbols':''}</title><desc id="${id}-desc">Labour ${times(p.L)} and experiments ${times(d.E)} enter the research lab, producing software progress ${times(d.G)}. Compute ${times(p.k)} splits between experiments and training ${times(d.Cr)}. ${d.X_out<=0?noProgress():'Software and training produce index progress '+times(d.X_out)+'.'}</desc><defs><marker id="${pipeId}" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8 Z"/></marker></defs>`;
+    let svg=`<svg viewBox="0 0 ${w} ${h}" role="group" aria-labelledby="${id}-title ${id}-desc"><title id="${id}-title">The research machine${symbols?' with symbols':''}</title><desc id="${id}-desc">Labour ${times(p.L)} and experiments ${times(d.E)} enter the research lab, producing software progress ${times(d.G)}. Compute ${times(p.k)} splits between experiments and training ${times(d.Cr)}. ${bridgeChanged()?forwardText(d)+' '+inverseText(M.inverse(p)).replace(/<[^>]+>/g,''):d.X_out<=0?noProgress():'Software and training produce index progress '+times(d.X_out)+'.'}</desc><defs><marker id="${pipeId}" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8 Z"/></marker></defs>`;
     for(const [, ,path,rate] of edges) {
       const start=path.match(/M([\d.]+) ([\d.]+)/);
       svg+=`<path class="pipe" d="${path}" marker-end="url(#${pipeId})"/><circle class="dot" data-rate="${Math.max(0,rate)}" r="2.6" cx="${start[1]}" cy="${start[2]}"/>`;
@@ -136,7 +145,7 @@
       svg+=`${symbols?`<a href="#${keys[i]}" tabindex="0" aria-label="${labels[i]}: go to equation">`:''}<rect class="node" x="${x}" y="${y}" width="${widths[i]}" height="${i===7?195:72}"/><text x="${x+10}" y="${y+25}">${labels[i]}</text><text class="value" style="font-size:${Math.min(19,(widths[i]-20)/(values[i].length*.57))}px" x="${x+10}" y="${y+53}">${values[i]}</text>${i===7?meter(x+8,y+65,widths[i]-16,d.X_out)+`<text class="meter-label" x="${x+10}" y="${y+162}">METR would not be<tspan x="${x+10}" dy="18">surprised by 1.3x or 3x</tspan></text>`:''}${symbols?'</a>':''}`;
     });
     if(symbols && mobile) svg+=`<text class="live-footer" x="10" y="${h-38}">φ₀ = ${f(p.phi0)} · φ₁ = ${f(p.phi1)}</text>`;
-    if(symbols) svg+=`<text class="live-footer" x="10" y="${h-12}">${mobile?'A = '+f(p.A)+' · c = '+f(d.c):'A = '+f(p.A)+' · c = '+f(d.c)+' doublings/year · φ₀ = '+f(p.phi0)+' · φ₁ = '+f(p.phi1)}</text>`;
+    if(symbols) svg+=`<text class="live-footer" x="10" y="${h-12}">${mobile?'A = '+f(p.A)+' · c = '+f(d.c)+(d.c!==d.c0?' during the transition':''):'A = '+f(p.A)+' · c = '+f(d.c)+' doublings/year'+(d.c!==d.c0?' during the transition':'')+' · φ₀ = '+f(p.phi0)+' · φ₁ = '+f(p.phi1)}</text>`;
     const container=$(id), layout=String(mobile);
     if(container.dataset.layout===layout && document.createElement) {
       const scratch=document.createElement('div');scratch.innerHTML=svg+'</svg>';
@@ -163,20 +172,20 @@
   }
   if(window.requestAnimationFrame)window.requestAnimationFrame(animatePipes);
   function meter(x,y,width,X) {
-    if(X<=0)return `<svg x="${x}" y="${y}" width="${width}" height="80" viewBox="0 0 ${width} 80" role="img" aria-label="${noProgress()}"><text class="meter-label" x="8" y="20">No progress in this setting</text></svg>`;
+    if(X<=0)return `<svg x="${x}" y="${y}" width="${width}" height="80" viewBox="0 0 ${width} 80" role="img" aria-label="${noProgress()}"><text class="meter-label" x="8" y="20">${X<0?'Index would fall':'No progress in this setting'}</text></svg>`;
     const scale=v=>10+Math.max(0,Math.min(4,v))/4*(width-20);
     return `<svg x="${x}" y="${y}" width="${width}" height="80" viewBox="0 0 ${width} 80" role="img" aria-label="${X<=0?noProgress():'Index pace '+times(X)}; METR mark 2x. METR would not be surprised by 1.3x or 3x"><rect class="meter-band" x="${scale(1.3)}" y="28" width="${scale(3)-scale(1.3)}" height="18" fill="var(--band)"/><path d="M10 37 H${width-10}" stroke="var(--hairline)"/><path d="M${scale(2)} 22 V51" stroke="var(--muted)"/><circle cx="${scale(X)}" cy="37" r="5" fill="var(--accent)"/><text class="meter-label" x="${scale(2)}" y="16" text-anchor="middle">METR 2x</text><text class="meter-label" x="${scale(1.3)}" y="70" text-anchor="middle">1.3x</text><text class="meter-label" x="${scale(3)}" y="70" text-anchor="middle">3x</text>${X>4?`<text class="meter-label" x="${width-10}" y="16" text-anchor="end">&gt;4x</text>`:X<=0?'<text class="meter-label" x="10" y="16">No progress</text>':''}</svg>`;
   }
-  function equations() {
-    const walk=M.walkTimePath(p), end=walk.last;
+  function equations(walk) {
+    const end=walk.last;
     const d=M.forward(p), r=M.inverse(p), cd=M.isCD(p.sigma), rho=(p.sigma-1)/p.sigma;
     const form=cd?'F(L, E) = L^a × E^(1 − a)':'F(L, E) = [a × L^ρ + (1 − a) × E^ρ]^(1/ρ); ρ = (σ − 1)/σ';
     $('equations').innerHTML=
       formula('final-sector','Final sector · Training run','Effective compute = C × S; g0 = s × T0; c0 = (1 − s) × T0',`g0 ≈ ${f(p.s)} × ${f(p.T0)} ≈ ${f(d.g0)}; c0 = (1 − ${f(p.s)}) × ${f(p.T0)} ≈ ${f(d.c0)} doublings/year.`, [["C", "Computing power used to train models"], ["S", "The stock of research methods"], ["g0", "Baseline software growth in doublings/year"], ["c0", "Baseline training growth in doublings/year"], ["s", "Software share of baseline progress"], ["T0", "Baseline effective-compute growth in doublings/year"]])+
-      formula('research','Research sector · Research lab',`g = g0 × A × F(L, E)^λ; G = g/g0 = A × F(L, E)^λ; ${form}`,`F = ${cd?`${f(p.L)}^${f(p.a)} × ${f(d.E)}^(1 − ${f(p.a)})`:`[${f(p.a)} × ${f(p.L)}^${f(rho,4)} + (1 − ${f(p.a)}) × ${f(d.E)}^${f(rho,4)}]^(1/${f(rho,4)})`} ≈ ${f(M.F(p.L,d.E,p.a,p.sigma))}; G ≈ ${f(p.A)} × ${f(M.F(p.L,d.E,p.a,p.sigma))}^${f(p.lambda)} ≈ ${f(d.G)}; ${cd?'Cobb-Douglas':`CES: ρ ≈ ${f(rho,4)}`}; a ≈ ${f(p.a)}; F(1,1) = 1.`, [["g", "Software growth in doublings a year"], ["g0", "Software growth before the speedup"], ["G", "New software pace divided by old"], ["A", "Research productivity compared with baseline"], ["L", "Human and AI research labour"], ["E", "Experiment compute compared with baseline"], ["λ", "Returns to scale in research"], ["F", "Combines labour and experiment compute"], ["a", "Labour weight against experiment compute"]].concat(cd?[]:[['σ','How easily labour stands in for experiments'],['ρ','Substitution parameter rewritten for the formula']] ),cd?H.plain.research:H.researchCES,cd?`<p class="formula tejas-equation">${H.equation(`With ${math('a = 0.5')} and ${math('λ = 1')}, this is Tejas's equation: ${math('G = A × √L × √E')}.`)}</p>`:'')+
-      formula('compute-link','Compute link · Compute pool','E = k × φ1/φ0; Cr = k × (1 − φ1)/(1 − φ0); c = c0 + log2(Cr)/W',`E ≈ ${f(p.k)} × ${f(p.phi1)}/${f(p.phi0)} ≈ ${f(d.E)}; Cr ≈ ${f(p.k)} × (1 − ${f(p.phi1)})/(1 − ${f(p.phi0)}) ≈ ${f(d.Cr)}; c ≈ ${f(d.c0)} + log2(${f(d.Cr)})/${f(p.W)} ≈ ${f(d.c)}.`, [["k", "Total compute pool divided by baseline"], ["φ0", "Experiment share before the change"], ["φ1", "Experiment share after the change"], ["E", "Experiment compute compared with baseline"], ["Cr", "Training compute ratio after W years"], ["c", "Training growth in doublings a year"], ["c0", "Training growth before the speedup"], ["log2", "How many doublings a ratio equals"], ["W", "Years for the training compute change"]])+
-      formula('index-link','Reading the index · AI capability','Xe = (G × g0 + c)/T0; X_out = 1 + (Xe − 1)/(b × h)',d.X_out<=0?noProgress():`Xe = (${f(d.G)} × ${f(d.g0)} ${signed(d.c)})/${f(p.T0)} ≈ ${f(d.Xe)}; X_out = 1 + (${f(d.Xe)} − 1)/(${f(p.b)} × ${f(p.h)}) ≈ ${f(d.X_out)}.`, [["G", "New software pace divided by old"], ["g0", "Software growth before the speedup"], ["c", "Training growth in doublings a year"], ["T0", "Baseline effective-compute growth in doublings/year"], ["Xe", "Effective-compute speedup after h and b"], ["X_out", "Index speedup produced by the inputs"], ["b", "Bridge from index to effective-compute speedup"], ["h", "Share of the speedup AI caused"]])+
-      formula('time-link','Holding the pace','G1 = (Xe × T0 − c)/g0; G2 = (Xe × T0 − c0)/g0; D(t) = max(0, G1 − 1) × g0 × min(t, W) + max(0, G2 − 1) × g0 × max(0, t − W); A(t) = A × 2^(−β × D(t))',walk.L5!==null?`At year 5: G1 ≈ ${f(end.G1)}; G2 ≈ ${f(end.G2)}; D(5) ≈ ${f(end.D)}; A(5) ≈ ${f(end.A,4)}; ${pathText(walk)}.`:`${pathText(walk)}.`, [["A(t)", "Research productivity at year t"], ["A", "Research productivity at the starting point"], ["β", "Rate at which ideas get harder"], ["D(t)", "Extra software doublings above baseline"], ["G1", "Required software speedup through W years"], ["G2", "Required software speedup after W years"], ["Xe", "Effective-compute speedup required for the target"], ["T0", "Baseline effective-compute growth in doublings/year"], ["g0", "Software growth before the speedup"], ["c", "Training growth through W years"], ["c0", "Baseline training growth after W years"], ["W", "Years for the training compute change"], ["t", "Time since the change in years"], ["max", "The larger of two values"], ["min", "The smaller of two values"]]);
+      formula('research','Research sector · Research lab',`g = g0 × A × F(L, E)^λ; G = g/g0 = A × F(L, E)^λ; ${form}`,`F = ${cd?`${f(p.L)}^${f(p.a)} × ${f(d.E)}^(1 − ${f(p.a)})`:`[${f(p.a)} × ${f(p.L)}^${f(rho,4)} + (1 − ${f(p.a)}) × ${f(d.E)}^${f(rho,4)}]^(1/${f(rho,4)})`} ≈ ${f(M.F(p.L,d.E,p.a,p.sigma))}; G ≈ ${f(p.A)} × ${f(M.F(p.L,d.E,p.a,p.sigma))}^${f(p.lambda)} ≈ ${f(d.G)}; ${cd?'Cobb-Douglas':`CES: ρ ≈ ${f(rho,4)}`}; a ≈ ${f(p.a)}; F(1,1) = 1.`, [["g", "Software growth in doublings a year"], ["g0", "Software growth before the speedup"], ["G", "New software pace divided by old"], ["A", "Research productivity compared with baseline"], ["L", "Human and AI research labour"], ["E", "Experiment compute compared with baseline. Compute per unit of time"], ["λ", "Returns to scale in research"], ["F", "Combines labour and experiment compute"], ["a", "Labour weight against experiment compute"]].concat(cd?[]:[['σ','How easily labour stands in for experiments'],['ρ','Substitution parameter rewritten for the formula']] ),cd?H.plain.research:H.researchCES,cd?`<p class="formula tejas-equation">${H.equation(`With ${math('a = 0.5')} and ${math('λ = 1')}, this is Tejas's equation: ${math('G = A × √L × √E')}.`)}</p>`:'')+
+      formula('compute-link','Compute link · Compute pool','E = k × φ1/φ0; Cr = k × (1 − φ1)/(1 − φ0); c = c0 + log2(Cr)/W',`E ≈ ${f(p.k)} × ${f(p.phi1)}/${f(p.phi0)} ≈ ${f(d.E)}; Cr ≈ ${f(p.k)} × (1 − ${f(p.phi1)})/(1 − ${f(p.phi0)}) ≈ ${f(d.Cr)}; c ≈ ${f(d.c0)} + log2(${f(d.Cr)})/${f(p.W)} ≈ ${f(d.c)}${d.c!==d.c0?" during the transition":""}.`, [["k", "Total compute pool divided by baseline"], ["φ0", "Experiment share before the change"], ["φ1", "Experiment share after the change"], ["E", "Experiment compute compared with baseline. Compute per unit of time"], ["Cr", "Training compute showing in models, against baseline"], ["c", "Training growth in doublings a year"], ["c0", "Training growth before the speedup"], ["log2", "How many doublings a ratio equals"], ["W", "Years for the training compute change"]])+
+      formula('index-link','Reading the index · AI capability','Xe = (G × g0 + c)/T0; X_out = 1 + (Xe − 1)/(b × h)',d.X_out<=0?noProgress():`Xe = (${f(d.G)} × ${f(d.g0)} ${signed(d.c)})/${f(p.T0)} ≈ ${f(d.Xe)}; X_out = 1 + (${f(d.Xe)} − 1)/(${f(p.b)} × ${f(p.h)}) ≈ ${f(d.X_out)}.`, [["G", "New software pace divided by old"], ["g0", "Software growth before the speedup"], ["c", "Training growth in doublings a year"], ["T0", "Baseline effective-compute growth in doublings/year"], ["Xe", "Effective-compute speedup after h and b"], ["X_out", "The reported index speedup implied by the inputs, given b and h"], ["b", "Bridge from index to effective-compute speedup"], ["h", "Share of the speedup AI caused"]],H.plain['index-link']+` Research productivity A enters through G in the research sector. For example, if other causes raised A to 1.3 and AI supplied the rest of a 2x pace, labour would need about ${f(M.inverse({...M.defaults,A:1.3}).L_needed,1)}x, against ${f(M.inverse({...M.defaults,h:.8}).L_needed)}x with h = 0.8 and A = 1.`)+
+      formula('time-link','Holding the pace','G1 = (Xe × T0 − c)/g0; G2 = (Xe × T0 − c0)/g0; G_required(t) = G1 for t ≤ W, G2 after; G_floor(t) = A(t) × F(0, E)^λ; G_actual(t) = max(G_required(t), G_floor(t)); dD/dt = (G_actual(t) − 1) × g0; D(0) = 0; A(t) = A × 2^(−β × D(t))',walk.L5!==null?`At year 5: G1 ≈ ${f(end.G1)}; G2 ≈ ${f(end.G2)}; D(5) ≈ ${f(end.D)}; A(5) ≈ ${f(end.A,4)}; ${pathText(walk)}.`:`${pathText(walk)}.`, [["A(t)", "Research productivity at year t"], ["A", "Research productivity at the starting point"], ["β", "Rate at which ideas get harder"], ["D(t)", "How many more doublings S has had by year t than on the baseline path. It is negative if S has fallen behind."], ["G1", "Required software speedup through W years"], ["G2", "Required software speedup after W years"], ["Xe", "Effective-compute speedup required for the target"], ["T0", "Baseline effective-compute growth in doublings/year"], ["g0", "Software growth before the speedup"], ["c", "Training growth through W years"], ["c0", "Baseline training growth after W years"], ["W", "Years for the training compute change"], ["t", "Time since the change in years"], ["max", "The larger of two values"], ["G_required", "Software growth required for the target"], ["G_actual", "Software growth the lab actually produces"], ["G_floor", "Software growth at zero labour"], ["F", "Combines labour and experiment compute"], ["E", "Experiment compute compared with baseline. Compute per unit of time"], ["λ", "Returns to scale in research"]]);
     $('derivation').innerHTML=`<li>Target X ≈ ${f(p.X)} → Xe = 1 + ${f(p.b)} × ${f(p.h)} × (${f(p.X)} − 1) ≈ ${f(r.Xe)}.</li><li>G = (Xe × T0 − c)/g0 = (${f(r.Xe)} × ${f(p.T0)} ${signed(r.c,true)})/${f(r.g0)} ≈ ${f(r.G)}.</li>`;
     if(r.G>0) {
       $('derivation').innerHTML+=`<li>Tg = (G/A)^(1/λ) = (${f(r.G)}/${f(p.A)})^(1/${f(p.lambda)}) ≈ ${f(r.Tg)}. Tg is the required value of F.</li><li>${cd?`L = (Tg/E^(1 − a))^(1/a) = (${f(r.Tg)}/${f(r.E)}^(1 − ${f(p.a)}))^(1/${f(p.a)})`:`ρ ≈ ${f(rho,4)}; inner = (${f(r.Tg)}^${f(rho,4)} − (1 − ${f(p.a)}) × ${f(r.E)}^${f(rho,4)})/${f(p.a)}. ${r.status==='wall'?'inner ≤ 0: no finite L':r.status==='compute-alone'?'inner ≤ 0: experiment compute alone suffices':'L = inner^(1/ρ)'}`}.</li>`;
@@ -199,12 +208,12 @@
     const step=Math.max(1,[1,2,5,10].find(n=>n*magnitude>=(rawMax-rawMin)/5)*magnitude);
     const min=logY?Math.min(0,...positive.map(v=>Math.floor(Math.log10(v)))):Math.floor(rawMin/step)*step;
     const max=logY?Math.max(min+1,...positive.map(v=>Math.ceil(Math.log10(v)))):Math.min(Number.MAX_VALUE,Math.ceil(rawMax/step)*step);
-    const x=v=>left+(options.log?Math.log(v/.5)/Math.log(80):v/5)*iw;
+    const x=v=>left+(options.log?Math.log(v/.5)/Math.log(120):v/5)*iw;
     const y=v=>top+ih*(1-(logY?Math.log10(v)-min:v-min)/(max-min));
     const clip=id+'-clip';
     let svg=`<svg viewBox="0 0 ${w} ${h}" role="img" aria-labelledby="${id}-title ${id}-desc"><title id="${id}-title">${options.title}</title><desc id="${id}-desc">${options.summary}</desc><defs><clipPath id="${clip}"><rect x="${left}" y="${top}" width="${iw}" height="${ih}"/></clipPath></defs>`;
     if(options.band) svg+=`<rect class="band" x="${left}" y="${y(3)}" width="${iw}" height="${y(1.3)-y(3)}"/><path class="target-line" d="M${left} ${y(2)} H${w-right}"/>`;
-    const xt=options.log?[.5,1,2,5,10,20,40]:[0,1,2,3,4,5];
+    const xt=options.log?[.5,1,2,5,10,20,40,60]:[0,1,2,3,4,5];
     xt.forEach(v=>{svg+=`<text x="${x(v)}" y="${h-bottom+24}" text-anchor="middle">${v}</text>`;});
     const tickCount=logY?max-min:Math.round((max-min)/step);
     const stride=Math.max(1,Math.ceil(tickCount/6));
@@ -223,18 +232,20 @@
     svg+=`<text x="${left+iw/2}" y="${h-5}" text-anchor="middle">${options.log?'Research labour L (log scale)':'Years'}</text></svg><p class="quiet chart-summary">${options.summary}</p>`;
     $(id).innerHTML=svg;
   }
-  function charts() {
+  function charts(walk,pathFor) {
     const data=[],reference=[];
-    for(let i=0;i<=100;i++) {const L=.5*Math.pow(80,i/100); data.push({x:L,y:Math.max(0,M.forward({...p,L}).X_out)});if(!M.isCD(p.sigma))reference.push({x:L,y:Math.max(0,M.forward({...p,L,sigma:1}).X_out)});}
-    chart('chart-forward',data,reference,{title:'Index progress against research labour',log:true,band:true,point:{x:p.L,y:Math.max(0,M.forward(p).X_out)},summary:`${M.forward(p).X_out<=0?noProgress():'At '+times(p.L)+' labour, index progress is '+times(M.forward(p).X_out)+'.'} ${reference.length?'Muted dashes show Cobb-Douglas at the same settings.':'The curve uses Cobb-Douglas.'} Settings with no progress sit at zero on this chart.`});
-    const walk=M.walkTimePath(p), path=walk.points,last=walk.last, ref=M.walkTimePath({...p,beta:0}).points;
-    $('time-sensitivity').textContent=`These figures depend on our illustrative T₀. At current settings, with T₀ = 1: ${pathText(M.walkTimePath({...p,T0:1}),false)}. With T₀ = 6: ${pathText(M.walkTimePath({...p,T0:6}),false)}.`;
+    for(let i=0;i<=100;i++) {const L=.5*Math.pow(120,i/100); data.push({x:L,y:Math.max(0,M.forward({...p,L}).X_out)});if(!M.isCD(p.sigma))reference.push({x:L,y:Math.max(0,M.forward({...p,L,sigma:1}).X_out)});}
+    chart('chart-forward',data,reference,{title:'Index progress against research labour',log:true,band:true,point:{x:p.L,y:Math.max(0,M.forward(p).X_out)},summary:`${M.forward(p).X_out<=0?noProgress():'At '+times(p.L)+' labour, '+(bridgeChanged()?'reported pace':'index progress')+' is '+times(M.forward(p).X_out)+'.'} ${reference.length?'Muted dashes show Cobb-Douglas at the same settings.':'The curve uses Cobb-Douglas.'} Settings with a decline or no progress sit at zero on this chart.`});
+    const path=walk.points,last=walk.last, ref=pathFor({...p,beta:0}).points;
+    $('time-sensitivity').textContent=`These figures depend on our illustrative T₀. At current settings, with T₀ = 1: ${pathText(pathFor({...p,T0:1}),false)}. With T₀ = 6: ${pathText(pathFor({...p,T0:6}),false)}.`;
     const points=path.map(q=>({x:q.t,y:q.L_needed}));
-    chart('chart-time',points,ref.map(q=>({x:q.t,y:q.L_needed})),{title:'Labour needed to hold the target pace',logY:true,wall:last.status==='wall',summary:`Target ${times(p.X)}. At year 0: ${inverseText(path[0],true)}. ${pathText(walk)}. Labour uses a logarithmic axis. Muted dashes hold β = 0.`});
+    chart('chart-time',points,ref.map(q=>({x:q.t,y:q.L_needed})),{title:'Labour needed to hold the target pace',logY:true,wall:last.status==='wall',summary:`Target ${times(p.X)}. At year 0: ${path[0].status==='ok'?timeTimes(path[0].L_needed):inverseText(path[0],true).replace(/\.$/,'')}. ${pathText(walk)}. Labour uses a logarithmic axis. Muted dashes hold β = 0.${p.h<1?" This path counts AI's part only.":""}${path.some(q=>q.G_actual>q.G_required+1e-12)?" With no labour, the lab keeps the faster growth.":""}`});
   }
   function update() {
     const d=M.forward(p), r=M.inverse(p);
-    H.setState(p);
+    const paths=new Map(), pathFor=state=>{const key=JSON.stringify(state);if(!paths.has(key))paths.set(key,M.walkTimePath(state));return paths.get(key);};
+    const walk=pathFor(p);
+    H.setState(p,walk);
     const opened=Array.from(document.querySelectorAll('#equations details, #derivation details')).map(el=>el.open);
     document.querySelectorAll('[data-key]').forEach(input=>{
       const key=input.dataset.key;
@@ -253,12 +264,12 @@
       + Number(experimentBase!==null && Math.abs(d.E-M.compute(counted).E)>1e-10);
     $('changed').hidden=!count;
     $('changed').innerHTML=`${count} ${count===1?'setting differs':'settings differ'} from the defaults. <a href="#workings">See the workings</a> or <button type="button" data-reset>reset</button>.`;
-    $('forward-readout').innerHTML=d.X_out<=0?noProgress():`With these inputs, AI progress runs at <strong>${times(d.X_out)}</strong> its old pace.`;
+    $('forward-readout').innerHTML=forwardText(d);
     $('inverse-readout').innerHTML=inverseText(r);
-    $('compact-readout').textContent=`${d.X_out<=0?noProgress():'Progress '+times(d.X_out)} · ${r.status==='ok'?'Labour ':''}${inverseText(r,true)}`;
-    $('target-note').innerHTML=`Target: ${p.X===2?"METR's 2x":times(p.X)}. Change it in <a href="#workings">the workings</a>.`;
+    $('compact-readout').textContent=bridgeChanged()?`${forwardText(d)} ${inverseText(r).replace(/<[^>]+>/g,'')}`:`${d.X_out<=0?noProgress():'Progress '+times(d.X_out)} · ${r.status==='ok'?'Labour ':''}${inverseText(r,true)}`;
+    $('target-note').innerHTML=`Target: ${targetName()}. Change it in <a href="#workings">the workings</a>.`;
     $('levels').textContent=`Labour: ${f(p.L0)} → ${f(p.L0*p.L)}. Compute: ${f(p.K0)} → ${f(p.K0*p.k)}.`;
-    drawMachine('diagram-machine',false);drawMachine('diagram-workings',true);equations();charts();
+    drawMachine('diagram-machine',false);drawMachine('diagram-workings',true);equations(walk);charts(walk,pathFor);
     const disclosures=Array.from(document.querySelectorAll('#equations details, #derivation details'));
     disclosures.forEach((el,i)=>el.open=!!opened[i===disclosures.length-1?opened.length-1:i]);
   }
@@ -308,7 +319,7 @@
     const text=result.status==='wall'?`Never reaches ${times(state.X)}: stops at ${times(result.X_max)}`:inverseText(result,true);
     return `<li><button class="scenario-row" type="button" data-case="${i}" aria-label="${group}: ${c.name}" aria-describedby="scenario-gloss-${i} scenario-result-${i}"><span class="scenario-copy"><span class="scenario-name">${c.name}</span><span class="scenario-gloss quiet" id="scenario-gloss-${i}">${c.gloss}</span></span><span class="result" id="scenario-result-${i}">${text}</span></button></li>`;
   }).join('')}</ul></section>`).join('');
-  $('scenarios').addEventListener('click',event=>{const button=event.target.closest('[data-case]');if(button){const index=Number(button.dataset.case);p=scenario(index);experimentBase=cases[index].E?{k:M.defaults.k,phi1:M.defaults.phi1,E:1}:null;update();}});
+  $('scenarios').addEventListener('click',event=>{const button=event.target.closest('[data-case]');if(button){const index=Number(button.dataset.case);p=scenario(index);const solved=M.inverse(p);p.L=solved.status==='wall'?6.25:solved.L_needed===0?Number($('work-L').min):solved.L_needed??6.25;experimentBase=cases[index].E?{k:M.defaults.k,phi1:M.defaults.phi1,E:1}:null;update();}});
   narrow.addEventListener('change',update);reduced.addEventListener('change',update);
   document.addEventListener('visibilitychange',()=>document.querySelectorAll('.diagram svg').forEach(svg=>{if(document.hidden||reduced.matches||svg.closest('[hidden]'))svg.pauseAnimations();else svg.unpauseAnimations();}));
   document.documentElement.setAttribute('data-interactive','true');

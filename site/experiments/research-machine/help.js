@@ -13,18 +13,18 @@ const entries = {
   },
   "Cr": {
     "name": "Training compute ratio",
-    "meaning": "Training compute compared with the baseline path, at the end of W years.",
+    "meaning": "Training compute showing in models, against baseline",
     "turn": ""
   },
   "L": {
     "name": "Research labour",
     "meaning": "Human researchers plus AI doing research work, in researcher-equivalents, compared with baseline. 2 means twice the baseline.",
-    "turn": "A faster pace of new methods, usually with less from each extra unit."
+    "turn": "A faster pace of new methods. With default weights and λ = 1, each extra unit adds less."
   },
   "E": {
     "name": "Experiment compute",
-    "meaning": "Computing power for research experiments, compared with baseline.",
-    "turn": "A faster pace of new methods, usually with less from each extra unit."
+    "meaning": "Computing power for research experiments, compared with baseline. Compute per unit of time",
+    "turn": "A faster pace of new methods. With default weights and λ = 1, each extra unit adds less."
   },
   "A": {
     "name": "Research productivity",
@@ -128,22 +128,22 @@ const entries = {
   },
   "X_out": {
     "name": "Index speedup",
-    "meaning": "The speedup the inputs produce, read on the index.",
+    "meaning": "The reported index speedup implied by the inputs, given b and h",
     "turn": ""
   },
   "h": {
     "name": "AI share",
-    "meaning": "The share of the speedup that AI caused.",
+    "meaning": "The assumed share of the acceleration that AI caused. It gives a labour equivalent for that part, and does not identify the actual uplift.",
     "turn": ""
   },
   "b": {
     "name": "Index bridge",
-    "meaning": "How much effective compute speeds up for each unit of index speedup.",
+    "meaning": "An assumed link between the index speedup and the effective compute speedup. We have no estimate of it.",
     "turn": ""
   },
   "D(t)": {
     "name": "Extra software doublings",
-    "meaning": "How many more doublings S has had by year t than on the baseline path.",
+    "meaning": "How many more doublings S has had by year t than on the baseline path. It is negative if S has fallen behind.",
     "turn": ""
   },
   "A(t)": {
@@ -188,6 +188,9 @@ const entries = {
   }
 };
 Object.assign(entries, {
+ G_actual:{name:'Actual software growth',meaning:'The larger of required growth and growth at zero labour.',turn:''},
+ G_required:{name:'Required software growth',meaning:'G₁ through W years and G₂ after.',turn:''},
+ G_floor:{name:'Growth at zero labour',meaning:'A(t) × F(0, E) raised to λ. It is zero for Cobb-Douglas and for σ below 1, and can be positive above 1.',turn:''},
  phi0:{name:'Baseline experiment share',meaning:'The share of compute that went to experiments before the change.',turn:'Less experiment compute and more training compute, compared with baseline.'},
  phi1:{name:'New experiment share',meaning:'The share of compute that goes to experiments after the change.',turn:'More for experiments, less for training.'},
  inner:{name:'CES working term',meaning:'A working term in the CES solution.',turn:''},
@@ -201,15 +204,15 @@ Object.assign(entries, {
 const plain = {
   "final-sector": "A model gets better in two ways: more training compute, or better methods. The two multiply, so doubling either one doubles effective compute. In growth rates the multiplying becomes adding: growth in effective compute equals growth in C plus growth in S. That lets us split baseline growth: s to software, 1 − s to training. Tejas supposes two-thirds and one-third. No research labour appears in this equation. Research labour comes in one step earlier, in the research lab. Methods are non-rival: each run uses all of S.",
   "research": "This equation makes new methods. Its output is a pace: how fast S grows. Its inputs are research labour, human or AI, and experiment compute. With equal weights and λ = 1, neither input can do the work alone: four times the labour only doubles the pace. A scales the whole result. If ideas get harder to find, A falls and the same lab finds less. Cobb-Douglas builds in one fixed answer to how far more research labour can stand in for more experiments, so no symbol for it appears here. Choose CES below to set it yourself.",
-  "compute-link": "A lab has one pool of compute and two uses for it: experiments and training. φ₀ and φ₁ are the shares that go to experiments before and after the change. If the pool stays the same, more for experiments means less for training. If the pool doubles and the split stays the same, both double. Experiments get a change at once. A change in training takes W years to show in full. The experiment dial on The machine holds <var>C</var><sub>r</sub> fixed.",
+  "compute-link": "A lab has one pool of compute and two uses for it: experiments and training. φ₀ and φ₁ are the shares that go to experiments before and after the change. If the pool stays the same, more for experiments means less for training. If the pool doubles and the split stays the same, both double. Experiments use a change at once. We assume training's effect on models arrives over W years. So E measures compute in use now, and <var>C</var><sub>r</sub> measures training compute already showing in models. During those years the two need not add up to the pool. The experiment dial on The machine holds <var>C</var><sub>r</sub> fixed.",
   "index-link": "The model works in effective compute, but METR reports a benchmark index. This card turns one into the other. With h and b both at 1, the two speedups are the same. h says how much of the speedup AI caused. b says how the index speedup relates to the effective compute speedup. Only b × h enters. Lowering h means more of the reported speedup comes from outside AI, so the same inputs report a larger speedup. With h below 1, the labour figure covers only the part attributed to AI. The target X enters through <var>X</var><sub>e</sub> = 1 + <var>b</var> × <var>h</var> × (<var>X</var> − 1).",
-  "time-link": "Going faster uses up the easy ideas faster. Unless β is 0, A keeps falling while the fast pace lasts, so the labour needed climbs. A cut in training compute can make it drop once, at year W. Read the shape of the line. Its size depends on β and on g₀, which comes from T₀. Both are our illustrative numbers."
+  "time-link": "S is software, whose excess doublings enter through D(t). D(t) is how many more doublings S has had by year t than on the baseline path. It is negative if S has fallen behind. If D is negative, A rises above its starting ratio. If the other inputs beat the target with no labour, the lab keeps the faster growth. A change in training compute makes labour jump once, at year W: down after a cut, up after an increase. Read the shape of the line. Its size depends on β and on g₀, which comes from T₀. Both are our illustrative numbers."
 };
 const researchCES = "This equation makes new methods. Its output is a pace: how fast S grows. Its inputs are research labour, human or AI, and experiment compute. A scales the whole result. If ideas get harder to find, A falls and the same lab finds less. σ says how far more research labour can stand in for more experiments. ρ is the same number rewritten for the formula. Below σ = 1 they are hard to swap, and past some point more labour adds little. Above 1, either input can do it alone.";
 const why = ["Start from the target speedup. Adjust it for how much AI caused and for how the index relates to effective compute.", "Take away what training compute supplies. Software must supply the rest.", "Divide by research productivity, then undo the power λ. This gives what the lab's research labour and experiment compute must produce.", "Undo the production function to find the labour that produces it."];
 const charts = {
   "chart-forward-help": "Moving right multiplies labour. The line shows the speedup that labour gives, with everything else as set. The shaded band is what METR would not be surprised by.",
-  "chart-time-help": "Each year at the fast pace makes ideas harder to find, so the labour needed climbs, unless β is 0. Equal steps up the chart multiply labour by the same amount. The dashed line shows the case where ideas do not get harder."
+  "chart-time-help": "Growth above baseline makes ideas harder to find; growth below baseline lets A rise. Unless β is 0, the labour needed changes with this accumulated difference. Equal steps up the chart multiply labour by the same amount. The dashed line shows the case where ideas do not get harder. Each ratio compares with the baseline workforce at that date."
 };
 const escape=text=>String(text).replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;');
 function button(key,content,slider=false) {
@@ -222,13 +225,13 @@ function equation(html) {
  return html.replace(/<span>log<\/span><sub>2<\/sub>|\b(?:inner|max|min)\b|<var>([^<]+)<\/var>(?:<sub>([^<]+)<\/sub>|\(<var>t<\/var>\))?/g,(whole,base,sub)=>{
  if(['inner','max','min'].includes(whole)||whole.startsWith('<span>')) {const out=button(whole.startsWith('<span>')?'log2':whole,whole).replace(' data-help=',` tabindex="${first?0:-1}" data-help=`);first=false;return out;}
  const map={'φ':'phi','σ':'sigma','ρ':'rho','λ':'lambda','β':'beta'};
- const key=whole.includes('(<var>t')?base+'(t)':sub?(base==='X'&&sub==='out'?'X_out':(['max','out'].includes(sub)?base+'_'+sub:base+sub)):map[base]||base;
- const normalized=key==='Tg'||key==='Xe'||key==='Cr'?key:key.replace('φ','phi');
+ const key=whole.includes('(<var>t')?base+'(t)':sub?(base==='X'&&sub==='out'?'X_out':(['max','out','required','actual','floor'].includes(sub)?base+'_'+sub:base+sub)):map[base]||base;
+ const normalized=key==='D'?'D(t)':key==='Tg'||key==='Xe'||key==='Cr'?key:key.replace('φ','phi');
  const out=button(normalized,whole).replace(' data-help=',` tabindex="${first?0:-1}" data-help=`);first=false;return out;
  });
 }
-let state, active=null, timer, scrollTimer, popover, restoringFocus=false;
-const nodeMap={inner:'research',log2:'compute-link',max:'time-link',min:'time-link',G1:'research',G2:'research',F_max:'research',G_max:'research',X_max:'index-link',S:'final-sector',C:'final-sector',Cr:'compute-link',L:'research',E:'compute-link',A:'research',g:'research',g0:'final-sector',c:'compute-link',c0:'final-sector',G:'research',F:'research',Tg:'research',a:'research',sigma:'research',rho:'research',lambda:'research',beta:'time-link',k:'compute-link',K:'compute-link',phi0:'compute-link',phi1:'compute-link',W:'compute-link',T0:'final-sector',s:'final-sector',X:'index-link',Xe:'index-link',X_out:'index-link',h:'index-link',b:'index-link','D(t)':'time-link','A(t)':'time-link',t:'time-link',L0:'research',K0:'compute-link'};
+let state, timeWalk, active=null, timer, scrollTimer, popover, restoringFocus=false;
+const nodeMap={G_actual:'time-link',G_required:'time-link',G_floor:'time-link',inner:'research',log2:'compute-link',max:'time-link',min:'time-link',G1:'research',G2:'research',F_max:'research',G_max:'research',X_max:'index-link',S:'final-sector',C:'final-sector',Cr:'compute-link',L:'research',E:'compute-link',A:'research',g:'research',g0:'final-sector',c:'compute-link',c0:'final-sector',G:'research',F:'research',Tg:'research',a:'research',sigma:'research',rho:'research',lambda:'research',beta:'time-link',k:'compute-link',K:'compute-link',phi0:'compute-link',phi1:'compute-link',W:'compute-link',T0:'final-sector',s:'final-sector',X:'index-link',Xe:'index-link',X_out:'index-link',h:'index-link',b:'index-link','D(t)':'time-link','A(t)':'time-link',t:'time-link',L0:'research',K0:'compute-link'};
 function highlight(id) {
  document.querySelectorAll('#diagram-workings a').forEach(a=>a.classList.toggle('help-match',a.getAttribute('href')==='#'+(id==='time-link'?'research':id)));
 }
@@ -240,12 +243,13 @@ function close(returnFocus=false) {
  if(returnFocus&&previous?.isConnected){restoringFocus=true;previous.focus({preventScroll:true});restoringFocus=false;}
 }
 function live(key,trigger) {
- const M=window.ResearchMachine, d=M.forward(state), r=M.inverse(state), end=M.walkTimePath(state).last;
+ const M=window.ResearchMachine, d=M.forward(state), r=M.inverse(state), end=(timeWalk||M.walkTimePath(state)).last;
  const values={...state,...d,K:state.K0*state.k,C:state.K0*(1-state.phi0)*d.Cr,g:d.G*d.g0,F:M.F(state.L,d.E,state.a,state.sigma),inner:M.isCD(state.sigma)?null:(Math.pow(r.Tg,(state.sigma-1)/state.sigma)-(1-state.a)*Math.pow(r.E,(state.sigma-1)/state.sigma))/state.a,Tg:r.Tg,rho:(state.sigma-1)/state.sigma,G1:end.G1,G2:end.G2};
  if(key==='S'||key==='t'||key==='D(t)'||key==='A(t)')return null;
- if(key==='X_out'&&d.X_out<=0)return 'No progress';
+ if(key==='X_out'&&d.X_out<=0)return d.X_out<0?'The reported index would fall in this setting.':'No progress';
  if(trigger.closest('#derivation')){values.G=r.G;values.Xe=r.Xe;values.L=r.L_needed;values.F=r.Tg;values.g=r.G*d.g0;}
  if(trigger.closest('#time-link'))values.Xe=r.Xe;
+ if(key==='c' && d.c!==d.c0)return M.format(d.c,4)+' during the transition';
  const value=values[key]??({F_max:r.status==='wall'?r.E*Math.pow(1-state.a,state.sigma/(state.sigma-1)):null,G_max:r.G_max,X_max:r.X_max})[key];
  if(key==='X_max'&&Number.isFinite(value)&&value<=0)return 'No progress at the ceiling';
  return Number.isFinite(value)?M.format(value,4):null;
@@ -330,5 +334,5 @@ function init() {
  const wrapper=document.createElement('div');wrapper.className=label.className;label.replaceWith(wrapper);while(label.firstChild)wrapper.append(label.firstChild);
  });
 }
-window.ResearchHelp={entries,plain, researchCES,why,charts,button,equation,init,close,setState(next){state=window.ResearchMachine.state(next);close();}};
+window.ResearchHelp={entries,plain, researchCES,why,charts,button,equation,init,close,setState(next,walk){state=window.ResearchMachine.state(next);timeWalk=walk;close();}};
 })();
