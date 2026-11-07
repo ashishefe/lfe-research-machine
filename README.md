@@ -4,6 +4,8 @@ An interactive model of AI research labour, experiment compute and training comp
 
 The starting model comes from [Tejas Subramaniam’s post](https://x.com/TejasReal/status/2118873231872643552). The benchmark context comes from [METR’s assessment of AI’s acceleration of Anthropic’s research](https://metr.org/blog/2026-11-05-anthropic-ai-rd-acceleration-assessment/). The page adds illustrative assumptions and extensions. Its results are conditional calculations, rather than forecasts.
 
+Live at **https://lfe.econforeverybody.com/experiments/research-machine/**, part of the [Experiments](https://lfe.econforeverybody.com/experiments/) on Learn For Everybody.
+
 ## Run locally
 
 No package installation is needed. With Python 3 installed, run:
