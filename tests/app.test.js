@@ -729,6 +729,7 @@ test('verbatim labour copy, help, caveat and both forms',()=>{
     if(symbol==='D(t)')assert.equal(meaning,'How many more doublings S has had by year t than on the baseline path. It is negative if S has fallen behind.');
     else if(symbol==='Xout')assert.equal(meaning,'The reported index speedup implied by the inputs, given b and h');
     else if(symbol==='E')assert.equal(meaning,'Experiment compute compared with baseline. Compute per unit of time');
+    else if(symbol==='Cr')assert.equal(meaning,'Training-compute effect relative to baseline at the end of W years');
     else assert.ok(meaning.split(/\s+/).length<=8,entry);
    }
   }
@@ -781,9 +782,9 @@ test('outside review copy appears verbatim in live and static views',()=>{
  assert.ok(H.plain['time-link'].includes('If D is negative, A rises above its starting ratio.'));
  assert.equal(H.entries.h.meaning,"The assumed share of the acceleration that AI caused. It gives a labour equivalent for that part, and does not identify the actual uplift.");
  assert.equal(H.entries.b.meaning,'An assumed link between the index speedup and the effective compute speedup. We have no estimate of it.');
- const compute="Experiments use a change at once. We assume training's effect on models arrives over W years. So E measures compute in use now, and Cr measures training compute already showing in models. During those years the two need not add up to the pool.";
+ const compute="Experiments use a change at once. We assume training's effect on models arrives over W years. So E measures compute in use now, and Cr measures the training-compute effect, relative to baseline, at the end of W years. During those years the two need not add up to the pool.";
  assert.ok(textOf(H.plain['compute-link']).includes(compute));
- assert.equal(H.entries.Cr.meaning,'Training compute showing in models, against baseline');
+ assert.equal(H.entries.Cr.meaning,'Training-compute effect relative to baseline at the end of W years');
  assert.ok(H.entries.E.meaning.includes('Compute per unit of time'));
  assert.ok(H.charts['chart-time-help'].includes('Each ratio compares with the baseline workforce at that date.'));
  for(const markup of [html,a.nodes.get('scenarios').innerHTML])assert.doesNotMatch(markup,/Ideas (?:get )?20% harder/);
@@ -827,7 +828,7 @@ test('attribution and index bridge copy follows h, b and target on desktop and p
    a.input('h',h);a.input('b',b);
    const state=a.window.ResearchMachineApp.snapshot().settings,d=M.forward(state),r=M.inverse(state);
    const target=X===2?"METR's 2x":`the ${X}x target`;
-   const attribution=h<1&&b*h<1,bridge=b*h!==1;
+   const attribution=h<1,bridge=b!==1||h!==1;
    const forward=attribution?`With these inputs, the reported pace would be ${M.format(d.X_out)}x its old pace, because we assume they explain only part of the speedup.`:bridge?`Under this index bridge, the reported pace would be ${M.format(d.X_out)}x its old pace.`:`With these inputs, AI progress runs at ${M.format(d.X_out)}x its old pace.`;
    const inverse=attribution?`The labour equivalent of AI's part of ${target} is ${M.format(r.L_needed)}x. The model does not say where the other causes act.`:bridge?`To reach the ${X}x target under this bridge, research labour must be ${M.format(r.L_needed)}x its old level.`:`To reach ${target} with everything else as set, research labour must be ${M.format(r.L_needed)}x its old level.`;
    assert.equal(textOf(a.nodes.get('forward-readout').innerHTML),forward);
@@ -838,7 +839,7 @@ test('attribution and index bridge copy follows h, b and target on desktop and p
     assert.ok(desc.includes(forward));assert.ok(desc.includes(inverse));
    }
    assert.equal(a.nodes.get('chart-time').innerHTML.includes("This path counts AI's part only."),h<1);
-   assert.ok(a.nodes.get('chart-forward').innerHTML.includes(`At ${M.format(state.L)}x labour, ${bridge?'reported pace':'index progress'} is ${M.format(d.X_out)}x.`));
+   assert.ok(textOf(a.nodes.get('chart-forward').innerHTML).includes(bridge?forward:`At ${M.format(state.L)}x labour, index progress is ${M.format(d.X_out)}x.`));
    assert.equal(textOf(a.nodes.get('target-note').innerHTML),`Target: ${target}. Change it in the workings.`);
    if(X!==2)for(const id of ['forward-readout','inverse-readout','compact-readout','diagram-machine','diagram-workings','target-note']){
     const node=a.nodes.get(id);assert.doesNotMatch(node.innerHTML+node.textContent,/METR's/);
@@ -981,4 +982,37 @@ test('phone wall readout reports declining index once for the supplied settings'
  const sentences=a.nodes.get('compact-readout').textContent.split(/\. (?=[A-Z])/);
  assert.equal(new Set(sentences).size,sentences.length);
  a.input('X',4);assert.equal(a.nodes.get('inverse-readout').innerHTML,'No amount of research labour reaches the 4x target here.');
+});
+
+test('half attribution with b = 2 survives diagram patches and phone rendering',()=>{
+ for(const mobile of [false,true])for(const dom of [false,true]){
+  const a=boot(mobile,false,dom);
+  a.input('h',.5);a.input('b',2);
+  const forward='With these inputs, the reported pace would be 2x its old pace, because we assume they explain only part of the speedup.';
+  const inverse="The labour equivalent of AI's part of METR's 2x is 6.25x. The model does not say where the other causes act.";
+  assert.equal(textOf(a.nodes.get('forward-readout').innerHTML),forward);
+  assert.equal(textOf(a.nodes.get('inverse-readout').innerHTML),inverse);
+  assert.equal(a.nodes.get('compact-readout').textContent,forward+' '+inverse);
+  for(const id of ['diagram-machine','diagram-workings']){
+   const node=a.nodes.get(id),desc=dom?node.querySelector('desc').textContent:node.innerHTML.match(/<desc[^>]*>(.*?)<\/desc>/)[1];
+   assert.ok(desc.includes(forward));assert.ok(desc.includes(inverse));
+   assert.doesNotMatch(desc,/under this (?:index )?bridge|Software and training produce index progress/i);
+  }
+  assert.ok(textOf(a.nodes.get('chart-forward').innerHTML).includes(forward));
+  assert.ok(textOf(a.nodes.get('chart-time').innerHTML).includes("This path counts AI's part only."));
+ }
+});
+
+test('training-compute definition is exact in symbols, popover and static fallback',()=>{
+ const a=boot(),H=a.window.ResearchHelp,html=fs.readFileSync(dir+'index.html','utf8');
+ const meaning='Training-compute effect relative to baseline at the end of W years';
+ const plain='and Cr measures the training-compute effect, relative to baseline, at the end of W years';
+ assert.equal(H.entries.Cr.meaning,meaning);
+ const h=helpHarness();h.trigger('Cr').focus();assert.ok(textOf(h.content.innerHTML).includes(meaning));
+ for(const content of [a.nodes.get('equations').innerHTML,html]){
+  assert.ok(textOf(content).includes('Cr — '+meaning));
+  assert.ok(textOf(content).includes(plain));
+ }
+ assert.ok(textOf(H.plain['compute-link']).includes(plain));
+ for(const file of ['app.js','help.js','index.html'])assert.doesNotMatch(fs.readFileSync(dir+file,'utf8'),/showing in models/);
 });
