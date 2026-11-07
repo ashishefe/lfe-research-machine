@@ -1,0 +1,156 @@
+.shell { width: var(--site-w); margin-inline: auto; }
+.masthead { padding: 3.7rem 0 2rem; }
+h1 { max-width: none; font-size: clamp(2.7rem,6vw,5.4rem); }
+p { max-width: 70ch; }
+.subheading { font-size: clamp(1.2rem,2.2vw,1.8rem); line-height: 1.4; margin-block: 1.4rem; max-width: none; }
+button, input, select { font: inherit; color: inherit; }
+button { border: 1px solid var(--hairline); border-radius: 0; background: transparent; padding: .45rem .7rem; cursor: pointer; }
+button:hover { border-color: var(--muted); }
+.tabs { display: flex; gap: 1.8rem; border-bottom: 1px solid var(--hairline); margin-bottom: 2rem; }
+.tabs button { border: 0; border-bottom: 2px solid transparent; padding: .65rem 0; }
+.tabs [aria-selected="true"] { border-color: var(--accent); font-weight: 600; }
+[hidden] { display: none !important; }
+.machine-layout { display: grid; grid-template-columns: minmax(210px,1fr) minmax(0,3.35fr); gap: 2.4rem; align-items: start; }
+.machine-layout h2 { font-size: 1.35rem; }
+.dial { display: block; padding-block: .8rem; border-bottom: 1px solid var(--hairline); }
+.dial .label-line { display: flex; justify-content: space-between; gap: .5rem; align-items: baseline; }
+.dial output { color: var(--accent); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.dial input[type="range"] { display: block; width: 100%; margin: .8rem 0 .3rem; accent-color: var(--accent); cursor: pointer; }
+.dial input[type="number"] { background: var(--paper); border: 1px solid var(--hairline); width: 100%; padding: .4rem; margin-top: .5rem; }
+.quiet, figcaption { color: var(--muted); font-size: .91rem; }
+figure { margin: 0; min-width: 0; }
+.machine-figure { background: var(--panel); border: 1px solid var(--hairline); padding: 1rem; }
+.diagram > svg { display: block; width: 100%; height: auto; }
+.diagram .node { fill: var(--paper); stroke: var(--hairline); }
+.diagram text { fill: var(--ink); font-family: var(--serif); font-size: 17px; }
+.diagram .value { fill: var(--accent); font-size: 19px; }
+.diagram .pipe { fill: none; stroke: var(--muted); stroke-width: 1.2; }
+.diagram .dot { fill: var(--accent); }
+.diagram marker path { fill: var(--muted); }
+.diagram a:hover .node { stroke: var(--muted); }
+#meter svg { width: 100%; height: 72px; display: block; }
+#meter text { font-family: var(--serif); fill: var(--muted); font-size: 14px; }
+.readout { margin: 1.7rem 0; font-size: 1.25rem; }
+.readout p { margin-block: .6rem; }
+.readout strong { color: var(--accent); font-weight: 600; }
+.reading-grid { display: grid; grid-template-columns: 1.25fr 1fr; gap: 5rem; margin-top: 3rem; }
+#scenarios ul { margin: 0; padding: 0; list-style: none; }
+#scenarios h3 { font-size: 1rem; font-weight: 500; margin: 1.25rem 0 .3rem; }
+#scenarios li { border-bottom: 1px solid var(--hairline); }
+#scenarios .scenario-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(5ch, 34%); align-items: baseline; text-align: left; width: 100%; border: 0; padding: .7rem 0; gap: 1rem; }
+#scenarios button:hover { color: var(--accent); }
+#scenarios .result { color: var(--accent); text-align: right; min-width: 5ch; }
+.assumptions { margin-top: 3rem; border-top: 1px solid var(--hairline); padding-top: 2rem; }
+.assumptions ul { max-width: 70ch; padding-left: 1.3rem; }
+.assumptions li { margin-bottom: .8rem; }
+#workings > .machine-figure { max-width: 1000px; margin-block: 2rem; }
+.equations { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem 3rem; margin-block: 2rem; }
+.formula-card { border-top: 1px solid var(--hairline); padding: .9rem 0; min-width: 0; }
+.formula-card .formula { font-size: 1.2rem; color: var(--accent); overflow-wrap: anywhere; }
+.formula-card p { margin-block: .65rem; }
+.formula-card .definitions { padding-inline-start: 1.3rem; color: var(--muted); font-size: .95rem; }
+.parameters { margin-block: 2rem 3rem; }
+#all-controls { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 2rem 3rem; }
+fieldset { padding: 0; border: 0; min-width: 0; margin: 0; }
+legend { font-size: 1.3rem; font-weight: 600; padding: 0; margin-bottom: .5rem; }
+.model-choice { margin-block: .6rem; }
+.model-choice label { margin-right: .6rem; }
+.derivation { max-width: 75ch; padding-left: 1.5rem; }
+.derivation li { margin-block: .6rem; overflow-wrap: anywhere; }
+.charts { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-block: 3rem; }
+.charts svg { display: block; width: 100%; height: auto; }
+.charts svg text { font-family: var(--serif); fill: var(--muted); font-size: 14px; }
+.charts .axis { stroke: var(--hairline); fill: none; }
+.charts .curve { stroke: var(--accent); fill: none; stroke-width: 2; }
+.charts .reference { stroke: var(--muted); fill: none; stroke-dasharray: 5 5; stroke-width: 1.4; }
+.charts .point { fill: var(--accent); }
+.charts .band { fill: var(--band); }
+.sources { border-top: 1px solid var(--hairline); padding-top: 2rem; margin-top: 3rem; }
+.lfe-footer { margin-top: 3rem; padding-bottom: 2rem; display: block; }
+.lfe-footer p { font-size: .9rem; }
+.topic-bar nav { flex-wrap: wrap; }
+@media (max-width: 1000px) { .machine-layout { grid-template-columns: 1fr; } .dials { display: grid; grid-template-columns: 1fr 1fr; gap: 0 2rem; } .dials h2, #simple-controls { grid-column: 1 / -1; } #simple-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 0 2rem; } .reading-grid { gap: 2rem; } }
+@media (max-width: 760px) { .masthead { padding-top: 2.3rem; } .reading-grid, .equations, #all-controls, .charts { grid-template-columns: 1fr; gap: 2rem; } .site-bar nav { gap: 14px; } .topic-bar nav { gap: 7px 14px; } .subheading { font-size: 1.22rem; } .machine-figure { padding: .65rem; } .dials { display: block; } #simple-controls { display: block; } .readout { font-size: 1.15rem; } .diagram { max-width: 400px; margin: auto; } .charts { margin-block: 2rem; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; } }
+@media (max-width: 760px) { .charts svg text { font-size: 20px; } }
+/* The house's older .tabs rule uses capitals; this view follows its current bars. */
+.tabs { text-transform: none; letter-spacing: 0; font-size: 1.1rem; font-weight: 400; margin-top: 0; padding: 0; border-top: 0; }
+.formula-card .formula { display: block; }
+
+.skip-link { position: fixed; left: 1rem; top: 0; transform: translateY(-150%); z-index: 30; padding: .6rem 1rem; background: var(--paper); color: var(--ink); border: 1px solid var(--hairline); }
+.skip-link:focus { transform: translateY(0); }
+.readout { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 3rem; margin: 0 0 2rem; }
+.readout strong { font-size: clamp(2rem,3.5vw,3.2rem); line-height: 1; white-space: nowrap; }
+.diagram .meter-label { font-size: 13px; fill: var(--muted); }
+#workings > .machine-figure { max-width: none; }
+.formula-card .formula { background: transparent; border: 0; padding: 0; line-height: 1.7; }
+.formula-card .substitution { font-size: 1.06rem; color: var(--ink); }
+var { font-family: inherit; font-style: italic; }
+sup, sub { font-size: .72em; line-height: 0; }
+.compact-readout { display: none; }
+@media (max-width: 760px) {
+  .readout { grid-template-columns: 1fr; gap: 0; }
+  html .topic-bar { position: static; }
+  .compact-readout { display: block; position: sticky; top: 0; z-index: 11; margin: 0; padding: .55rem .2rem; border-bottom: 1px solid var(--hairline); background: var(--paper); color: var(--accent); font-size: .95rem; line-height: 1.3; }
+}
+
+html:not([data-interactive]) .model-choice,
+html:not([data-interactive]) .tabs,
+html:not([data-interactive]) input,
+html:not([data-interactive]) [data-reset],
+html:not([data-interactive]) #scenarios button,
+html:not([data-interactive]) .theme-toggle { display: none; }
+.formula-card, #workings { scroll-margin-top: 7rem; }
+.math-power { white-space: nowrap; display: inline-block; }
+.charts .target-line { stroke: var(--muted); stroke-dasharray: 1 4; fill: none; stroke-width: 1.6; }
+.diagram .meter-band { fill: var(--band); stroke: var(--muted); stroke-width: 1; }
+html[data-theme="dark"] .diagram .meter-band { fill: var(--hairline); }
+.diagram a:focus .node { stroke: var(--accent); stroke-width: 2; }
+#scenarios .scenario-name, #scenarios .scenario-gloss { display: block; }
+#scenarios .scenario-gloss { margin-top: .2rem; font-size: .85rem; line-height: 1.45; }
+@media (max-width: 760px) { .formula-card, #workings { scroll-margin-top: 1rem; } }
+
+/* Match dial specificity when scripts are blocked. */
+html:not([data-interactive]) .dial input[type="range"],
+html:not([data-interactive]) .dial input[type="number"],
+html:not([data-interactive]) .interactive-only,
+html[data-interactive] .static-only { display: none; }
+.meter-band-label { margin: .3rem 0 .7rem; }
+/* Explanations belong to the workings; the machine keeps its existing controls. */
+#workings details { margin-block: .8rem; }
+#workings summary { cursor: pointer; color: var(--muted); width: fit-content; }
+#workings summary:hover, #workings summary:focus-visible { color: var(--accent); }
+#workings h4 { font-size: 1rem; margin: 1rem 0 .3rem; }
+#workings .symbol { display: inline; font: inherit; color: inherit; border: 0; background: transparent; padding: 0; line-height: inherit; vertical-align: baseline; cursor: help; }
+#workings .symbol:hover, #workings .symbol:focus-visible { color: var(--accent); }
+#workings .symbol:focus-visible { outline: 1px solid var(--muted); outline-offset: 2px; }
+#workings .help-question { font: inherit; font-size: 1rem; font-weight: 400; color: var(--muted); padding: 0 .35rem; margin-left: .3rem; border: 0; cursor: help; }
+#workings .help-question:hover, #workings .help-question:focus-visible { color: var(--accent); }
+.assumption-label { flex: 1; }
+.symbol-popover { position: fixed; z-index: 40; width: 30ch; max-width: calc(100vw - 1rem); max-height: calc(100dvh - 1rem); overflow-y: auto; padding: 1rem; border: 1px solid var(--hairline); background: var(--paper); color: var(--ink); font-family: var(--serif); border-radius: 0; box-shadow: none; font-size: 1rem; }
+.symbol-popover p { margin: .55rem 0; }
+.symbol-popover > button { float: right; margin: 0 0 .5rem .7rem; font-size: .9rem; }
+#diagram-workings .help-match .node { stroke: var(--muted); stroke-width: 2; }
+@media (max-width: 760px) {
+  .symbol-popover { bottom: 0; left: 0; right: 0; top: auto; width: auto; max-width: none; max-height: 45dvh; padding: .8rem 1rem; }
+  .symbol-popover.top-sheet { top: 0; bottom: auto; }
+}
+
+/* Visible symbol feedback and quiet deep-link focus. */
+#workings .symbol:hover, #workings .symbol:focus-visible { text-decoration: underline; text-underline-offset: .18em; }
+#workings:focus { outline: none; }
+@media (max-width: 760px) { #workings .symbol { padding-inline: .12em; } }
+
+.takeaway { margin-bottom: 2.5rem; }
+.source-credit { font-size: .9rem; }
+.takeaway-ladder { width: 100%; max-width: 50rem; border-collapse: collapse; table-layout: fixed; }
+.takeaway-ladder th, .takeaway-ladder td { padding: .7rem .5rem; text-align: left; border-bottom: 1px solid var(--hairline); overflow-wrap: anywhere; }
+.takeaway-ladder th:first-child, .takeaway-ladder td:first-child { padding-left: 0; width: 39%; }
+.takeaway-ladder th:nth-child(2) { width: 17%; }
+.takeaway-ladder .current { font-weight: 600; }
+.takeaway-ladder .current td { border-bottom-color: var(--muted); }
+@media (max-width: 760px) { .takeaway-ladder { font-size: .92rem; } .takeaway-ladder th, .takeaway-ladder td { padding-right: .25rem; padding-left: .25rem; } }
+
+/* Each authored equation starts a new line; long phone equations wrap in place. */
+.equation-line { display: block; }
+#research > .formula:first-of-type { font-size: 1.25rem; font-weight: 500; }

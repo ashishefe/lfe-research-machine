@@ -1,0 +1,7 @@
+planning/
+qa/
+tasks/
+dist/
+.DS_Store
+node_modules
+tests/*-output.txt
