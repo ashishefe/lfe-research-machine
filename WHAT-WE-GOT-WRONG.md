@@ -230,4 +230,4 @@ These were live for a few hours before the fix.
 
 **How we found it:** Ashish asked Astra, OpenAI's model, to review the three pages and the repository. We checked each finding against the sources before changing anything, then a fresh AI reviewer checked the corrections and found nine smaller problems in them, including one false sentence.
 
-**The fix:** All of the above is corrected. A second round (the research machine's labels, links that carry settings between pages, and how the six spending trends treat yearly and half-yearly totals) is still to do.
+**The fix:** All of the above is corrected. A second round followed the same day. The six spending trends had mixed two ways of handling totals over different periods; treating every figure as a total over its period moved trend 1 from 0.45 to 0.49 and trend 2 from 2.75 to 2.70, without changing the lesson. The research machine now says what it is and labels what moves, and settings travel between pages in the address.
