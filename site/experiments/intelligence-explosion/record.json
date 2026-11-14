@@ -1,1 +1,27 @@
-[]
+[
+  {
+    "id": "garicano-imas",
+    "approved": true,
+    "title": "Luis Garicano and Alex Imas: what more data shows",
+    "who": "Luis Garicano and Alex Imas, economists. ‘Are we approaching an intelligence explosion?’, Silicon Continent, 13 November 2026, with an online appendix.",
+    "claim": "Using Anthropic's filings, METR's chart and their own staff estimates: progress per dollar fell about 69% and per technical employee about 38%. Fitting a standard model of research to sixteen model scores, more inputs explain part of the speedup (at most about half, in their most generous version) and the rest looks like a one-time jump in research effectiveness. On their model, ideas are getting harder to find, at a similar rate before and after October 2025; that rests on their assumptions, and the estimates are imprecise. No clear sign yet of AI supplying research input that grows with capability.",
+    "kind": "Measurement and a fitted model.",
+    "questions": "How much of the speedup is money, and how much is AI? Are ideas getting harder to find? Is AI starting to do its own research?",
+    "fits": "The fullest analysis of the spending puzzle we have found. Its broad reading sits near Krier's, with a one-time boost that the per-dollar chart could not show. It does not contradict METR's guess about AI's share, which concerns a later date.",
+    "tag": "Claimed. Arithmetic checked against the filings; the model was not refitted by us.",
+    "link": "https://www.siliconcontinent.com/p/are-we-approaching-an-intelligence",
+    "caveats": "Staff numbers are their estimates from published shares; the final score falls inside their effort-only forecast's margin of error; the most generous jump estimate is not statistically clear; with a one-year research delay the per-dollar fall shrinks from about 69% to about 40% (from 64% to 10% in a January-to-September comparison); in their broadest test of measurement error, about one in eleven re-runs of their model meet its explosion condition, which is not a probability, independent of their model, that one has begun; results are model comparisons, not measured effects of AI tools. Their appendix says they worked with Gemini Carbon, Fable 5.2 and Astra."
+  },
+  {
+    "id": "chalmers",
+    "approved": true,
+    "title": "David Chalmers: the ‘factor F’ question",
+    "who": "David Chalmers, philosopher. Post on X, 11 November 2026, with replies to 12 November.",
+    "claim": "Several researchers read METR's 2x speedup as support for an intelligence explosion around 2027. Chalmers asks how that reasoning works. He describes the main rival view, which he calls the \"factor F hypothesis\", and says he does not know whether it is true: there is at least one capacity F (he suggests creativity, research vision or planning) that an AI must have to reach superhuman research, and that is hard enough to build that leading systems will not have it soon. The 2x speedup, he says, reflects gains in other capacities G, such as coding and experiments, where the speedup may be larger, perhaps 10x. Under the F hypothesis, G can explode on its own and give an \"intelligence subexplosion\" below general intelligence. He does not see why the speedup makes the F hypothesis much less likely. Routes from 2x to an explosion in 2027 need \"huge premises\", such as extrapolating ever-faster speedups. He adds that he is worried about near-term superintelligence all the same.",
+    "kind": "An argument about what the evidence shows. No new data.",
+    "questions": "Is AI starting to do its own research? What would an explosion need?",
+    "fits": "It gives a name to a gap the economics leaves open. Garicano and Imas find a one-time jump in research effectiveness \"consistent with\" coding agents. Chalmers's picture would predict gains of that kind if they come in G and not F. He also allows that G could improve itself fast, a \"subexplosion\" below general intelligence. The research machine cannot show this directly: its σ setting is about research labour against computing, not about one research skill against another. Chalmers's F is a bottleneck of the second kind. Replies push back. Daniel Kokotajlo: many candidate Fs have been proposed before and overtaken quickly. One reply suggests strong G could let AI build F itself, and Chalmers grants the point. Peli Grietzer offers a reading Chalmers endorses: METR's report is evidence for \"if general ASI is coming soon then general ASI is coming very soon\".",
+    "tag": "Claimed. An argument about what the evidence shows; no new data.",
+    "link": "https://x.com/davidchalmers42/status/2120551211195642338"
+  }
+]
