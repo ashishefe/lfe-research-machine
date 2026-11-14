@@ -449,7 +449,7 @@ test('exact corrected copy and independent phi entries',()=>{
  assert.equal(H.entries.W.turn,'The same change moves yearly training growth less.');
  assert.equal(H.entries.inner.meaning,'A working term in the CES solution.');
  assert.equal(H.entries.log2.meaning,'How many doublings a ratio equals.');
- for(const k of ['max','min'])assert.equal(H.entries[k].meaning,'The larger or smaller of two values.');
+ assert.equal(H.entries.max.meaning,'The larger of two values.'); assert.equal(H.entries.min.meaning,'The smaller of two values.');
  const copy=require('./expected-copy.json')["symbolExplanations"];
  for(const text of [H.why[0],H.charts['chart-time-help']])assert.ok(copy.includes(text));
  assert.ok(H.plain.research.includes('With equal weights and λ = 1, neither input can do the work alone: four times the labour only doubles the pace.'));
@@ -743,7 +743,7 @@ test('verbatim labour copy, help, caveat and both forms',()=>{
   assert.match(card,id==='compute-link'?/<var>C<\/var><sub>r<\/sub>/:/<var>X<\/var><sub>e<\/sub> = 1/);
  }
  // FIXES-19 compares AI labour costs with people; retain the ban for model labour.
- const sources=['app.js','help.js','index.html'].map(file=>fs.readFileSync(dir+file,'utf8')).join('\n').replaceAll('A 6.25 is the total, including the original 1, and it does not mean 6.25 times the staff.','').replaceAll("AI labour may cost less than people",'');
+ const sources=['app.js','help.js','index.html'].map(file=>fs.readFileSync(dir+file,'utf8')).join('\n').replaceAll('An L of 6.25 means 6.25 times the old research labour, not 6.25 extra. It does not mean 6.25 times the staff.','').replaceAll("AI labour may cost less than people",'');
  assert.doesNotMatch(sources,/\b(?:people|person|staff)\b/i);
 });
 

@@ -195,8 +195,8 @@ Object.assign(entries, {
  phi1:{name:'New experiment share',meaning:'The share of compute that goes to experiments after the change.',turn:'More for experiments, less for training.'},
  inner:{name:'CES working term',meaning:'A working term in the CES solution.',turn:''},
  log2:{name:'Base-two logarithm',meaning:'How many doublings a ratio equals.',turn:''},
- max:{name:'Maximum',meaning:'The larger or smaller of two values.',turn:''},
- min:{name:'Minimum',meaning:'The larger or smaller of two values.',turn:''},
+ max:{name:'Maximum',meaning:'The larger of two values.',turn:''},
+ min:{name:'Minimum',meaning:'The smaller of two values.',turn:''},
  F_max:{name:'Research output ceiling',meaning:'The highest research output experiment compute permits when research labour and experiments are hard to swap.',turn:''},
  G_max:{name:'Software speedup ceiling',meaning:'The highest software speedup the research output ceiling permits.',turn:''},
  X_max:{name:'Index speedup ceiling',meaning:'The index speedup at the software speedup ceiling.',turn:''}

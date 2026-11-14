@@ -154,7 +154,10 @@
     const projected=[2*(data.year2024/4)*(data.year2024/data.year2023)**1.75, 2*(h1/2)*((h1/2)/(data.year2024/4))**(1/.75), q3*(q*q+q*q*q),h1*annual,q3*(annual**.5+annual**.75),h1*(h2/h1)**2];
     // Garicano and Imas appendix: progress 1.9063, spending 6.19, staff 3.10.
     const ratios=projected.map(x=>actual/x);
-    return {trendGrowth:(data.year2024/data.year2023)**1.75, trendTest1:(data.year2024/4)*(data.year2024/data.year2023)**.75/(h1/2), trendTest2:(h1/2)*((h1/2)/(data.year2024/4))**.5, data,q,quarters:[q3,data.year2025-data.nine2025,data.nine2026-actual],spending:actual/h1,pace:data.slopeNew/data.slopeOld,falls:[1-(data.slopeNew/data.slopeOld)/(actual/h1),1-1/(actual/h1)],projected,ratios,whatIf:ratios.map(x=>1/3+2*x/3),annual,fast:(h2/h1)**2,worlds:[{input:2,price:1,productivity:1.5},{input:3,price:2/3,productivity:1}],roughProjection:h1*rough**4, studyFalls:[1-1.9063/6.19,1-1.9063/3.10],labour:[Math.SQRT2,annual,(h2/h1)**2].map(n=>6.25*n**15)};
+    const appendixRatios={matched:{immediate:0.31,yearDelay:0.60},janSep:{immediate:0.36,yearDelay:0.90}};
+    const appendixFalls=Object.fromEntries(Object.entries(appendixRatios).map(([k,v])=>[k,{immediate:1-v.immediate,yearDelay:1-v.yearDelay}]));
+    const labourBase=inverse(defaults).L_needed, labourRates=[Math.SQRT2,annual,(h2/h1)**2], labourPowers=labourRates.map(n=>n**15);
+    return {appendixRatios,appendixFalls,labourBase,labourRates,labourPowers,trendGrowth:(data.year2024/data.year2023)**1.75, trendTest1:(data.year2024/4)*(data.year2024/data.year2023)**.75/(h1/2), trendTest2:(h1/2)*((h1/2)/(data.year2024/4))**.5, data,q,quarters:[q3,data.year2025-data.nine2025,data.nine2026-actual],spending:actual/h1,pace:data.slopeNew/data.slopeOld,falls:[1-(data.slopeNew/data.slopeOld)/(actual/h1),1-1/(actual/h1)],projected,ratios,whatIf:ratios.map(x=>1/3+2*x/3),annual,fast:(h2/h1)**2,worlds:[{input:2,price:1,productivity:1.5},{input:3,price:2/3,productivity:1}],roughProjection:h1*rough**4, studyFalls:[1-1.9063/6.19,1-1.9063/3.10],labour:labourPowers.map(power=>labourBase*power)};
   }
   return {defaults,state,isCD,compute,experimentDial,F,forward,inverse,timePoint,timePath,walkTimePath,cases,scenario,format,spendingPuzzle,kitchen};
 });

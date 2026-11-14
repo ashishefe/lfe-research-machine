@@ -78,3 +78,17 @@ test('trend key and connectors describe the engine values on the shared log scal
  const cards=[...panel.matchAll(/<article class="trend-card"[\s\S]*?<\/article>/g)];
  cards.forEach((card,i)=>{const line=card[0].match(/class="trend-gap" x1="([\d.]+)" y1="([\d.]+)" x2="([\d.]+)" y2="([\d.]+)"/);assert.ok(line);close(+line[1],345);close(+line[3],345);close(+line[2],y(x.data.actual/2000),.02);close(+line[4],y(x.projected[i]/2000),.02);assert.match(card[0],/cx="345.00" cy="80.09" r="4.5"/)});
 });
+test('appendix percentages retain their matching windows and delays',()=>{
+ const x=m.spendingPuzzle();
+ assert.deepEqual(x.appendixRatios,{matched:{immediate:.31,yearDelay:.60},janSep:{immediate:.36,yearDelay:.90}});
+ for(const key of ['matched','janSep']) for(const delay of ['immediate','yearDelay']) close(x.appendixFalls[key][delay],1-x.appendixRatios[key][delay]);
+ assert.deepEqual(Object.values(x.appendixFalls.matched).map(v=>Math.round(v*100)),[69,40]);
+ assert.deepEqual(Object.values(x.appendixFalls.janSep).map(v=>Math.round(v*100)),[64,10]);
+ close(x.quarters[2],19240-9741);
+});
+test('workforce scenarios retain their comparator and match the powers within rounding',()=>{
+ const x=m.spendingPuzzle(),b=boot();
+ for(let i=0;i<3;i++) { const e=b.inputs.find(v=>v.name==='panel4'&&v.value===String(i)); e.events.change(); assert.match(b.el('result4').textContent,/the workforce the old path would have had by then\.$/); close(x.labour[i],x.labourBase*x.labourPowers[i],.001); }
+ close(x.labourBase*Math.round(x.labourPowers[0]),x.labour[0],4);
+ close(x.labourBase*(Math.round(x.labourPowers[1]/1e5)*1e5),x.labour[1],400000);
+});
