@@ -6,6 +6,13 @@ The starting model comes from [Tejas Subramaniam’s post](https://x.com/TejasRe
 
 Live at **https://lfe.econforeverybody.com/experiments/research-machine/**, part of the [Experiments](https://lfe.econforeverybody.com/experiments/) on Learn For Everybody.
 
+This repository also holds two companion pages:
+
+- **Is there an intelligence explosion?** ([live](https://lfe.econforeverybody.com/experiments/intelligence-explosion/), `site/experiments/intelligence-explosion/`): the work worth reading on that question, explained in plain words.
+- **The spending puzzle** ([live](https://lfe.econforeverybody.com/experiments/spending-puzzle/), `site/experiments/spending-puzzle/`): what Anthropic's research spending can and cannot tell us about whether AI is speeding up its own research.
+
+To run them locally, open `http://localhost:8000/experiments/intelligence-explosion/` or `.../spending-puzzle/` after the command below.
+
 ## Run locally
 
 No package installation is needed. With Python 3 installed, run:
