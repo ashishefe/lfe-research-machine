@@ -78,7 +78,14 @@
     update();
   }
 
-  function boot() { wire(); spy(); }
+  function boot() {
+    wire(); spy();
+    var bar = document.querySelector('.topic-bar .bar-inner');
+    var current = bar && bar.querySelector('nav [aria-current]');
+    if (current && matchMedia('(max-width: 900px)').matches) {
+      bar.scrollLeft += current.getBoundingClientRect().left - bar.getBoundingClientRect().left;
+    }
+  }
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", boot);

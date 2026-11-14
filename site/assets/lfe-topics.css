@@ -51,3 +51,10 @@ html.lenis, html.lenis body { height: auto; }
 }
 
 @media print { [data-reveal], .ideas-list > li { opacity: 1 !important; transform: none !important; } .topic-bar { position: static; } }
+
+/* The project links share the topic bar's inner edge on every page. */
+.project-nav { display: flex; gap: 1.5rem; overflow-x: auto; white-space: nowrap; padding: .65rem max(0px, calc((100% - var(--page-w)) / 2)); border-bottom: 1px solid var(--hairline); font: 14px/1.4 system-ui, sans-serif; }
+.project-nav a { flex: none; color: var(--muted); text-decoration: none; }
+.project-nav a:hover, .project-nav a:focus-visible { color: var(--accent); text-decoration: underline; text-underline-offset: 7px; }
+.project-nav a[aria-current] { color: var(--ink); text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 7px; text-decoration-thickness: 1.5px; }
+.project-nav a:first-child { margin-left: auto; } .project-nav a:last-child { margin-right: auto; }

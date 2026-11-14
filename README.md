@@ -58,3 +58,5 @@ This creates `dist/research-machine-review.html`, a self-contained offline page 
 ## Licences
 
 Code: [MIT](LICENSE), © 2026 Ashish Kulkarni. Words: [CC BY 4.0](LICENSE-TEXT.md). Third-party source material remains under its publishers’ terms.
+
+The intelligence-explosion hub reads its record from `site/experiments/intelligence-explosion/cards.json`. After changing the data, run `python3 scripts/build-hub.py` to regenerate the page. Cards appear on the ordinary page only when `approved` is `true`; open `dist/hub-drafts-preview.html` to inspect all cards locally. The public page contains approved cards only.

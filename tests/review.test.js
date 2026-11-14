@@ -19,7 +19,7 @@ test('review bundle is self-contained, safely escaped, with no network APIs; pub
  assert.match(id,/^2026-11-07-[a-f0-9]{10}$/);
  assert.match(html,/<meta name="robots" content="noindex">/);
  assert.match(html,/Private review copy for Example Reviewer\. This page is not public yet\./);
- assert.match(html,/<a href="#" aria-current="page">Research machine<\/a>/);
+ assert.match(html,/<a href="https:\/\/lfe.econforeverybody.com\/experiments\/intelligence-explosion\/" aria-current="page">Intelligence explosion<\/a>/);
  assert.doesNotMatch(html,/<script[^>]+src=|<link[^>]+href=|(?:src|href)="(?:\.\.?\/|index\.html|[^"#:]+\.(?:js|css))"|@import|url\(['"]?(?:https?:|\.\.?\/)/i);
  assert.doesNotMatch(html,/\b(?:fetch\s*\(|XMLHttpRequest|sendBeacon|WebSocket|EventSource|importScripts)\b/);
  const scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];assert.equal(scripts.length,5);

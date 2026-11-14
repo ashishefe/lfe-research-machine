@@ -742,7 +742,8 @@ test('verbatim labour copy, help, caveat and both forms',()=>{
   assert.ok(plain.includes(expected),plain);
   assert.match(card,id==='compute-link'?/<var>C<\/var><sub>r<\/sub>/:/<var>X<\/var><sub>e<\/sub> = 1/);
  }
- const sources=['app.js','help.js','index.html'].map(file=>fs.readFileSync(dir+file,'utf8')).join('\n').replaceAll('A 6.25 is the total, including the original 1, and it does not mean 6.25 times the staff.','');
+ // FIXES-19 compares AI labour costs with people; retain the ban for model labour.
+ const sources=['app.js','help.js','index.html'].map(file=>fs.readFileSync(dir+file,'utf8')).join('\n').replaceAll('A 6.25 is the total, including the original 1, and it does not mean 6.25 times the staff.','').replaceAll("AI labour may cost less than people",'');
  assert.doesNotMatch(sources,/\b(?:people|person|staff)\b/i);
 });
 
@@ -1016,3 +1017,5 @@ test('training-compute definition is exact in symbols, popover and static fallba
  assert.ok(textOf(H.plain['compute-link']).includes(plain));
  for(const file of ['app.js','help.js','index.html'])assert.doesNotMatch(fs.readFileSync(dir+file,'utf8'),/showing in models/);
 });
+
+

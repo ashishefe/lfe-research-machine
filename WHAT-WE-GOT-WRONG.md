@@ -199,3 +199,19 @@
 **How we found it:** The outside review checked the definitions, preset behaviour and negative-growth cases against the calculations.
 
 **The fix:** Equal-capacity replacement now leaves effective labour unchanged in the explanation. Presets load their solved labour into the dial, with explicit handling for walls and zero labour. The dial and chart extend to 60. Negative growth is described as a decline; exactly zero remains no progress. The productivity preset now names the quantity that actually falls. All eleven starting preset answers remain unchanged.
+
+## The spending puzzle: comparing with last year, not with the trend
+
+**The mistake:** When charts set Anthropic's research spending against METR's capability trend, we compared this year's spending with last year's and concluded that research was scaling up badly. Our own model compares everything with the continuation of the old trend, and says so.
+
+**How we found it:** Two fresh AI reviewers checked the draft. The second found that the comparison broke the model's own rule.
+
+**The fix:** The draft was withdrawn before publication. The spending puzzle page compares spending with several possible trends instead.
+
+## The spending puzzle: leaving out the least favourable trends
+
+**The mistake:** Our first draft of the spending puzzle page showed only the spending trends that made Anthropic's spending look ordinary at the bend, and concluded that spending "did nothing unusual".
+
+**How we found it:** A fresh AI reviewer recomputed trends from the same filing and found two that use only figures from before the bend, one of which puts spending at 2.75 times trend.
+
+**The fix:** The page now shows six trends, including those, says that the past gives no stable trend, and no longer concludes that spending was ordinary.

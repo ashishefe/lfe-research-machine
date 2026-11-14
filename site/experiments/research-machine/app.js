@@ -273,7 +273,7 @@
     const disclosures=Array.from(document.querySelectorAll('#equations details, #derivation details'));
     disclosures.forEach((el,i)=>el.open=!!opened[i===disclosures.length-1?opened.length-1:i]);
   }
-  const isWorkingsHash=target=>['workings','research','compute-link','final-sector','index-link','time-link'].includes(target);
+  const isWorkingsHash=target=>['workings','research','compute-link','final-sector','index-link','time-link','work-lambda'].includes(target);
   function setTab(name,focus=false,preserveHash=false) {
     if(name!=='workings') name='machine';
     document.documentElement.setAttribute('data-view',name);

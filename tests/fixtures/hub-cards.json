@@ -1,0 +1,27 @@
+[
+ {
+  "id": "garicano-imas",
+  "approved": false,
+  "title": "Sample card garicano-imas",
+  "who": "Sample text.",
+  "claim": "Sample text.",
+  "kind": "Sample text.",
+  "questions": "Sample text.",
+  "fits": "Sample text.",
+  "tag": "Sample text.",
+  "link": "https://www.siliconcontinent.com/p/are-we-approaching-an-intelligence",
+  "caveats": "Sample text."
+ },
+ {
+  "id": "chalmers",
+  "approved": false,
+  "title": "Sample card chalmers",
+  "who": "Sample text.",
+  "claim": "Sample text.",
+  "kind": "Sample text.",
+  "questions": "Sample text.",
+  "fits": "Sample text.",
+  "tag": "Sample text.",
+  "link": "https://x.com/davidchalmers42/status/2120551211195642338"
+ }
+]

@@ -1,0 +1,70 @@
+/* Notebook paper, blue-black ink, one red margin line, and the teacher's notes in the margin. */
+:root{--paper:#f5f4ef;--ink:#1b2233;--muted:#4a5366;--rule:#cbd2dc;--red:#9c2522;--ruling:#c9d5e6}*{box-sizing:border-box}body{background:var(--paper);color:var(--ink)}.head{margin:2rem auto 0;max-width:1320px;padding:0 1.5rem 1rem;border-bottom:2px solid var(--ink);font:13px ui-monospace,monospace}.sheet{position:relative;max-width:1320px;margin:auto;padding:1rem 2rem 6rem 3.5rem}.sheet:before{content:'';position:absolute;left:2rem;top:0;bottom:0;width:2px;background:var(--red)}section{max-width:780px;margin:3rem 0;border-top:2px solid var(--ink);padding-top:1rem}h2,h3{font-family:Georgia,serif;line-height:1.15}h2{font-size:clamp(1.8rem,4vw,2.7rem)}h3{font-size:1.5rem;margin-top:2rem}#chapter-1>h1{font-size:clamp(2.2rem,5vw,4rem);line-height:1.03}p,li{font:20px/1.55 Georgia,serif}p{max-width:65ch}a{color:inherit;text-decoration-thickness:1px;text-underline-offset:3px}.note{font:13px/1.5 system-ui,sans-serif;color:var(--muted);border-left:1px solid var(--rule);padding-left:.7rem;margin:1rem 0}.note strong{display:block;font:11px ui-monospace,monospace}.guess{margin:2rem 0}.guess label{display:block;font:16px/1.5 system-ui,sans-serif}.guess textarea{width:100%;min-height:8rem;font:17px/2rem system-ui,sans-serif;color:var(--ink);border:1px solid var(--rule);background:repeating-linear-gradient(var(--paper) 0,var(--paper) 31px,var(--ruling) 31px,var(--ruling) 32px);padding:0 .6rem}.panel h3{margin:.3rem 0 1rem}.controls{display:none;border:0;padding:0;margin:0}.js .controls{display:block}.controls legend{font-weight:bold}.controls label{display:block;font:16px/1.5 system-ui,sans-serif;margin:.5rem 0}.panel p{font:18px/1.5 system-ui,sans-serif}.why{font:15px system-ui,sans-serif}svg{width:100%;height:auto;max-width:520px}svg text{font:16px system-ui,sans-serif;fill:var(--ink)}table{border-collapse:collapse;width:100%;font:16px system-ui,sans-serif}td,th{border-bottom:1px solid var(--rule);text-align:left;padding:.5rem}#saved-guess{white-space:pre-wrap}.colophon{font:13px system-ui,sans-serif}.site-bar nav,.topic-bar nav{flex-wrap:wrap}:focus-visible{outline:2px solid var(--red);outline-offset:3px}@media(min-width:900px){.sheet{padding-left:17rem}.sheet:before{left:15rem}.note{float:left;clear:left;width:12rem;margin-left:-15rem;text-align:right;border:0;padding:0}}@media(max-width:600px){.sheet{padding-left:2.4rem;padding-right:1rem}.sheet:before{left:1.2rem}p,li{font-size:18px}.site-bar nav,.topic-bar nav{gap:7px 14px}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+:target{scroll-margin-top:1rem}p[id^=explain]:target{background:var(--ruling)}
+/* Rules, not filled cards; the inherited site panel is a boxed component. */
+.panel{margin:2rem 0;background:transparent;border:0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:1rem 0}
+.panel h3{font:600 1.2rem/1.3 system-ui,sans-serif}
+#chapter-1>h1{max-width:32ch}
+
+#trend-chart text{font-size:12px}
+@media(max-width:600px){.topic-bar{position:static}}
+@media(min-width:900px){.noted{display:grid;grid-template-columns:12rem minmax(0,1fr);column-gap:3rem;margin-left:-15rem;align-items:start}.noted>p{grid-column:2;grid-row:1}.noted>.note{grid-column:1;grid-row:1;float:none;width:auto;margin:.35rem 0 0}.noted>p:first-child{margin-top:0}}
+/* Fix list 21: the reading column and notebook tokens. */
+:root[data-theme="dark"]{--paper:#141922;--ink:#e4e7ec;--muted:#b9c1ce;--rule:#485464;--red:#f07a7d;--ruling:#3a4760}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#141922;--ink:#e4e7ec;--muted:#b9c1ce;--rule:#485464;--red:#f07a7d;--ruling:#3a4760}}
+section{max-width:780px}
+section:first-child{border-top:0}
+.sheet figure{margin:1rem 0;width:100%}
+#chapter-1 svg{max-width:none}
+#chapter-1 svg text{font-size:20px}
+#trend-chart{max-width:none}
+#trend-chart text{font-size:19px}
+.controls input{accent-color:var(--ink)}
+.controls label{padding-left:1.5em;text-indent:-1.5em}
+.visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.guess-return{background:repeating-linear-gradient(var(--paper) 0,var(--paper) 31px,var(--ruling) 31px,var(--ruling) 32px);padding:.5rem 1rem;border:1px solid var(--rule)}
+.guess-return[hidden]{display:none}
+.guess-label,.section-label,.small-register{font:13px/1.5 ui-monospace,monospace}
+:focus-visible{outline-color:var(--ink)}
+@media(max-width:899px){.topic-bar{position:static}}
+
+.quiet{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);margin:2rem 0;padding:.2rem 0}.quiet h3{font:600 1rem/1.4 system-ui,sans-serif}.table-note{display:flow-root}.table-note .note{float:none;width:auto;margin:1rem 0;text-align:left;border-left:1px solid var(--rule);padding-left:.7rem}
+
+.js .static-case{display:none}.static-case{font:15px/1.5 system-ui,sans-serif}.guess-label,.section-label,.small-register,.controls legend{font:13px/1.5 system-ui,sans-serif}#trend-chart{max-width:520px}#trend-chart text{font-size:16px}@media(max-width:899px){.topic-bar .bar-inner{display:flex;flex-wrap:nowrap;overflow-x:auto}.topic-bar nav{flex-wrap:nowrap;white-space:nowrap}.topic-name{white-space:nowrap;flex:none}}@media(min-width:900px){.noted{clear:both}.noted>ul,.noted>ol{grid-column:2;grid-row:1}.table-note .note{float:left;clear:left;width:12rem;margin:0 0 0 -15rem;text-align:right;border:0;padding:0}.table-note{overflow:visible;display:flow-root}}
+
+/* Keep each margin note in the same layout row as its associated content. */
+@media(min-width:900px){
+ .table-note{display:grid;grid-template-columns:12rem minmax(0,1fr);column-gap:3rem;margin-left:-15rem;align-items:start}
+ .table-note table{grid-column:2;grid-row:1}
+ .table-note .note{grid-column:1;grid-row:1;float:none;width:auto;margin:.35rem 0 0}
+}
+@media(max-width:900px){.topic-bar{position:static}.topic-bar .bar-inner{display:flex;flex-wrap:nowrap;overflow-x:auto}.topic-bar nav{flex-wrap:nowrap;white-space:nowrap}.topic-name{white-space:nowrap;flex:none}}
+#trend-chart text{font-size:19px}
+#record details{border-top:1px solid var(--rule);padding:1rem 0}#record summary{cursor:pointer;font:600 1.2rem/1.4 system-ui,sans-serif}#record summary span{display:block;font:normal 14px/1.5 system-ui,sans-serif;color:var(--muted)}
+
+/* Keep the dateline together and each hub note in its own reading row. */
+.head{white-space:nowrap}
+@media(max-width:600px){.head{font-size:12px}}
+
+.head{overflow-wrap:normal}.note a{color:inherit;text-decoration-thickness:1px;text-underline-offset:3px}
+
+@media(min-width:1200px){.hub .sheet{padding-left:20rem}.hub .sheet:before{left:18rem}.hub .noted{grid-template-columns:15rem minmax(0,1fr);margin-left:-18rem}.hub .note{width:15rem}}
+.ie-curves svg{max-width:520px}.ie-curves text{font-size:15px}
+.project-nav{justify-content:flex-start}
+
+.trend-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:1.5rem}.trend-card{min-width:0}.trend-card svg{display:block;width:100%;max-width:none}.trend-card svg text{font:13px system-ui,sans-serif}.trend-card p{margin:.35rem 0;font-size:16px}.trend-card p:last-child{font-size:14px}.panel h4{font:600 1rem/1.4 system-ui,sans-serif;margin:2rem 0 1rem}td,th{overflow-wrap:anywhere}@media(min-width:900px){.trend-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){table{font-size:13px}td,th{padding:.35rem .2rem}}
+.panel .scale-note{font:15px/1.5 system-ui,sans-serif;color:var(--muted);max-width:60ch}
+
+/* Six trends share aligned plot and caption rows on wide screens. */
+.trend-key{display:flex;flex-wrap:wrap;align-items:center;gap:.3rem 1rem;max-width:none!important;font-size:14px!important}.trend-key span{display:inline-flex;align-items:center;gap:.25rem}.trend-key svg{width:28px;height:18px;flex:none}.trend-key-note{font-size:15px!important}.trend-card svg text{font-size:19px}
+@media(min-width:1100px){#panel2{width:min(1040px, calc(100vw - 19rem));max-width:none}.trend-grid{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:1.5rem;row-gap:0}.trend-card{display:grid;grid-template-rows:subgrid;grid-row:span 4}.trend-card p{align-self:start}}
+@media(min-width:900px) and (max-width:1099px){.trend-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* Kitchen values sit above each bar, away from the red reference line. */
+.kitchen-controls label{padding:0;text-indent:0;font-weight:600}.kitchen-controls input[type=range]{display:block;width:100%;height:44px;margin:0;accent-color:var(--ink)}.kitchen-ends{display:flex;justify-content:space-between;gap:1rem;font:14px/1.4 system-ui,sans-serif}.kitchen-ends span:last-child{text-align:right}.kitchen-chart{margin:1.5rem 0;max-width:520px}.kitchen-reference{color:var(--red);font:14px system-ui,sans-serif;margin-left:33.333%;padding-left:6px}.kitchen-row{margin:1rem 0}.kitchen-label{font:16px/1.4 system-ui,sans-serif}.kitchen-label small{display:block;color:var(--muted);font-size:12px}.kitchen-track{position:relative;height:8px;margin-top:.4rem}.kitchen-track:after{content:"";position:absolute;left:33.333%;top:-4px;bottom:-4px;width:2px;background:var(--red)}.kitchen-bar{height:8px;background:var(--ink);transition:width .25s ease}.inside .kitchen-bar{background:var(--muted)}@media(prefers-reduced-motion:reduce){.kitchen-bar{transition:none}}
+
+.kitchen-chart{position:relative}.kitchen-chart:before{content:"";position:absolute;left:calc(45% + 55% / 3);top:1.5rem;bottom:0;width:2px;background:var(--red);z-index:1}.kitchen-reference{margin-left:calc(45% + 55% / 3)}.kitchen-row{display:grid;grid-template-columns:45% 55%;align-items:center;min-height:3.8rem}.kitchen-label{padding-right:.5rem}.kitchen-track{margin:0}.kitchen-track:after{display:none}
+/* Match the opening figure: labels above bars, clear of the reference. */
+.kitchen-chart:before{left:33.333%}.kitchen-reference{margin-left:33.333%}.kitchen-row{display:block;min-height:0;margin:1.2rem 0}.kitchen-label{margin-left:calc(33.333% + 6px);padding-right:0}.kitchen-track{margin-top:.4rem}
+.opening-fig .fig-title{font:600 17px/1.4 system-ui,sans-serif;margin:0 0 .6rem;max-width:520px}.opening-fig .fig-cap{font:14px/1.5 system-ui,sans-serif;color:var(--muted);max-width:520px;margin-top:.4rem}

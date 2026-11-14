@@ -142,5 +142,19 @@
     if(Math.abs(value)>=1e6 || (value!==0 && Math.abs(value)<.001)) return value.toExponential(2);
     return value.toLocaleString('en-GB',{maximumFractionDigits:digits});
   }
-  return {defaults,state,isCD,compute,experimentDial,F,forward,inverse,timePoint,timePath,walkTimePath,cases,scenario,format};
+  function kitchen(share) {
+    const skill=1.5**share, price=1.5**(-(1-share)), ingredients=2*1.5**(1-share);
+    return {budget:2, price, ingredients, skill, meals:ingredients*skill};
+  }
+  function spendingPuzzle() {
+    const data={h1:1850,nine2025:3594,year2025:6338,year2024:2275,year2023:422,actual:9741,nine2026:19240,slopeOld:15,slopeNew:29};
+    const {h1,actual}=data, q3=data.nine2025-h1, h2=data.year2025-h1, annual=data.year2025/data.year2024;
+    const R=q3/(h1/2), q=(R+Math.sqrt(R*R+8*R))/4;
+    const rough=Math.pow(q3/(h1/2),2/3);
+    const projected=[2*(data.year2024/4)*(data.year2024/data.year2023)**1.75, 2*(h1/2)*((h1/2)/(data.year2024/4))**(1/.75), q3*(q*q+q*q*q),h1*annual,q3*(annual**.5+annual**.75),h1*(h2/h1)**2];
+    // Garicano and Imas appendix: progress 1.9063, spending 6.19, staff 3.10.
+    const ratios=projected.map(x=>actual/x);
+    return {trendGrowth:(data.year2024/data.year2023)**1.75, trendTest1:(data.year2024/4)*(data.year2024/data.year2023)**.75/(h1/2), trendTest2:(h1/2)*((h1/2)/(data.year2024/4))**.5, data,q,quarters:[q3,data.year2025-data.nine2025,data.nine2026-actual],spending:actual/h1,pace:data.slopeNew/data.slopeOld,falls:[1-(data.slopeNew/data.slopeOld)/(actual/h1),1-1/(actual/h1)],projected,ratios,whatIf:ratios.map(x=>1/3+2*x/3),annual,fast:(h2/h1)**2,worlds:[{input:2,price:1,productivity:1.5},{input:3,price:2/3,productivity:1}],roughProjection:h1*rough**4, studyFalls:[1-1.9063/6.19,1-1.9063/3.10],labour:[Math.SQRT2,annual,(h2/h1)**2].map(n=>6.25*n**15)};
+  }
+  return {defaults,state,isCD,compute,experimentDial,F,forward,inverse,timePoint,timePath,walkTimePath,cases,scenario,format,spendingPuzzle,kitchen};
 });

@@ -154,3 +154,5 @@ html[data-interactive] .static-only { display: none; }
 /* Each authored equation starts a new line; long phone equations wrap in place. */
 .equation-line { display: block; }
 #research > .formula:first-of-type { font-size: 1.25rem; font-weight: 500; }
+
+@media(max-width:900px){.topic-bar .bar-inner{display:flex;flex-wrap:nowrap;overflow-x:auto}.topic-bar nav{flex-wrap:nowrap;white-space:nowrap}.topic-bar .topic-name{white-space:nowrap;flex:none}}
