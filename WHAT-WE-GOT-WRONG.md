@@ -215,3 +215,19 @@
 **How we found it:** A fresh AI reviewer recomputed trends from the same filing and found two that use only figures from before the bend, one of which puts spending at 2.75 times trend.
 
 **The fix:** The page now shows six trends, including those, says that the past gives no stable trend, and no longer concludes that spending was ordinary.
+
+## Outside review of the published pages (Astra, 14 November 2026)
+
+These were live for a few hours before the fix.
+
+**The mistakes:**
+- The spending puzzle said a one-year research delay shrinks the fall in progress per dollar "from about 69% to about 10%". Those two numbers come from different comparisons in Garicano and Imas's appendix table. The matched comparison goes from 69% to 40%; the January-to-September one from 64% to 10%.
+- We dated Tejas Subramaniam's post 3 November. It was 7 November.
+- The hub said only "more output from the same input" could start an explosion. AI can also earn money that pays for more research, so rising inputs can be part of the loop.
+- The kitchen example said faster cooks and lower prices "add up" to one and a half times. Their effects multiply.
+- Two of the three five-year workforce figures dropped what they were compared with. All three compare with the workforce the old path would have had at the same date, not with today's.
+- Several claims were firmer than the evidence: a model result stated as settled, a share of model re-runs called a probability, a 95% interval called a range for "the true figure", and a hand-drawn curve labelled "established".
+
+**How we found it:** Ashish asked Astra, OpenAI's model, to review the three pages and the repository. We checked each finding against the sources before changing anything, then a fresh AI reviewer checked the corrections and found nine smaller problems in them, including one false sentence.
+
+**The fix:** All of the above is corrected. A second round (the research machine's labels, links that carry settings between pages, and how the six spending trends treat yearly and half-yearly totals) is still to do.
