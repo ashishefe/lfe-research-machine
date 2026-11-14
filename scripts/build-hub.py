@@ -3,9 +3,13 @@ import json, html
 root=Path('site/experiments/intelligence-explosion')
 # Draft cards live in the private planning folder so unapproved text never ships.
 cards_path=Path('planning/hub-cards.json')
-cards=json.loads(cards_path.read_text()) if cards_path.exists() else []
+record_path=root/'record.json'
+if not cards_path.exists() and not record_path.exists():
+ raise SystemExit('No card source found: expected planning/hub-cards.json or site/experiments/intelligence-explosion/record.json')
+cards=json.loads((cards_path if cards_path.exists() else record_path).read_text())
 esc=html.escape
 approved={c['id']:c for c in cards if c['approved']}
+record_path.write_text(json.dumps(list(approved.values()), indent=2, ensure_ascii=False)+'\n')
 LINKS={'garicano-imas':'https://www.siliconcontinent.com/p/are-we-approaching-an-intelligence','chalmers':'https://x.com/davidchalmers42/status/2120551211195642338'}
 def ref(id,text):
  return f'<a href="{("#"+id) if id in approved else esc(LINKS[id],quote=True)}">{text}</a>'

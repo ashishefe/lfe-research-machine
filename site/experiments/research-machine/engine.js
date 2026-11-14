@@ -139,7 +139,8 @@
   function scenario(index) {const c=cases[index]; return c.E?experimentDial(defaults,c.E):state(c.change);}
   function format(value, digits=2) {
     if(value===null || !Number.isFinite(value)) return 'beyond numeric range';
-    if(Math.abs(value)>=1e6 || (value!==0 && Math.abs(value)<.001)) return value.toExponential(2);
+    if(Math.abs(value)>=1e6) { const scales=[[1e300,'centillion'],[1e15,'quadrillion'],[1e12,'trillion'],[1e9,'billion'],[1e6,'million']]; const [scale,name]=scales.find(([n])=>Math.abs(value)>=n); return (value/scale).toLocaleString('en-GB',{maximumSignificantDigits:3})+' '+name; }
+    if(value!==0 && Math.abs(value)<.001) return value.toExponential(2);
     return value.toLocaleString('en-GB',{maximumFractionDigits:digits});
   }
   function kitchen(share) {
@@ -149,15 +150,23 @@
   function spendingPuzzle() {
     const data={h1:1850,nine2025:3594,year2025:6338,year2024:2275,year2023:422,actual:9741,nine2026:19240,slopeOld:15,slopeNew:29};
     const {h1,actual}=data, q3=data.nine2025-h1, h2=data.year2025-h1, annual=data.year2025/data.year2024;
-    const R=q3/(h1/2), q=(R+Math.sqrt(R*R+8*R))/4;
-    const rough=Math.pow(q3/(h1/2),2/3);
-    const projected=[2*(data.year2024/4)*(data.year2024/data.year2023)**1.75, 2*(h1/2)*((h1/2)/(data.year2024/4))**(1/.75), q3*(q*q+q*q*q),h1*annual,q3*(annual**.5+annual**.75),h1*(h2/h1)**2];
+    // Time is measured in quarters from January 2023. A path gives spending per quarter.
+    const integral=(rate,start,end)=>Math.abs(rate)<1e-12?end-start:(Math.exp(rate*end)-Math.exp(rate*start))/rate;
+    const fit=(p1,p2)=>{let lo=-5,hi=5; for(let i=0;i<100;i++){const mid=(lo+hi)/2; if(integral(mid,p2[0],p2[1])/integral(mid,p1[0],p1[1])<p2[2]/p1[2])lo=mid;else hi=mid;} const rate=(lo+hi)/2; return {rate,scale:p1[2]/integral(rate,p1[0],p1[1])};};
+    const total=(path,start,end)=>path.scale*integral(path.rate,start,end);
+    const p2023=[0,4,data.year2023],p2024=[4,8,data.year2024],pH1=[8,10,h1],pQ3=[10,11,q3],p2025=[8,12,data.year2025],pH2=[10,12,h2];
+    const t1=fit(p2023,p2024),t2=fit(p2024,pH1),t3=fit(pH1,pQ3),year=fit(p2024,p2025),t6=fit(pH1,pH2);
+    const anchor=(rate,p)=>({rate,scale:p[2]/integral(rate,p[0],p[1])});
+    const trends=[t1,t2,t3,anchor(year.rate,pH1),anchor(year.rate,pQ3),t6];
+    const projected=trends.map(t=>total(t,12,14));
+    const q=Math.exp(t3.rate), rough=Math.pow(q3/(h1/2),2/3);
     // Garicano and Imas appendix: progress 1.9063, spending 6.19, staff 3.10.
     const ratios=projected.map(x=>actual/x);
     const appendixRatios={matched:{immediate:0.31,yearDelay:0.60},janSep:{immediate:0.36,yearDelay:0.90}};
+    const studyInputs={progress:1.9063,spending:6.19,staff:3.10};
     const appendixFalls=Object.fromEntries(Object.entries(appendixRatios).map(([k,v])=>[k,{immediate:1-v.immediate,yearDelay:1-v.yearDelay}]));
     const labourBase=inverse(defaults).L_needed, labourRates=[Math.SQRT2,annual,(h2/h1)**2], labourPowers=labourRates.map(n=>n**15);
-    return {appendixRatios,appendixFalls,labourBase,labourRates,labourPowers,trendGrowth:(data.year2024/data.year2023)**1.75, trendTest1:(data.year2024/4)*(data.year2024/data.year2023)**.75/(h1/2), trendTest2:(h1/2)*((h1/2)/(data.year2024/4))**.5, data,q,quarters:[q3,data.year2025-data.nine2025,data.nine2026-actual],spending:actual/h1,pace:data.slopeNew/data.slopeOld,falls:[1-(data.slopeNew/data.slopeOld)/(actual/h1),1-1/(actual/h1)],projected,ratios,whatIf:ratios.map(x=>1/3+2*x/3),annual,fast:(h2/h1)**2,worlds:[{input:2,price:1,productivity:1.5},{input:3,price:2/3,productivity:1}],roughProjection:h1*rough**4, studyFalls:[1-1.9063/6.19,1-1.9063/3.10],labour:labourPowers.map(power=>labourBase*power)};
+    return {appendixRatios,appendixFalls,studyInputs,labourBase,labourRates,labourPowers,trendGrowth:projected[0]/(data.year2024/2), trendTest1:total(t1,8,10)/h1, trendTest2:total(t2,10,11), trends, trendAnnual:trends.map(t=>Math.exp(4*t.rate)), trendTotal:total, data,q,quarters:[q3,data.year2025-data.nine2025,data.nine2026-actual],spending:actual/h1,pace:data.slopeNew/data.slopeOld,falls:[1-(data.slopeNew/data.slopeOld)/(actual/h1),1-1/(actual/h1)],projected,ratios,whatIf:ratios.map(x=>1/3+2*x/3),annual,fast:(h2/h1)**2,worlds:[{input:2,price:1,productivity:1.5},{input:3,price:2/3,productivity:1}],roughProjection:h1*rough**4, studyFalls:[1-studyInputs.progress/studyInputs.spending,1-studyInputs.progress/studyInputs.staff],labour:labourPowers.map(power=>labourBase*power)};
   }
   return {defaults,state,isCD,compute,experimentDial,F,forward,inverse,timePoint,timePath,walkTimePath,cases,scenario,format,spendingPuzzle,kitchen};
 });

@@ -156,3 +156,10 @@ html[data-interactive] .static-only { display: none; }
 #research > .formula:first-of-type { font-size: 1.25rem; font-weight: 500; }
 
 @media(max-width:900px){.topic-bar .bar-inner{display:flex;flex-wrap:nowrap;overflow-x:auto}.topic-bar nav{flex-wrap:nowrap;white-space:nowrap}.topic-bar .topic-name{white-space:nowrap;flex:none}}
+
+.slider-row { display: flex; align-items: center; gap: .7rem; }
+.dial .slider-row input[type="range"] { flex: 1; min-width: 0; }
+.dial .slider-row input[type="number"] { width: 7rem; margin: 0; }
+
+.readout-wide { grid-column: 1 / -1; }
+.input-error { color: #a12420; font-size: .85rem; }

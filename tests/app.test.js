@@ -1,7 +1,7 @@
 // Script integration in a small DOM stand-in. These checks do not replace browser QA.
 const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs');
 const dir=__dirname+'/../site/experiments/research-machine/';
-function boot(mobile=false,reduced=false,dom=false,hash='') {
+function boot(mobile=false,reduced=false,dom=false,hash='',search='') {
  const nodes=new Map(),listeners={},media=[],html=fs.readFileSync(dir+'index.html','utf8');
  class SvgNode {
   constructor(tag,attrs='',parent=null){this.tag=tag;this.parent=parent;this.children=[];this.dataset={};this.attrs={};this.textContent='';for(const m of attrs.matchAll(/([\w-]+)="([^"]*)"/g))this.setAttribute(m[1],m[2]);}
@@ -23,7 +23,7 @@ function boot(mobile=false,reduced=false,dom=false,hash='') {
   const node=new SvgNode(tag,m[1],stack.at(-1));stack.at(-1).children.push(node);if(!m[1].endsWith('/'))stack.push(node);
  }return root;}
  class El {
-  constructor(id,attrs='') {this.id=id;this.attrs={};this.listeners={};this.dataset={};this.hidden=false;this.innerHTML='';this.textContent='';this.parent={hidden:false};for(const a of attrs.matchAll(/([\w-]+)="([^"]*)"/g)){this.attrs[a[1]]=a[2];if(a[1].startsWith('data-'))this.dataset[a[1].slice(5)]=a[2];}this.value=this.attrs.value||'';this.min=this.attrs.min;this.max=this.attrs.max;}
+  constructor(id,attrs='') {this.id=id;this.attrs={};this.listeners={};this.dataset={};this.hidden=false;this.innerHTML='';this.textContent='';this.parent={hidden:false};for(const a of attrs.matchAll(/([\w-]+)="([^"]*)"/g)){this.attrs[a[1]]=a[2];if(a[1].startsWith('data-'))this.dataset[a[1].slice(5)]=a[2];}this.value=this.attrs.value||'';this.min=this.attrs.min;this.max=this.attrs.max;this.type=this.attrs.type;}
   addEventListener(k,fn){this.listeners[k]=fn;} setAttribute(k,v){this.attrs[k]=v;}getAttribute(k){return this.attrs[k];}
   closest(selector){return selector==='label'?this.parent:null;}
   get innerHTML(){return this.raw||'';} set innerHTML(value){this.raw=value;this.tree=null;}
@@ -37,11 +37,11 @@ function boot(mobile=false,reduced=false,dom=false,hash='') {
  const tabs=new El('tabs');
  const document={documentElement:new El('html'),hidden:false,activeElement:null,getElementById:id=>nodes.get(id),addEventListener:(k,fn)=>listeners[k]=fn,
  querySelector:()=>tabs,querySelectorAll:selector=>selector==='#equations details, #derivation details'?['equations','derivation'].flatMap(id=>nodes.get(id).querySelectorAll('details')):selector==='[data-key]'?inputs:selector==='[data-output]'?outputs:selector==='[name="form"]'?radios:dom&&selector==='.diagram .dot'?['diagram-machine','diagram-workings'].flatMap(id=>nodes.get(id).querySelectorAll('.dot')):[]};
- const location={hash,pathname:'/index.html',search:''};
+ const location={hash,pathname:'/index.html',search,href:'https://example.com/index.html'+search+hash};
  const window={listeners:{},addEventListener(k,fn){this.listeners[k]=fn;}};
  if(dom)window.requestAnimationFrame=fn=>window.frame=fn;
  if(dom)document.createElement=()=>new El('scratch');
- const context={setTimeout,clearTimeout,window,document,location,history:{replaceState(a,b,url){location.hash=url.startsWith('#')?url:'';}},matchMedia:q=>{const m={matches:q.includes('760')?mobile:reduced,addEventListener(){}};media.push(m);return m;},console};
+ const context={setTimeout,clearTimeout,URLSearchParams,URL,navigator:{clipboard:{writeText:async()=>{}}},window,document,location,history:{replaceState(a,b,url){const u=new URL(url,'https://example.com'+location.pathname+location.search+location.hash);location.pathname=u.pathname;location.search=u.search;location.hash=u.hash;location.href=u.href;}},matchMedia:q=>{const m={matches:q.includes('760')?mobile:reduced,addEventListener(){}};media.push(m);return m;},console};
  vm.createContext(context);vm.runInContext(fs.readFileSync(dir+'engine.js','utf8'),context);vm.runInContext(fs.readFileSync(dir+'help.js','utf8'),context);vm.runInContext(fs.readFileSync(dir+'app.js','utf8'),context);
  const input=(key,value)=>{const e=inputs.find(e=>e.dataset.key===key);e.value=String(value);e.listeners.input();};
  return {nodes,inputs,radios,window,input,location,listeners,document,media};
@@ -50,8 +50,8 @@ function assertFiniteMarkup(app) {
  for(const [id,e] of app.nodes)assert.doesNotMatch(e.innerHTML,/NaN|Infinity/,id);
 }
 test('classic-script engine and app boot, tabs and shared controls',()=>{
- const app=boot();assert.match(app.nodes.get('inverse-readout').innerHTML,/6.25x/);
- app.input('A',.8);assert.match(app.nodes.get('inverse-readout').innerHTML,/9.77x/);
+ const app=boot();assert.match(app.nodes.get('inverse-readout').innerHTML,/6.25×/);
+ app.input('A',.8);assert.match(app.nodes.get('inverse-readout').innerHTML,/9.77×/);
  assert.equal(app.inputs.find(e=>e.id==='work-A').value,.8);
  app.nodes.get('tab-machine').listeners.keydown({key:'ArrowRight',preventDefault(){}});
  assert.equal(app.document.documentElement.attrs['data-view'],'workings');assert.equal(app.nodes.get('tab-workings').attrs['aria-selected'],'true');assert.equal(app.location.hash,'#workings');
@@ -92,42 +92,42 @@ test('equations and derivation use true mathematical markup, including CES and z
   assert.match(html,/<sup>/);assert.match(html,/<sub>0<\/sub>/);assert.match(html,/<var>φ<\/var><sub>1<\/sub>/);
   assert.doesNotMatch(textOf(steps),/\. ≈/);
   if(sigma===.5)assert.match(textOf(steps),/No finite L reaches the target/);
-  else assert.match(textOf(steps),/L ≈ [\d.]+x/);
+  else assert.match(textOf(steps),/L ≈ [\d.]+×/);
  }
  app.input('X',1);app.input('k',8);assert.match(textOf(app.nodes.get('derivation').innerHTML),/L = 0/);
  const fallback=fs.readFileSync(dir+'index.html','utf8');assert.doesNotMatch(fallback.replace(/<[^>]+>/g,' '),/[\^_]|φ[01]/);
 });
 test('results lead the diagram; embedded meter and compact result track inputs',()=>{
  const html=fs.readFileSync(dir+'index.html','utf8');assert.ok(html.indexOf('id="forward-readout"')<html.indexOf('id="diagram-machine"'));
- const app=boot(true);assert.match(app.nodes.get('compact-readout').textContent,/Progress 2x · Labour 6.25x/);
+ const app=boot(true);assert.match(app.nodes.get('compact-readout').textContent,/Progress 2× · Labour 6.25×/);
  const before=app.nodes.get('diagram-machine').innerHTML;
  app.input('L',20);const after=app.nodes.get('diagram-machine').innerHTML;
  assert.notEqual(before.match(/<circle cx="([^"]+)" cy="37"/)[1],after.match(/<circle cx="([^"]+)" cy="37"/)[1]);
- assert.match(after,/Index pace .*METR mark 2x. METR would not be surprised by 1.3x or 3x/);
- assert.match(app.nodes.get('compact-readout').textContent,/Progress 3.31x/);
+ assert.match(after,/Index pace .*METR mark 2×. METR would not be surprised by 1.3× or 3×/);
+ assert.match(app.nodes.get('compact-readout').textContent,/Progress 3.31×/);
 });
 test('charts use whole-number forward ticks and decade time ticks, including zero and numeric-limit paths',()=>{
  const app=boot(), forward=app.nodes.get('chart-forward').innerHTML, time=app.nodes.get('chart-time').innerHTML;
- const ticks=html=>[...html.matchAll(/text-anchor="end">([^<]+)x<\/text>/g)].map(m=>m[1]);
+ const ticks=html=>[...html.matchAll(/text-anchor="end">([^<]+)×<\/text>/g)].map(m=>m[1]);
  assert.ok(ticks(forward).every(v=>/^[-\d,]+$/.test(v)));
  assert.deepEqual(ticks(time),['1','10','100','1,000','10,000']);
  app.window.ResearchMachine.walkTimePath=()=>({points:[{t:0,L_needed:1,status:'ok'},{t:5,L_needed:Number.MAX_VALUE,status:'ok'}],last:{t:5,L_needed:Number.MAX_VALUE,status:'ok'},status:'ok',wallYear:null,L5:Number.MAX_VALUE});
  app.input('L',7);assertFiniteMarkup(app);
  app.window.ResearchMachine.walkTimePath=()=>({points:[{t:0,L_needed:0,status:'none-needed'},{t:5,L_needed:0,status:'none-needed'}],last:{t:5,L_needed:0,status:'none-needed'},status:'none-needed',wallYear:null,L5:0});
- app.input('L',8);assert.match(app.nodes.get('chart-time').innerHTML,/No labour needed \(0x\)/);assertFiniteMarkup(app);
+ app.input('L',8);assert.match(app.nodes.get('chart-time').innerHTML,/No labour needed \(0×\)/);assertFiniteMarkup(app);
 });
 
 test('phase card, sensitivity, negative progress and readable statuses',()=>{
  const app=boot(true);
  app.input('k',2);
- assert.match(textOf(app.nodes.get('equations').innerHTML),/At year 5:[\s\S]*400x/);
+ assert.match(textOf(app.nodes.get('equations').innerHTML),/At year 5:[\s\S]*400×/);
  assert.match(app.nodes.get('time-sensitivity').textContent,/T₀ = 1.*T₀ = 6/);
  for(const [k,v] of Object.entries({k:.5,phi0:.05,phi1:.95,W:.5,T0:1,L:.5,A:.3,s:.1,h:.3,b:.5}))app.input(k,v);
  const sentence='The reported index would fall in this setting. The cut in training compute outweighs research.';
  assert.equal(app.nodes.get('forward-readout').innerHTML,sentence);
  assert.ok(app.nodes.get('compact-readout').textContent.startsWith(sentence));
  assert.match(textOf(app.nodes.get('diagram-machine').innerHTML),/The reported index would fall in this setting\. The cut in training compute outweighs research\./);
- assert.doesNotMatch(app.nodes.get('diagram-machine').innerHTML,/-[\d.]+x/);
+ assert.doesNotMatch(app.nodes.get('diagram-machine').innerHTML,/-[\d.]+×/);
  app.listeners.click({target:{closest:s=>s==='[data-reset]'?{}:null}});
  app.input('sigma',.5);
  assert.doesNotMatch(app.nodes.get('compact-readout').textContent,/Labour Wall/);
@@ -171,7 +171,7 @@ test('nonpositive wall ceiling uses words in every result and derivation',()=>{
  for(const id of ['forward-readout','inverse-readout','compact-readout','time-sensitivity','derivation','equations','diagram-machine']) {
   const e=app.nodes.get(id);assert.doesNotMatch(textOf(e.innerHTML+' '+e.textContent),/[−-][\d,.]+x/,id);
  }
- assert.equal(app.nodes.get('inverse-readout').innerHTML,"No amount of research labour reaches METR's 2x here.");
+ assert.equal(app.nodes.get('inverse-readout').innerHTML,"No amount of research labour reaches METR's 2× here.");
 });
 
 
@@ -185,7 +185,7 @@ test('index mapping can stop progress without cutting training',()=>{
  assert.doesNotMatch(app.nodes.get('chart-forward').innerHTML,/, No progress/);
 });
 test('time card, chart and sensitivity all stop at the first wall',()=>{
- const app=boot();assert.match(textOf(app.nodes.get('equations').innerHTML),/L\(5\) = 1,130x/);
+ const app=boot();assert.match(textOf(app.nodes.get('equations').innerHTML),/L\(5\) = 1,130×/);
  app.input('sigma',.75);
  for(const id of ['equations','chart-time']) assert.match(textOf(app.nodes.get(id).innerHTML),/Wall at year/);
  assert.doesNotMatch(textOf(app.nodes.get('equations').innerHTML),/D\(5\) ≈|L\(5\) =|ceiling/);
@@ -216,11 +216,11 @@ test('readable derivations, round ticks, static precision and mobile bounds',()=
  const ticks=[...app.nodes.get('chart-forward').innerHTML.matchAll(/text-anchor="end">([\d,]+)x/g)].map(m=>Number(m[1].replaceAll(',','')));
  assert.ok(ticks.every(n=>n%10===0));
  const svg=app.nodes.get('diagram-machine').innerHTML;assert.match(svg,/L4 115 L4 455/);assert.match(svg,/viewBox="0 0 330 1045"/);
- const html=fs.readFileSync(dir+'index.html','utf8');assert.match(html,/<strong>2x<\/strong>/);assert.doesNotMatch(html,/<strong>2.0x/);
+ const html=fs.readFileSync(dir+'index.html','utf8');assert.match(html,/<strong>2×<\/strong>/);assert.doesNotMatch(html,/<strong>2.0×/);
  assert.match(html,/Old pace means METR's baseline, March 2024 to October 2025/);
  assert.match(html,/Much of METR's evidence measures well-specified tasks/);
  assert.match(html,/Cobb-Douglas form, labour weight/);
- assert.match(html,/class="quiet meter-band-label static-only">METR would not be surprised by 1.3x or 3x/);
+ assert.match(html,/class="quiet meter-band-label static-only">METR would not be surprised by 1.3× or 3×/);
 });
 
 
@@ -307,7 +307,7 @@ test('uncertainty label sits inside the capability node below the meter',()=>{
    const svg=app.nodes.get(id).innerHTML;
    const node=[...svg.matchAll(/<rect class="node" x="([^"]+)" y="([^"]+)" width="([^"]+)" height="([^"]+)"/g)].at(-1).slice(1).map(Number);
    const meter=svg.match(/<svg x="([^"]+)" y="([^"]+)" width="([^"]+)" height="80"/).slice(1).map(Number);
-   const label=svg.match(/<text class="meter-label" x="([^"]+)" y="([^"]+)">METR would not be<tspan x="([^"]+)" dy="18">surprised by 1.3x or 3x/).slice(1).map(Number);
+   const label=svg.match(/<text class="meter-label" x="([^"]+)" y="([^"]+)">METR would not be<tspan x="([^"]+)" dy="18">surprised by 1.3× or 3×/).slice(1).map(Number);
    assert.ok(label[0]>node[0]&&label[0]<node[0]+node[2]);
    assert.ok(label[1]>meter[1]+80&&label[1]+18<node[1]+node[3]);
   }
@@ -500,13 +500,13 @@ test('focus scroll keeps help open and arrow keys rove within a line',()=>{
 test('fixed engine-derived takeaway and exact preset labour',()=>{
  const a=boot(),initial=a.nodes.get('takeaway-lead').innerHTML,rows=a.nodes.get('takeaway-rows').innerHTML;
  const spec=require('./expected-copy.json')["modelIntroduction"];assert.ok(spec.includes(initial));
- assert.match(rows,/6 months<\/td><td>1x<\/td><td>1x/);
- assert.match(rows,/<tr class="current"><td>3 months<\/td><td>2x<\/td><td>about 6x/);
- assert.match(rows,/1.5 months<\/td><td>4x<\/td><td>about 30x/);
+ assert.match(rows,/6 months<\/td><td>1×<\/td><td>1×/);
+ assert.match(rows,/<tr class="current"><td>3 months<\/td><td>2×<\/td><td>about 6×/);
+ assert.match(rows,/1.5 months<\/td><td>4×<\/td><td>about 30×/);
  const M=a.window.ResearchMachine;
  for(const [i,expected] of [30.25,15.125,7.5625,47.265625].entries()){
   a.nodes.get('scenarios').listeners.click({target:{closest:()=>({dataset:{case:String(i+7)}})}});
-  const p={};a.inputs.filter(e=>e.dataset.key!=='E').forEach(e=>p[e.dataset.key]=Number(e.value));
+  const p={};a.inputs.filter(e=>e.dataset.key!=='E' && e.type==='range').forEach(e=>p[e.dataset.key]=Number(e.value));
   assert.equal(p.X,4);assert.ok(Math.abs(M.inverse(p).L_needed-expected)<1e-10);
   if(i===1||i===2){assert.ok(Math.abs(M.compute(p).E-(i===1?2:4))<1e-10);assert.ok(Math.abs(M.compute(p).Cr-1)<1e-10);}
   assert.equal(a.nodes.get('takeaway-lead').innerHTML,initial);assert.equal(a.nodes.get('takeaway-rows').innerHTML,rows);
@@ -515,7 +515,7 @@ test('fixed engine-derived takeaway and exact preset labour',()=>{
  assert.ok(html.indexOf('class="takeaway"')<html.indexOf('id="forward-readout"'));
  assert.ok(html.includes(`content="${initial.replace(/<br>/g,' ')}"`));
  assert.ok(html.includes('Compute beyond the old trend lowers these numbers. Harder ideas raise them. <span class="interactive-only">Test that with the dials below.</span>'));
- assert.ok(html.includes("The months are an illustration. METR measured a benchmark index, not release dates. These figures use Tejas's assumptions, and 4x is our what-if, not a forecast. These are starting figures. Holding the pace takes more each year if ideas get harder."));
+ assert.ok(html.includes("The months are an illustration. METR measured a benchmark index, not release dates. These figures use Tejas's assumptions, and 4× is our what-if, not a forecast. These are starting figures. Holding the pace takes more each year if ideas get harder."));
  assert.doesNotMatch(html.match(/id="equations">([\s\S]*?)<section class="parameters"/)[1],/<button/);
 });
 
@@ -539,31 +539,31 @@ test('verbatim grouped presets, unique accessible names and engine results',()=>
  const spec=require('./expected-copy.json')["scenarioDescriptions"];
  const expected=[...spec.matchAll(/^\| (.+) \| (.+) \|$/gm)].filter(m=>m[1]!=='Name');
  assert.equal(expected.length,11);
- expected[5]=[null,"Thinking can't fully replace experiments",'Researchers, human or AI, share experiment compute, so extra labour helps less (σ = 0.75).'];
- expected[6]=[null,'Thinking can barely replace experiments','Past a point, more researchers, human or AI, add almost nothing, and experiment compute sets a limit (σ = 0.5).'];
+ expected[5]=[null,"Research labour and experiment compute are strong complements",'Researchers, human or AI, share experiment compute, so extra labour helps less (σ = 0.75). This is about research labour against experiment computing. It does not capture bottlenecks between tasks inside research, such as research judgement against coding.'];
+ expected[6]=[null,'Research labour and experiment compute are very strong complements','Past a point, more researchers, human or AI, add almost nothing, and experiment compute sets a limit (σ = 0.5). This is about research labour against experiment computing. It does not capture bottlenecks between tasks inside research, such as research judgement against coding.'];
  const buttons=[...live.matchAll(/<button[^>]*aria-label="([^"]+)"[^>]*>([\s\S]*?)<\/button>/g)];
  assert.equal(buttons.length,11);assert.equal(new Set(buttons.map(m=>m[1])).size,11);
  for(const markup of [live,fallback]) {
   assert.equal((markup.match(/<li>/g)||[]).length,11);
-  for(const heading of ['To double the pace (2x)','To double the pace again (4x)'])assert.ok(markup.includes('>'+heading+'</h3>'));
+  for(const heading of ['To double the pace (2×)','To double the pace again (4×)'])assert.ok(markup.includes('>'+heading+'</h3>'));
   expected.forEach(([_,name,gloss],i)=>{
    const row=[...markup.matchAll(/<li>([\s\S]*?)<\/li>/g)][i][1];
    assert.ok(row.includes(`<span class="scenario-name">${name}</span>`));
    assert.ok(row.includes(`<span class="scenario-gloss quiet" id="scenario-gloss-${i}">${gloss}</span>`));
-   const group=i<7?'To double the pace (2x)':'To double the pace again (4x)';
+   const group=i<7?'To double the pace (2×)':'To double the pace again (4×)';
    assert.equal(buttons[i][1],`${group}: ${name}`);
    assert.ok(live.includes(`aria-describedby="scenario-gloss-${i} scenario-result-${i}"`));
    a.nodes.get('scenarios').listeners.click({target:{closest:()=>({dataset:{case:String(i)}})}});
-   const p={};a.inputs.filter(e=>e.dataset.key!=='E').forEach(e=>p[e.dataset.key]=Number(e.value));
+   const p={};a.inputs.filter(e=>e.dataset.key!=='E' && e.type==='range').forEach(e=>p[e.dataset.key]=Number(e.value));
    const result=M.inverse(p);
-   const value=result.status==='wall'?`Never reaches ${M.format(p.X)}x: stops at ${M.format(result.X_max)}x`:`${M.format(result.L_needed)}x`;
+   const value=result.status==='wall'?`Never reaches ${M.format(p.X)}×: approaches a ceiling of ${M.format(result.X_max)}×`:`${M.format(result.L_needed)}×`;
    assert.ok(row.includes(`<span class="result" id="scenario-result-${i}">${value}</span>`),value);
   });
  }
  assert.ok(html.includes('Click a row to load it into the dials. The right-hand number is the research labour needed.'));
  assert.ok(html.includes("Reset to Tejas's model"));
  assert.doesNotMatch(fallback,/<button/);
- assert.match(live,/Never reaches 2x: stops at 1.67x/);
+ assert.match(live,/Never reaches 2×: approaches a ceiling of 1.67×/);
 });
 
 test('verbatim lambda explanation and baseline accessible names',()=>{
@@ -609,14 +609,14 @@ test('one masthead message, quiet credit and static model origin',()=>{
  const hero=html.match(/<header class="shell masthead">([\s\S]*?)<\/header>/)[1];
  const message=boot().nodes.get('takeaway-lead').innerHTML;
  assert.ok(spec.includes(message));
- assert.match(hero,/<h1>The research machine<\/h1>\s*<p id="takeaway-lead" class="subheading">/);
- assert.equal((hero.match(/<p\b/g)||[]).length,2);
+ assert.match(hero,/<h1>The research machine<\/h1>[\s\S]*?<p id="takeaway-lead" class="subheading">/);
+ assert.equal((hero.match(/<p\b/g)||[]).length,3);
  assert.equal((html.match(/id="takeaway-lead"/g)||[]).length,1);
  const credit=hero.match(/<p class="quiet source-credit">([\s\S]*?)<\/p>/)[1];
  assert.equal(credit,"Based on <a href=\"https://x.com/TejasReal/status/2118873231872643552\">a short model</a> by Tejas Subramaniam, using METR's estimate that Anthropic's models are improving about twice as fast as before on well-specified tasks.");
  assert.match(fs.readFileSync(dir+'styles.css','utf8'),/\.source-credit \{ font-size: \.9rem; \}/);
  const machine=html.match(/<section id="machine"[\s\S]*?(?=<section id="workings")/)[0];
- assert.match(machine,/<div class="takeaway">\s*<table class="takeaway-ladder">/);
+ assert.match(machine,/<div class="takeaway">\s*<p class="quiet">Reference cases[\s\S]*?<table class="takeaway-ladder">/);
  assert.doesNotMatch(machine,/id="takeaway-lead"/);
  const origin=machine.match(/<section class="model-origin"><h2>Where this comes from<\/h2><p>(.*?)<\/p><\/section>\s*<section class="assumptions"><h2>What the number depends on/);
  assert.ok(origin);assert.ok(spec.includes('"'+origin[1]+'"'));
@@ -758,10 +758,10 @@ test('snapshots export the experiment dial as E and describe unreachable targets
  app.input('E',3);assert.ok(snapshot().changed.some(x=>x.startsWith('k = ')));
  app.listeners.click({target:{closest:s=>s==='[data-reset]'?{}:null}});
  app.input('sigma',.5);
- assert.equal(snapshot().labour,'never reaches 2x, stops at 1.67x');
+ assert.equal(snapshot().labour,'never reaches 2×, approaches a ceiling of 1.67×');
  const {commentsToMarkdown}=require('../review/feedback.js');
  const md=commentsToMarkdown({name:'',date:'',buildId:'',comments:[{where:'Here',text:'Check',snapshot:snapshot()}]});
- assert.match(md,/labour needed for target never reaches 2x, stops at 1.67x/);
+ assert.match(md,/labour needed for target never reaches 2×, approaches a ceiling of 1.67×/);
 });
 
 test('outside review copy appears verbatim in live and static views',()=>{
@@ -769,7 +769,7 @@ test('outside review copy appears verbatim in live and static views',()=>{
  const lead="If AI has doubled Anthropic's pace, Tejas's model says that's like having about 6 times the research workforce.<br>On the same model, doubling the pace again would take about 30 times the original workforce.";
  assert.equal(a.nodes.get('takeaway-lead').innerHTML,lead);
  for(const attr of ['name="description"','property="og:description"'])assert.ok(html.includes(`<meta ${attr} content="${lead.replace('<br>',' ')}">`));
- const range="METR would not be surprised by 1.3x or 3x. Through this model that is about 2x to 16x the research labour. This is our calculation, not METR's.";
+ const range="METR would not be surprised by 1.3× or 3×. Through this model that is about 2× to 16× the research labour. This is our calculation, not METR's.";
  assert.equal(a.nodes.get('takeaway-range').innerHTML,range);assert.ok(html.includes(range));
  for(const copy of [
  "Old pace means METR's baseline, March 2024 to October 2025. We assume that trend would have continued. It is not an observed world without AI.",
@@ -828,19 +828,19 @@ test('attribution and index bridge copy follows h, b and target on desktop and p
   for(const [h,b] of [[.8,1],[.8,.5],[.8,2],[1,.5],[1,2],[.5,2],[1,1],[1,1+Number.EPSILON]]){
    a.input('h',h);a.input('b',b);
    const state=a.window.ResearchMachineApp.snapshot().settings,d=M.forward(state),r=M.inverse(state);
-   const target=X===2?"METR's 2x":`the ${X}x target`;
+   const target=X===2?"METR's 2×":`the ${X}× target`;
    const attribution=h<1,bridge=b!==1||h!==1;
-   const forward=attribution?`With these inputs, the reported pace would be ${M.format(d.X_out)}x its old pace, because we assume they explain only part of the speedup.`:bridge?`Under this index bridge, the reported pace would be ${M.format(d.X_out)}x its old pace.`:`With these inputs, AI progress runs at ${M.format(d.X_out)}x its old pace.`;
-   const inverse=attribution?`The labour equivalent of AI's part of ${target} is ${M.format(r.L_needed)}x. The model does not say where the other causes act.`:bridge?`To reach the ${X}x target under this bridge, research labour must be ${M.format(r.L_needed)}x its old level.`:`To reach ${target} with everything else as set, research labour must be ${M.format(r.L_needed)}x its old level.`;
+   const forward=attribution?`With these inputs, the reported pace would be ${M.format(d.X_out)}× its old pace, because we assume they explain only part of the speedup.`:bridge?`Under this index bridge, the reported pace would be ${M.format(d.X_out)}× its old pace.`:`With these inputs, AI progress runs at ${M.format(d.X_out)}× its old pace.`;
+   const inverse=attribution?`The labour equivalent of AI's part of ${target} is ${M.format(r.L_needed)}×. The model does not say where the other causes act.`:bridge?`To reach the ${X}× target under this bridge, research labour must be ${M.format(r.L_needed)}× its old level.`:`To reach ${target} with everything else as set, research labour must be ${M.format(r.L_needed)}× its old level.`;
    assert.equal(textOf(a.nodes.get('forward-readout').innerHTML),forward);
    assert.equal(textOf(a.nodes.get('inverse-readout').innerHTML),inverse);
-   assert.equal(a.nodes.get('compact-readout').textContent,bridge?forward+' '+inverse:`Progress ${M.format(d.X_out)}x · Labour ${M.format(r.L_needed)}x`);
+   assert.equal(a.nodes.get('compact-readout').textContent,bridge?forward+' '+inverse:`Progress ${M.format(d.X_out)}× · Labour ${M.format(r.L_needed)}×`);
    if(bridge)for(const id of ['diagram-machine','diagram-workings']){
     const desc=a.nodes.get(id).innerHTML.match(/<desc[^>]*>(.*?)<\/desc>/)[1];
     assert.ok(desc.includes(forward));assert.ok(desc.includes(inverse));
    }
    assert.equal(a.nodes.get('chart-time').innerHTML.includes("This path counts AI's part only."),h<1);
-   assert.ok(textOf(a.nodes.get('chart-forward').innerHTML).includes(bridge?forward:`At ${M.format(state.L)}x labour, index progress is ${M.format(d.X_out)}x.`));
+   assert.ok(textOf(a.nodes.get('chart-forward').innerHTML).includes(bridge?forward:`At ${M.format(state.L)}× labour, index progress is ${M.format(d.X_out)}×.`));
    assert.equal(textOf(a.nodes.get('target-note').innerHTML),`Target: ${target}. Change it in the workings.`);
    if(X!==2)for(const id of ['forward-readout','inverse-readout','compact-readout','diagram-machine','diagram-workings','target-note']){
     const node=a.nodes.get(id);assert.doesNotMatch(node.innerHTML+node.textContent,/METR's/);
@@ -853,18 +853,18 @@ test('fixed engine-derived examples, signed time results and three-significant-f
  const a=boot(),M=a.window.ResearchMachine;
  assert.ok(Math.abs(M.inverse({A:1.3}).L_needed-3.698224852071006)<1e-12);
  assert.equal(Math.round(M.inverse({X:1.3}).L_needed),2);assert.equal(Math.round(M.inverse({X:3}).L_needed),16);
- const example='For example, if other causes raised A to 1.3 and AI supplied the rest of a 2x pace, labour would need about 3.7x, against 4.84x with h = 0.8 and A = 1.';
+ const example='For example, if other causes raised A to 1.3 and AI supplied the rest of a 2× pace, labour would need about 3.7×, against 4.84× with h = 0.8 and A = 1.';
  for(const settings of [{},{k:4,W:.5},{k:2,W:1},{X:1,A:1.5,k:8,beta:0}]){
   a.listeners.click({target:{closest:s=>s==='[data-reset]'?{}:null}});
   for(const [k,v] of Object.entries(settings))a.input(k,v);
   const state=a.window.ResearchMachineApp.snapshot().settings,walk=M.walkTimePath(state);
   const displayed=walk.L5.toLocaleString('en-GB',{maximumSignificantDigits:3});
-  for(const id of ['equations','chart-time'])assert.ok(textOf(a.nodes.get(id).innerHTML).includes(`L(5) = ${displayed}x`));
+  for(const id of ['equations','chart-time'])assert.ok(textOf(a.nodes.get(id).innerHTML).includes(`L(5) = ${displayed}×`));
   assert.ok(textOf(a.nodes.get('equations').innerHTML).includes(example));
   if(settings.k===4){assert.equal(walk.last.D,13);assert.match(textOf(a.nodes.get('equations').innerHTML),/D\(5\) ≈ 13/);}
  }
  const html=fs.readFileSync(dir+'index.html','utf8');assert.ok(html.includes(example));
- assert.match(html,/L\(5\) = 1,130x/);assert.doesNotMatch(html,/1,131\.37x/);
+ assert.match(html,/L\(5\) = 1,130×/);assert.doesNotMatch(html,/1,131\.37×/);
 });
 
 test('zero labour can exceed the target and its faster growth is retained in time descriptions',()=>{
@@ -917,10 +917,10 @@ test('time summary rounds starting labour as well as year five without rounding 
   a.nodes.get('scenarios').listeners.click({target:{closest:()=>({dataset:{case:String(index)}})}});
   const M=a.window.ResearchMachine,p=a.window.ResearchMachineApp.snapshot().settings;
   const expected=M.inverse(p).L_needed.toLocaleString('en-GB',{maximumSignificantDigits:3});
-  assert.ok(textOf(a.nodes.get('chart-time').innerHTML).includes(`At year 0: ${expected}x.`));
+  assert.ok(textOf(a.nodes.get('chart-time').innerHTML).includes(`At year 0: ${expected}×.`));
   assert.doesNotMatch(textOf(a.nodes.get('chart-time').innerHTML),/\.\./);
  }
- assert.match(a.nodes.get('scenarios').innerHTML,/47.27x/);
+ assert.match(a.nodes.get('scenarios').innerHTML,/47.27×/);
  for(const [k,v] of Object.entries({X:1,sigma:2,k:8,W:2}))a.input(k,v);
  assert.doesNotMatch(textOf(a.nodes.get('chart-time').innerHTML),/\.\./);
 });
@@ -977,20 +977,20 @@ test('phone wall readout reports declining index once for the supplied settings'
  assert.equal(M.inverse(state).status,'wall');assert.ok(M.inverse(state).X_max<0);
  const forward=textOf(a.nodes.get('forward-readout').innerHTML);
  const inverse=textOf(a.nodes.get('inverse-readout').innerHTML);
- assert.equal(inverse,"No amount of research labour reaches METR's 2x here.");
+ assert.equal(inverse,"No amount of research labour reaches METR's 2× here.");
  assert.equal(a.nodes.get('compact-readout').textContent,forward+' '+inverse);
  assert.equal((a.nodes.get('compact-readout').textContent.match(/The reported index would fall in this setting\./g)||[]).length,1);
  const sentences=a.nodes.get('compact-readout').textContent.split(/\. (?=[A-Z])/);
  assert.equal(new Set(sentences).size,sentences.length);
- a.input('X',4);assert.equal(a.nodes.get('inverse-readout').innerHTML,'No amount of research labour reaches the 4x target here.');
+ a.input('X',4);assert.equal(a.nodes.get('inverse-readout').innerHTML,'No amount of research labour reaches the 4× target here.');
 });
 
 test('half attribution with b = 2 survives diagram patches and phone rendering',()=>{
  for(const mobile of [false,true])for(const dom of [false,true]){
   const a=boot(mobile,false,dom);
   a.input('h',.5);a.input('b',2);
-  const forward='With these inputs, the reported pace would be 2x its old pace, because we assume they explain only part of the speedup.';
-  const inverse="The labour equivalent of AI's part of METR's 2x is 6.25x. The model does not say where the other causes act.";
+  const forward='With these inputs, the reported pace would be 2× its old pace, because we assume they explain only part of the speedup.';
+  const inverse="The labour equivalent of AI's part of METR's 2× is 6.25×. The model does not say where the other causes act.";
   assert.equal(textOf(a.nodes.get('forward-readout').innerHTML),forward);
   assert.equal(textOf(a.nodes.get('inverse-readout').innerHTML),inverse);
   assert.equal(a.nodes.get('compact-readout').textContent,forward+' '+inverse);
@@ -1019,3 +1019,46 @@ test('training-compute definition is exact in symbols, popover and static fallba
 });
 
 
+
+ test('settings round trip, number boxes and extrapolation warning',()=>{
+ const a=boot(); a.input('beta',1.28); a.input('A',.8); a.input('sigma',2);
+ const b=boot(false,false,false,'',a.location.search);
+ for(const [key,value] of Object.entries(a.window.ResearchMachineApp.snapshot().settings)) assert.ok(Math.abs(b.window.ResearchMachineApp.snapshot().settings[key]-value)<1e-9,key);
+ assert.equal(b.nodes.get('beta-warning').hidden,false); assert.equal(b.nodes.get('sigma-warning').hidden,false);
+ const n=b.nodes.get('work-beta-number'); n.value='1.4'; n.listeners.input(); assert.equal(b.nodes.get('work-beta').value,1.4);
+ n.value='2'; n.listeners.input(); assert.equal(b.window.ResearchMachineApp.snapshot().settings.beta,1.4);
+ });
+
+test('all spending puzzle states open in the machine and reproduce five-year labour',()=>{
+ const base=boot().window.ResearchMachine, x=base.spendingPuzzle();
+ x.labourRates.forEach((rate,i)=>{
+  const state={...base.defaults,beta:Math.log2(rate)/2}, query=new URLSearchParams(Object.entries(state)).toString();
+  const app=boot(false,false,false,'','?'+query), restored=app.window.ResearchMachineApp.snapshot().settings;
+  assert.ok(Math.abs(base.timePoint(restored,5).L_needed/x.labour[i]-1)<1e-10);
+ });
+});
+
+test('a valid experiment-compute boundary survives floating-point rounding in a shared URL',()=>{
+ const a=boot(), m=a.window.ResearchMachine;
+ const state=m.experimentDial({...m.defaults,k:2.671996047519153,phi0:0.367188871103954,phi1:0.674069961084362},0.12482945918153995);
+ const b=boot(false,false,false,'','?'+new URLSearchParams(Object.entries(state)).toString());
+ assert.equal(b.window.ResearchMachineApp.snapshot().settings.phi1,state.phi1);
+ assert.equal(b.window.ResearchMachineApp.snapshot().settings.k,state.k);
+});
+
+test('invalid shared settings preserve valid values and report defaults',()=>{
+ const base=boot().window.ResearchMachine, q=new URLSearchParams(Object.entries(base.defaults));
+ q.set('A','0.8');q.set('beta','99');q.delete('X');
+ const a=boot(false,false,false,'','?'+q), p=a.window.ResearchMachineApp.snapshot().settings;
+ assert.equal(p.A,.8);assert.equal(p.beta,base.defaults.beta);assert.equal(p.X,base.defaults.X);assert.equal(a.nodes.get('link-warning').hidden,false);
+ assert.equal(new URLSearchParams(a.location.search).get('s'),'0.6666666667');
+});
+test('invalid number box restores its setting on blur and clears its message after valid input',()=>{
+ const a=boot(), box=a.nodes.get('work-beta-number'), error=a.nodes.get('work-beta-number-error');
+ box.value='2';box.listeners.input();box.listeners.blur();assert.equal(Number(box.value),a.window.ResearchMachineApp.snapshot().settings.beta);assert.match(error.textContent,/Enter a number between 0 and 1.5/);
+ box.value='0.7';box.listeners.input();assert.equal(error.textContent,'');box.listeners.blur();assert.equal(Number(box.value),a.window.ResearchMachineApp.snapshot().settings.beta);
+});
+test('large machine values use number words',()=>{
+ const m=boot().window.ResearchMachine;
+ assert.equal(m.format(29500000),'29.5 million');assert.equal(m.format(2200000000000),'2.2 trillion');assert.doesNotMatch(m.format(Number.MAX_VALUE),/e\+/);
+});

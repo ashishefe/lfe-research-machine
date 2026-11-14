@@ -1,0 +1,230 @@
+{
+  "description": "Source inputs and comparisons used by the spending puzzle. Values transcribed from cited sources; transformations are explicit.",
+  "entries": [
+    {
+      "id": "year2023",
+      "value": 422,
+      "units": "USD millions, R&D expense",
+      "period": "calendar year 2023",
+      "source": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026067168/anthropicpbc-sx1.htm",
+      "location": "Supplemental Operating Expense Information, research and development",
+      "transformation": "None; value as reported."
+    },
+    {
+      "id": "year2024",
+      "value": 2275,
+      "units": "USD millions, R&D expense",
+      "period": "calendar year 2024",
+      "source": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026067168/anthropicpbc-sx1.htm",
+      "location": "Supplemental Operating Expense Information, research and development",
+      "transformation": "None; value as reported."
+    },
+    {
+      "id": "h1",
+      "value": 1850,
+      "units": "USD millions, R&D expense",
+      "period": "January\u2013June 2025",
+      "source": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026067168/anthropicpbc-sx1.htm",
+      "location": "Supplemental Operating Expense Information, research and development",
+      "transformation": "None; value as reported."
+    },
+    {
+      "id": "nine2025",
+      "value": 3594,
+      "units": "USD millions, R&D expense",
+      "period": "January\u2013September 2025",
+      "source": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026068676/anthropicpbc-sx1ax1.htm",
+      "location": "Supplemental Operating Expense Information, research and development",
+      "transformation": "None; value as reported."
+    },
+    {
+      "id": "year2025",
+      "value": 6338,
+      "units": "USD millions, R&D expense",
+      "period": "calendar year 2025",
+      "source": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026067168/anthropicpbc-sx1.htm",
+      "location": "Supplemental Operating Expense Information, research and development",
+      "transformation": "None; value as reported."
+    },
+    {
+      "id": "actual",
+      "value": 9741,
+      "units": "USD millions, R&D expense",
+      "period": "January\u2013June 2026",
+      "source": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026067168/anthropicpbc-sx1.htm",
+      "location": "Supplemental Operating Expense Information, research and development",
+      "transformation": "None; value as reported."
+    },
+    {
+      "id": "nine2026",
+      "value": 19240,
+      "units": "USD millions, R&D expense",
+      "period": "January\u2013September 2026",
+      "source": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026068676/anthropicpbc-sx1ax1.htm",
+      "location": "Supplemental Operating Expense Information, research and development",
+      "transformation": "None; value as reported."
+    },
+    {
+      "id": "q3_2025",
+      "value": 1744,
+      "units": "USD millions, R&D expense",
+      "period": "July\u2013September 2025",
+      "source": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026068676/anthropicpbc-sx1ax1.htm",
+      "location": "Supplemental Operating Expense Information, research and development table",
+      "transformation": "3,594 nine months less 1,850 first half."
+    },
+    {
+      "id": "q4_2025",
+      "value": 2744,
+      "units": "USD millions, R&D expense",
+      "period": "October\u2013December 2025",
+      "source": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026068676/anthropicpbc-sx1ax1.htm",
+      "location": "Supplemental Operating Expense Information, research and development table",
+      "transformation": "6,338 full year less 3,594 nine months."
+    },
+    {
+      "id": "q3_2026",
+      "value": 9499,
+      "units": "USD millions, R&D expense",
+      "period": "July\u2013September 2026",
+      "source": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026068676/anthropicpbc-sx1ax1.htm",
+      "location": "Supplemental Operating Expense Information, research and development table",
+      "transformation": "19,240 nine months less 9,741 first half."
+    },
+    {
+      "id": "slopeOld",
+      "value": 15,
+      "units": "AECI points per year",
+      "period": "before October 2025",
+      "source": "https://metr.org/blog/2026-11-05-anthropic-ai-rd-acceleration-assessment/",
+      "location": "Figure showing fitted AECI trends",
+      "transformation": "Rounded fitted slopes used in the original exchange."
+    },
+    {
+      "id": "slopeNew",
+      "value": 29,
+      "units": "AECI points per year",
+      "period": "after October 2025",
+      "source": "https://metr.org/blog/2026-11-05-anthropic-ai-rd-acceleration-assessment/",
+      "location": "Figure showing fitted AECI trends",
+      "transformation": "Rounded fitted slopes used in the original exchange."
+    },
+    {
+      "id": "intervalLow",
+      "value": 1.5,
+      "units": "times",
+      "period": "before and after October 2025",
+      "source": "https://metr.org/blog/2026-11-05-anthropic-ai-rd-acceleration-assessment/",
+      "location": "Executive summary, estimated acceleration",
+      "transformation": "Endpoint of the 95% confidence interval."
+    },
+    {
+      "id": "intervalHigh",
+      "value": 2.8,
+      "units": "times",
+      "period": "before and after October 2025",
+      "source": "https://metr.org/blog/2026-11-05-anthropic-ai-rd-acceleration-assessment/",
+      "location": "Executive summary, estimated acceleration",
+      "transformation": "Endpoint of the 95% confidence interval."
+    },
+    {
+      "id": "matched_immediate",
+      "value": 0.31,
+      "units": "ratio of later to earlier progress per dollar",
+      "period": "METR matched periods, immediate",
+      "source": "https://www.dropbox.com/scl/fi/jz1zaj2fk741g2len97q9/Online-Appendix-to-Garicano-and-Imas-AI-ideas-getting-harder-to-find.pdf?rlkey=narofum32aiq105vrcwcx92vy&dl=0",
+      "location": "Section C, Allowing time for research to produce results",
+      "transformation": "A fall in percent is 100 \u00d7 (1 \u2212 ratio)."
+    },
+    {
+      "id": "matched_yearDelay",
+      "value": 0.6,
+      "units": "ratio of later to earlier progress per dollar",
+      "period": "METR matched periods, one-year delay",
+      "source": "https://www.dropbox.com/scl/fi/jz1zaj2fk741g2len97q9/Online-Appendix-to-Garicano-and-Imas-AI-ideas-getting-harder-to-find.pdf?rlkey=narofum32aiq105vrcwcx92vy&dl=0",
+      "location": "Section C, Allowing time for research to produce results",
+      "transformation": "A fall in percent is 100 \u00d7 (1 \u2212 ratio)."
+    },
+    {
+      "id": "janSep_immediate",
+      "value": 0.36,
+      "units": "ratio of later to earlier progress per dollar",
+      "period": "January\u2013September comparison, immediate",
+      "source": "https://www.dropbox.com/scl/fi/jz1zaj2fk741g2len97q9/Online-Appendix-to-Garicano-and-Imas-AI-ideas-getting-harder-to-find.pdf?rlkey=narofum32aiq105vrcwcx92vy&dl=0",
+      "location": "Section C, Allowing time for research to produce results",
+      "transformation": "A fall in percent is 100 \u00d7 (1 \u2212 ratio)."
+    },
+    {
+      "id": "janSep_yearDelay",
+      "value": 0.9,
+      "units": "ratio of later to earlier progress per dollar",
+      "period": "January\u2013September comparison, one-year delay",
+      "source": "https://www.dropbox.com/scl/fi/jz1zaj2fk741g2len97q9/Online-Appendix-to-Garicano-and-Imas-AI-ideas-getting-harder-to-find.pdf?rlkey=narofum32aiq105vrcwcx92vy&dl=0",
+      "location": "Section C, Allowing time for research to produce results",
+      "transformation": "A fall in percent is 100 \u00d7 (1 \u2212 ratio)."
+    },
+    {
+      "id": "preciseSlopeOld",
+      "value": 15.37,
+      "units": "AECI points per year",
+      "period": "before October 2025",
+      "source": "https://www.dropbox.com/scl/fi/jz1zaj2fk741g2len97q9/Online-Appendix-to-Garicano-and-Imas-AI-ideas-getting-harder-to-find.pdf?rlkey=narofum32aiq105vrcwcx92vy&dl=0",
+      "location": "METR trend estimates in appendix",
+      "transformation": "More precise fitted slopes, as cited on the page."
+    },
+    {
+      "id": "preciseSlopeNew",
+      "value": 29.3,
+      "units": "AECI points per year",
+      "period": "after October 2025",
+      "source": "https://www.dropbox.com/scl/fi/jz1zaj2fk741g2len97q9/Online-Appendix-to-Garicano-and-Imas-AI-ideas-getting-harder-to-find.pdf?rlkey=narofum32aiq105vrcwcx92vy&dl=0",
+      "location": "METR trend estimates in appendix",
+      "transformation": "More precise fitted slopes, as cited on the page."
+    },
+    {
+      "id": "studyProgress",
+      "value": 1.9063,
+      "units": "times, progress rate",
+      "period": "METR matched periods",
+      "source": "https://www.dropbox.com/scl/fi/jz1zaj2fk741g2len97q9/Online-Appendix-to-Garicano-and-Imas-AI-ideas-getting-harder-to-find.pdf?rlkey=narofum32aiq105vrcwcx92vy&dl=0",
+      "location": "Comparison of progress, spending and technical staff",
+      "transformation": "Later period divided by earlier period, as used in the page calculation."
+    },
+    {
+      "id": "studySpending",
+      "value": 6.19,
+      "units": "times, R&D expense",
+      "period": "METR matched periods",
+      "source": "https://www.dropbox.com/scl/fi/jz1zaj2fk741g2len97q9/Online-Appendix-to-Garicano-and-Imas-AI-ideas-getting-harder-to-find.pdf?rlkey=narofum32aiq105vrcwcx92vy&dl=0",
+      "location": "Comparison of progress, spending and technical staff",
+      "transformation": "Later period divided by earlier period, as used in the page calculation."
+    },
+    {
+      "id": "studyStaff",
+      "value": 3.1,
+      "units": "times, technical staff",
+      "period": "METR matched periods",
+      "source": "https://www.dropbox.com/scl/fi/jz1zaj2fk741g2len97q9/Online-Appendix-to-Garicano-and-Imas-AI-ideas-getting-harder-to-find.pdf?rlkey=narofum32aiq105vrcwcx92vy&dl=0",
+      "location": "Comparison of progress, spending and technical staff",
+      "transformation": "Later period divided by earlier period, as used in the page calculation."
+    },
+    {
+      "id": "illustrationPace",
+      "value": 25,
+      "units": "AECI points per year",
+      "period": "illustrative sustained pace",
+      "source": "https://www.dropbox.com/scl/fi/jz1zaj2fk741g2len97q9/Online-Appendix-to-Garicano-and-Imas-AI-ideas-getting-harder-to-find.pdf?rlkey=narofum32aiq105vrcwcx92vy&dl=0",
+      "location": "Appendix illustration of research spending needed to sustain progress",
+      "transformation": "Approximate illustrative pace, not a measured forecast."
+    },
+    {
+      "id": "illustrationGrowth",
+      "value": 4,
+      "units": "times per year",
+      "period": "illustrative sustained pace",
+      "source": "https://www.dropbox.com/scl/fi/jz1zaj2fk741g2len97q9/Online-Appendix-to-Garicano-and-Imas-AI-ideas-getting-harder-to-find.pdf?rlkey=narofum32aiq105vrcwcx92vy&dl=0",
+      "location": "Appendix illustration of research spending needed to sustain progress",
+      "transformation": "Approximate annual spending multiplier under the authors\u2019 assumptions."
+    }
+  ]
+}

@@ -1,7 +1,21 @@
 (function () {
   'use strict';
   const M=window.ResearchMachine, $=id=>document.getElementById(id), f=M.format;
+  const incoming=new URLSearchParams(location.search);
+  const keys=Object.keys(M.defaults);
   let p=M.state(), experimentBase=null;
+  const bounds={X:[1,4],s:[.1,.9],L:[.5,60],A:[.3,1.5],k:[.5,8],phi0:[.05,.95],phi1:[.05,.95],a:[.1,.9],sigma:[.2,3],lambda:[.3,1.5],h:[.3,1],b:[.5,2],T0:[1,6],W:[.5,5],beta:[0,1.5],L0:[Number.MIN_VALUE,Infinity],K0:[Number.MIN_VALUE,Infinity]};
+  const round10=value=>String(Number(value.toPrecision(10)));
+  let badLink=false;
+  if([...incoming.keys()].some(key=>keys.includes(key))) keys.forEach(key=>{
+    const raw=incoming.get(key), value=raw===null||raw.trim()===''?NaN:Number(raw), [min,max]=bounds[key];
+    if(Number.isFinite(value)&&value>=min-1e-12&&value<=max+1e-12&&(min!==Number.MIN_VALUE||value>0)) p[key]=value;
+    else badLink=true;
+  });
+  function settingsURL() {
+    const params=new URLSearchParams(); keys.forEach(key=>params.set(key,round10(p[key])));
+    return location.pathname+'?'+params.toString()+location.hash;
+  }
   window.ResearchMachineApp = Object.freeze({
     snapshot() {
       const settings={...p}, result=M.inverse(settings);
@@ -10,7 +24,7 @@
       const changed=Object.keys(M.defaults).filter(key=>settings[key]!==M.defaults[key]&&(!unchangedTraining||!['k','phi1'].includes(key))).map(key=>`${key} = ${settings[key]}`);
       if(unchangedTraining&&Math.abs(compute.E-baseline.E)>1e-12)changed.push(`E = ${compute.E}`);
       const labour=result.status==='ok'?result.L_needed
-        :result.status==='wall'?`never reaches ${f(settings.X)}x, stops at ${f(result.X_max)}x`
+        :result.status==='wall'?`never reaches ${f(settings.X)}×, approaches a ceiling of ${f(result.X_max)}×`
         :result.status==='none-needed'?'no labour needed: training compute reaches the target'
         :result.status==='compute-alone'?'no labour needed: experiment compute reaches the target'
         :'labour exceeds numeric range';
@@ -18,16 +32,16 @@
     }
   });
   // The page groups the core presets with the four higher-target cases.
-  const groups=['To double the pace (2x)','To double the pace again (4x)'];
+  const groups=['To double the pace (2×)','To double the pace again (4×)'];
   const labels=[
     ["Tejas's model",'His assumptions, unchanged.'],
     ['Research productivity falls 20%','The same effort finds 20% less.'],
     ['Twice the experiment compute','Training compute stays on its old path.'],
     ['Twice the compute everywhere','Experiments and training both double. Depends on our illustrative T₀ and W. METR is confident the acceleration was not due to faster training compute scaling.'],
     ['AI caused 80% of the speedup',"METR's guess. This is the labour equivalent of AI's part only, and it depends on where the other causes act."],
-    ["Thinking can't fully replace experiments",'Researchers, human or AI, share experiment compute, so extra labour helps less (σ = 0.75).'],
-    ['Thinking can barely replace experiments','Past a point, more researchers, human or AI, add almost nothing, and experiment compute sets a limit (σ = 0.5).'],
-    ["Tejas's model",'His assumptions, with the target at 4x.'],
+    ["Research labour and experiment compute are strong complements",'Researchers, human or AI, share experiment compute, so extra labour helps less (σ = 0.75). This is about research labour against experiment computing. It does not capture bottlenecks between tasks inside research, such as research judgement against coding.'],
+    ['Research labour and experiment compute are very strong complements','Past a point, more researchers, human or AI, add almost nothing, and experiment compute sets a limit (σ = 0.5). This is about research labour against experiment computing. It does not capture bottlenecks between tasks inside research, such as research judgement against coding.'],
+    ["Tejas's model",'His assumptions, with the target at 4×.'],
     ['Twice the experiment compute',"The labour needed halves."],
     ['Four times the experiment compute',"The labour needed falls to a quarter."],
     ['Research productivity falls 20%','The same effort finds 20% less.']
@@ -41,13 +55,13 @@
   const scenario=index=>{const c=cases[index], base=M.state(c.change);return c.E?M.experimentDial(base,c.E):base;};
   const ladder=[1,2,4].map(X=>({X,months:6/X,labour:M.inverse({...M.defaults,X}).L_needed}));
   const uncertainty=[1.3,3].map(X=>Math.round(M.inverse({...M.defaults,X}).L_needed));
-  $('takeaway-range').innerHTML=`METR would not be surprised by 1.3x or 3x. Through this model that is about ${uncertainty[0]}x to ${uncertainty[1]}x the research labour. This is our calculation, not METR's.`;
+  $('takeaway-range').innerHTML=`METR would not be surprised by 1.3× or 3×. Through this model that is about ${uncertainty[0]}× to ${uncertainty[1]}× the research labour. This is our calculation, not METR's.`;
   const lead=`If AI has doubled Anthropic's pace, Tejas's model says that's like having about ${Math.round(ladder[1].labour)} times the research workforce.<br>On the same model, doubling the pace again would take about ${Math.round(ladder[2].labour)} times the original workforce.`;
   $('takeaway-lead').innerHTML=lead;
-  $('takeaway-rows').innerHTML=ladder.map((row,i)=>`<tr${i===1?' class="current"':''}><td>${f(row.months)} months</td><td>${row.X}x</td><td>${i?'about '+Math.round(row.labour):f(row.labour)}x</td></tr>`).join('');
+  $('takeaway-rows').innerHTML=ladder.map((row,i)=>`<tr${i===1?' class="current"':''}><td>${f(row.months)} months</td><td>${row.X}×</td><td>${i?'about '+Math.round(row.labour):f(row.labour)}×</td></tr>`).join('');
   const bridgeChanged=()=>p.b!==1 || p.h!==1;
   const partial=()=>p.h<1;
-  const targetName=()=>p.X===2?"METR's 2x":`the ${times(p.X)} target`;
+  const targetName=()=>p.X===2?"METR's 2×":`the ${times(p.X)} target`;
   const forwardText=d=>d.X_out<=0?noProgress():partial()?`With these inputs, the reported pace would be ${times(d.X_out)} its old pace, because we assume they explain only part of the speedup.`:bridgeChanged()?`Under this index bridge, the reported pace would be ${times(d.X_out)} its old pace.`:`With these inputs, AI progress runs at <strong>${times(d.X_out)}</strong> its old pace.`;
   const noProgress=()=> {
     const d=M.forward(p);
@@ -63,8 +77,8 @@
   };
   const signed=(value,subtract=false)=>`${value<0?(subtract?'+':'−'):(subtract?'−':'+')} ${f(Math.abs(value))}`;
   const narrow=matchMedia('(max-width: 760px)'), reduced=matchMedia('(prefers-reduced-motion: reduce)');
-  const times = value => `${f(value)}x`;
-  const timeTimes=value=>`${Math.abs(value)>=1e6||(value!==0&&Math.abs(value)<.001)?value.toExponential(2):value.toLocaleString('en-GB',{maximumSignificantDigits:3})}x`;
+  const times = value => `${f(value)}×`;
+  const timeTimes=value=>`${Math.abs(value)>=1e6?f(value):value.toLocaleString('en-GB',{maximumSignificantDigits:3})}×`;
   // Typeset only authored mathematical text; identifiers in attributes stay intact.
   function math(text, variables=true) {
     text=text.replace(/-(?=\d)/g,'−');
@@ -107,7 +121,7 @@
   const formula=(id,title,equation,substitution,definitions,plain=H.plain[id],note='')=>`<article class="formula-card" id="${id}"><h3>${title}</h3><p class="formula">${H.equation(equationLines(equation))}</p>${note}<p class="formula substitution">${equationLines(substitution)}</p><details><summary>In plain English</summary><p>${plain}</p><h4>Symbols</h4><ul class="definitions">${definitions.map(([symbol,name])=>`<li>${math(symbol)} — ${name}</li>`).join('')}</ul></details></article>`;
   function inverseText(r,short=false) {
     if(r.status==='wall' && r.X_max<=0)return short?'No finite labour; no progress at the ceiling':`No amount of research labour reaches ${targetName()} here.`;
-    if(r.status==='wall') return short?`No finite labour; ceiling ${times(r.X_max)}`:`No amount of research labour reaches ${targetName()} here. The ceiling is <strong>${times(r.X_max)}</strong>.`;
+    if(r.status==='wall') return short?`No finite labour; ceiling ${times(r.X_max)}`:`No amount of research labour reaches ${targetName()} here. It approaches a ceiling of <strong>${times(r.X_max)}</strong>.`;
     if(r.L_needed===0 && M.forward({...p,L:0}).X_out>p.X+1e-12)return 'No research labour is needed: these inputs already beat the target.';
     if(r.status==='none-needed') return short?'No labour needed':'Training compute alone reaches the target. No research labour is needed.';
     if(r.status==='compute-alone') return short?'Experiments alone suffice':'Experiment compute alone is enough for the target. No research labour is needed.';
@@ -142,7 +156,7 @@
       svg+=`<path class="pipe" d="${path}" marker-end="url(#${pipeId})"/><circle class="dot" data-rate="${Math.max(0,rate)}" r="2.6" cx="${start[1]}" cy="${start[2]}"/>`;
     }
     positions.forEach(([x,y],i)=>{
-      svg+=`${symbols?`<a href="#${keys[i]}" tabindex="0" aria-label="${labels[i]}: go to equation">`:''}<rect class="node" x="${x}" y="${y}" width="${widths[i]}" height="${i===7?195:72}"/><text x="${x+10}" y="${y+25}">${labels[i]}</text><text class="value" style="font-size:${Math.min(19,(widths[i]-20)/(values[i].length*.57))}px" x="${x+10}" y="${y+53}">${values[i]}</text>${i===7?meter(x+8,y+65,widths[i]-16,d.X_out)+`<text class="meter-label" x="${x+10}" y="${y+162}">METR would not be<tspan x="${x+10}" dy="18">surprised by 1.3x or 3x</tspan></text>`:''}${symbols?'</a>':''}`;
+      svg+=`${symbols?`<a href="#${keys[i]}" tabindex="0" aria-label="${labels[i]}: go to equation">`:''}<rect class="node" x="${x}" y="${y}" width="${widths[i]}" height="${i===7?195:72}"/><text x="${x+10}" y="${y+25}">${labels[i]}</text><text class="value" style="font-size:${Math.min(19,(widths[i]-20)/(values[i].length*.57))}px" x="${x+10}" y="${y+53}">${values[i]}</text>${i===7?meter(x+8,y+65,widths[i]-16,d.X_out)+`<text class="meter-label" x="${x+10}" y="${y+162}">METR would not be<tspan x="${x+10}" dy="18">surprised by 1.3× or 3×</tspan></text>`:''}${symbols?'</a>':''}`;
     });
     if(symbols && mobile) svg+=`<text class="live-footer" x="10" y="${h-38}">φ₀ = ${f(p.phi0)} · φ₁ = ${f(p.phi1)}</text>`;
     if(symbols) svg+=`<text class="live-footer" x="10" y="${h-12}">${mobile?'A = '+f(p.A)+' · c = '+f(d.c)+(d.c!==d.c0?' during the transition':''):'A = '+f(p.A)+' · c = '+f(d.c)+' doublings/year'+(d.c!==d.c0?' during the transition':'')+' · φ₀ = '+f(p.phi0)+' · φ₁ = '+f(p.phi1)}</text>`;
@@ -174,7 +188,7 @@
   function meter(x,y,width,X) {
     if(X<=0)return `<svg x="${x}" y="${y}" width="${width}" height="80" viewBox="0 0 ${width} 80" role="img" aria-label="${noProgress()}"><text class="meter-label" x="8" y="20">${X<0?'Index would fall':'No progress in this setting'}</text></svg>`;
     const scale=v=>10+Math.max(0,Math.min(4,v))/4*(width-20);
-    return `<svg x="${x}" y="${y}" width="${width}" height="80" viewBox="0 0 ${width} 80" role="img" aria-label="${X<=0?noProgress():'Index pace '+times(X)}; METR mark 2x. METR would not be surprised by 1.3x or 3x"><rect class="meter-band" x="${scale(1.3)}" y="28" width="${scale(3)-scale(1.3)}" height="18" fill="var(--band)"/><path d="M10 37 H${width-10}" stroke="var(--hairline)"/><path d="M${scale(2)} 22 V51" stroke="var(--muted)"/><circle cx="${scale(X)}" cy="37" r="5" fill="var(--accent)"/><text class="meter-label" x="${scale(2)}" y="16" text-anchor="middle">METR 2x</text><text class="meter-label" x="${scale(1.3)}" y="70" text-anchor="middle">1.3x</text><text class="meter-label" x="${scale(3)}" y="70" text-anchor="middle">3x</text>${X>4?`<text class="meter-label" x="${width-10}" y="16" text-anchor="end">&gt;4x</text>`:X<=0?'<text class="meter-label" x="10" y="16">No progress</text>':''}</svg>`;
+    return `<svg x="${x}" y="${y}" width="${width}" height="80" viewBox="0 0 ${width} 80" role="img" aria-label="${X<=0?noProgress():'Index pace '+times(X)}; METR mark 2×. METR would not be surprised by 1.3× or 3×"><rect class="meter-band" x="${scale(1.3)}" y="28" width="${scale(3)-scale(1.3)}" height="18" fill="var(--band)"/><path d="M10 37 H${width-10}" stroke="var(--hairline)"/><path d="M${scale(2)} 22 V51" stroke="var(--muted)"/><circle cx="${scale(X)}" cy="37" r="5" fill="var(--accent)"/><text class="meter-label" x="${scale(2)}" y="16" text-anchor="middle">METR 2×</text><text class="meter-label" x="${scale(1.3)}" y="70" text-anchor="middle">1.3×</text><text class="meter-label" x="${scale(3)}" y="70" text-anchor="middle">3×</text>${X>4?`<text class="meter-label" x="${width-10}" y="16" text-anchor="end">&gt;4×</text>`:X<=0?'<text class="meter-label" x="10" y="16">No progress</text>':''}</svg>`;
   }
   function equations(walk) {
     const end=walk.last;
@@ -184,7 +198,7 @@
       formula('final-sector','Final sector · Training run','Effective compute = C × S; g0 = s × T0; c0 = (1 − s) × T0',`g0 ≈ ${f(p.s)} × ${f(p.T0)} ≈ ${f(d.g0)}; c0 = (1 − ${f(p.s)}) × ${f(p.T0)} ≈ ${f(d.c0)} doublings/year.`, [["C", "Computing power used to train models"], ["S", "The stock of research methods"], ["g0", "Baseline software growth in doublings/year"], ["c0", "Baseline training growth in doublings/year"], ["s", "Software share of baseline progress"], ["T0", "Baseline effective-compute growth in doublings/year"]])+
       formula('research','Research sector · Research lab',`g = g0 × A × F(L, E)^λ; G = g/g0 = A × F(L, E)^λ; ${form}`,`F = ${cd?`${f(p.L)}^${f(p.a)} × ${f(d.E)}^(1 − ${f(p.a)})`:`[${f(p.a)} × ${f(p.L)}^${f(rho,4)} + (1 − ${f(p.a)}) × ${f(d.E)}^${f(rho,4)}]^(1/${f(rho,4)})`} ≈ ${f(M.F(p.L,d.E,p.a,p.sigma))}; G ≈ ${f(p.A)} × ${f(M.F(p.L,d.E,p.a,p.sigma))}^${f(p.lambda)} ≈ ${f(d.G)}; ${cd?'Cobb-Douglas':`CES: ρ ≈ ${f(rho,4)}`}; a ≈ ${f(p.a)}; F(1,1) = 1.`, [["g", "Software growth in doublings a year"], ["g0", "Software growth before the speedup"], ["G", "New software pace divided by old"], ["A", "Research productivity compared with baseline"], ["L", "Human and AI research labour"], ["E", "Experiment compute compared with baseline. Compute per unit of time"], ["λ", "Returns to scale in research"], ["F", "Combines labour and experiment compute"], ["a", "Labour weight against experiment compute"]].concat(cd?[]:[['σ','How easily labour stands in for experiments'],['ρ','Substitution parameter rewritten for the formula']] ),cd?H.plain.research:H.researchCES,cd?`<p class="formula tejas-equation">${H.equation(`With ${math('a = 0.5')} and ${math('λ = 1')}, this is Tejas's equation: ${math('G = A × √L × √E')}.`)}</p>`:'')+
       formula('compute-link','Compute link · Compute pool','E = k × φ1/φ0; Cr = k × (1 − φ1)/(1 − φ0); c = c0 + log2(Cr)/W',`E ≈ ${f(p.k)} × ${f(p.phi1)}/${f(p.phi0)} ≈ ${f(d.E)}; Cr ≈ ${f(p.k)} × (1 − ${f(p.phi1)})/(1 − ${f(p.phi0)}) ≈ ${f(d.Cr)}; c ≈ ${f(d.c0)} + log2(${f(d.Cr)})/${f(p.W)} ≈ ${f(d.c)}${d.c!==d.c0?" during the transition":""}.`, [["k", "Total compute pool divided by baseline"], ["φ0", "Experiment share before the change"], ["φ1", "Experiment share after the change"], ["E", "Experiment compute compared with baseline. Compute per unit of time"], ["Cr", "Training-compute effect relative to baseline at the end of W years"], ["c", "Training growth in doublings a year"], ["c0", "Training growth before the speedup"], ["log2", "How many doublings a ratio equals"], ["W", "Years for the training compute change"]])+
-      formula('index-link','Reading the index · AI capability','Xe = (G × g0 + c)/T0; X_out = 1 + (Xe − 1)/(b × h)',d.X_out<=0?noProgress():`Xe = (${f(d.G)} × ${f(d.g0)} ${signed(d.c)})/${f(p.T0)} ≈ ${f(d.Xe)}; X_out = 1 + (${f(d.Xe)} − 1)/(${f(p.b)} × ${f(p.h)}) ≈ ${f(d.X_out)}.`, [["G", "New software pace divided by old"], ["g0", "Software growth before the speedup"], ["c", "Training growth in doublings a year"], ["T0", "Baseline effective-compute growth in doublings/year"], ["Xe", "Effective-compute speedup after h and b"], ["X_out", "The reported index speedup implied by the inputs, given b and h"], ["b", "Bridge from index to effective-compute speedup"], ["h", "Share of the speedup AI caused"]],H.plain['index-link']+` Research productivity A enters through G in the research sector. For example, if other causes raised A to 1.3 and AI supplied the rest of a 2x pace, labour would need about ${f(M.inverse({...M.defaults,A:1.3}).L_needed,1)}x, against ${f(M.inverse({...M.defaults,h:.8}).L_needed)}x with h = 0.8 and A = 1.`)+
+      formula('index-link','Reading the index · AI capability','Xe = (G × g0 + c)/T0; X_out = 1 + (Xe − 1)/(b × h)',d.X_out<=0?noProgress():`Xe = (${f(d.G)} × ${f(d.g0)} ${signed(d.c)})/${f(p.T0)} ≈ ${f(d.Xe)}; X_out = 1 + (${f(d.Xe)} − 1)/(${f(p.b)} × ${f(p.h)}) ≈ ${f(d.X_out)}.`, [["G", "New software pace divided by old"], ["g0", "Software growth before the speedup"], ["c", "Training growth in doublings a year"], ["T0", "Baseline effective-compute growth in doublings/year"], ["Xe", "Effective-compute speedup after h and b"], ["X_out", "The reported index speedup implied by the inputs, given b and h"], ["b", "Bridge from index to effective-compute speedup"], ["h", "Share of the speedup AI caused"]],H.plain['index-link']+` Research productivity A enters through G in the research sector. For example, if other causes raised A to 1.3 and AI supplied the rest of a 2× pace, labour would need about ${f(M.inverse({...M.defaults,A:1.3}).L_needed,1)}×, against ${f(M.inverse({...M.defaults,h:.8}).L_needed)}× with h = 0.8 and A = 1.`)+
       formula('time-link','Holding the pace','G1 = (Xe × T0 − c)/g0; G2 = (Xe × T0 − c0)/g0; G_required(t) = G1 for t ≤ W, G2 after; G_floor(t) = A(t) × F(0, E)^λ; G_actual(t) = max(G_required(t), G_floor(t)); dD/dt = (G_actual(t) − 1) × g0; D(0) = 0; A(t) = A × 2^(−β × D(t))',walk.L5!==null?`At year 5: G1 ≈ ${f(end.G1)}; G2 ≈ ${f(end.G2)}; D(5) ≈ ${f(end.D)}; A(5) ≈ ${f(end.A,4)}; ${pathText(walk)}.`:`${pathText(walk)}.`, [["A(t)", "Research productivity at year t"], ["A", "Research productivity at the starting point"], ["β", "Rate at which ideas get harder"], ["D(t)", "How many more doublings S has had by year t than on the baseline path. It is negative if S has fallen behind."], ["G1", "Required software speedup through W years"], ["G2", "Required software speedup after W years"], ["Xe", "Effective-compute speedup required for the target"], ["T0", "Baseline effective-compute growth in doublings/year"], ["g0", "Software growth before the speedup"], ["c", "Training growth through W years"], ["c0", "Baseline training growth after W years"], ["W", "Years for the training compute change"], ["t", "Time since the change in years"], ["max", "The larger of two values"], ["G_required", "Software growth required for the target"], ["G_actual", "Software growth the lab actually produces"], ["G_floor", "Software growth at zero labour"], ["F", "Combines labour and experiment compute"], ["E", "Experiment compute compared with baseline. Compute per unit of time"], ["λ", "Returns to scale in research"]]);
     $('derivation').innerHTML=`<li>Target X ≈ ${f(p.X)} → Xe = 1 + ${f(p.b)} × ${f(p.h)} × (${f(p.X)} − 1) ≈ ${f(r.Xe)}.</li><li>G = (Xe × T0 − c)/g0 = (${f(r.Xe)} × ${f(p.T0)} ${signed(r.c,true)})/${f(r.g0)} ≈ ${f(r.G)}.</li>`;
     if(r.G>0) {
@@ -221,14 +235,14 @@
       const value=logY?Math.pow(10,min+i):min+step*i;
       const label=logY?(min+i>=-3&&min+i<=6?value.toLocaleString('en-GB'):`10<tspan baseline-shift="super" font-size="10">${min+i}</tspan>`):f(value,0);
       const tickY=logY?top+ih*(1-i/(max-min)):y(value);
-      svg+=`<path class="axis" d="M${left} ${tickY} H${w-right}"/><text x="${left-10}" y="${tickY+5}" text-anchor="end">${label}x</text>`;
+      svg+=`<path class="axis" d="M${left} ${tickY} H${w-right}"/><text x="${left-10}" y="${tickY+5}" text-anchor="end">${label}×</text>`;
     }
     const path=points=>{let pen=false;return points.map(q=>{if(!Number.isFinite(q.y)||(logY&&q.y<=0)){pen=false;return '';}const command=pen?'L':'M';pen=true;return `${command}${x(q.x)},${y(q.y)}`;}).join(' ');};
     svg+=`<g clip-path="url(#${clip})"><path class="reference" d="${path(reference)}"/><path class="curve" d="${path(data)}"/>`;
     if(options.point) svg+=`<circle class="point" cx="${x(options.point.x)}" cy="${y(options.point.y)}" r="4"/>`;
     svg+='</g>';
     if(options.wall) {const q=data.filter(q=>Number.isFinite(q.y)&&(!logY||q.y>0)).at(-1);if(q)svg+=`<circle class="point" cx="${x(q.x)}" cy="${y(q.y)}" r="4"/><text x="${Math.min(w-75,x(q.x)+8)}" y="${Math.max(18,y(q.y)-12)}">Wall</text>`;else svg+=`<text x="${left+12}" y="${top+24}">Wall at year 0</text>`;}
-    if(logY&&data.some(q=>q.y===0))svg+=`<text x="${left+12}" y="${top+24}">No labour needed (0x)</text>`;
+    if(logY&&data.some(q=>q.y===0))svg+=`<text x="${left+12}" y="${top+24}">No labour needed (0×)</text>`;
     svg+=`<text x="${left+iw/2}" y="${h-5}" text-anchor="middle">${options.log?'Research labour L (log scale)':'Years'}</text></svg><p class="quiet chart-summary">${options.summary}</p>`;
     $(id).innerHTML=svg;
   }
@@ -243,6 +257,9 @@
   }
   function update() {
     const d=M.forward(p), r=M.inverse(p);
+    $('beta-warning').hidden=p.beta<=1;
+    $('sigma-warning').hidden=p.sigma<=1;
+    history.replaceState(null,'',settingsURL());
     const paths=new Map(), pathFor=state=>{const key=JSON.stringify(state);if(!paths.has(key))paths.set(key,M.walkTimePath(state));return paths.get(key);};
     const walk=pathFor(p);
     H.setState(p,walk);
@@ -252,8 +269,8 @@
       if(key==='E') {
         const min=Math.max(.00001,(.5-d.Cr*(1-p.phi0))/p.phi0,d.Cr*(1-p.phi0)*.05/(.95*p.phi0));
         const max=Math.min((8-d.Cr*(1-p.phi0))/p.phi0,d.Cr*(1-p.phi0)*.95/(.05*p.phi0));
-        input.min=Math.min(min,d.E);input.max=Math.max(max,d.E);input.value=d.E;
-      } else if(!(input.type==='number' && document.activeElement===input)) input.value=p[key];
+        input.min=Math.min(min,d.E);input.max=Math.max(max,d.E);if(!(input.type==='number' && document.activeElement===input)) input.value=input.type==='number'?round10(d.E):d.E;
+      } else if(!(input.type==='number' && document.activeElement===input)) input.value=input.type==='number'?round10(p[key]):p[key];
       input.setAttribute('aria-valuetext',key==='s'&&p.s===2/3?'two thirds':f(key==='E'?d.E:p[key],4));
     });
     document.querySelectorAll('[data-output]').forEach(out=>{const key=out.dataset.output;out.textContent=key==='s'&&p.s===2/3?'2/3':f(key==='E'?d.E:p[key],4);});
@@ -293,10 +310,12 @@
       if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) {event.preventDefault();setTab(event.key==='Home'?'machine':event.key==='End'?'workings':name==='machine'?'workings':'machine',true);}
     });
   }
-  document.querySelectorAll('[data-key]').forEach(input=>input.addEventListener('input',()=>{
+  document.querySelectorAll('[data-key]').forEach(input=>{
+  const message=()=>document.getElementById(input.id+'-error');
+  const validate=()=>{
     const value=input.valueAsNumber;
-    if(!Number.isFinite(value)||((input.dataset.key==='L0'||input.dataset.key==='K0')&&value<=0)) {input.setCustomValidity('Enter a number greater than zero.');return;}
-    input.setCustomValidity('');
+    if(!Number.isFinite(value) || (input.min!=='' && value<Number(input.min)) || (input.max!=='' && input.max!==undefined && value>Number(input.max)) || ((input.dataset.key==='L0'||input.dataset.key==='K0')&&value<=0)) {return false;}
+    input.setCustomValidity(''); if(message()) message().textContent='';
     if(input.dataset.key==='E') {
       if(!experimentBase)experimentBase={k:p.k,phi1:p.phi1,E:M.compute(p).E};
       p=M.experimentDial(p,value);
@@ -305,9 +324,20 @@
         experimentBase={...experimentBase,[input.dataset.key]:value};
       p={...p,[input.dataset.key]:value};
     }
-    update();
-  }));
+    update(); return true;
+  };
+  input.addEventListener('input',validate);
+  const finish=()=>{if(message()?.textContent && input.value===round10(input.dataset.key==='E'?M.compute(p).E:p[input.dataset.key])) return; if(!validate()){input.value=round10(input.dataset.key==='E'?M.compute(p).E:p[input.dataset.key]); input.setCustomValidity(''); if(message()) message().textContent=`Enter a number between ${round10(Number(input.min))} and ${round10(Number(input.max))}.`;}};
+  if(input.type==='number'){input.addEventListener('change',finish);input.addEventListener('blur',finish);}
+  });
   document.querySelectorAll('[name="form"]').forEach(input=>input.addEventListener('change',()=>{p.sigma=input.value==='cd'?1:.75;update();}));
+  $('copy-settings').addEventListener('click',async()=>{
+    const url=new URL(settingsURL(),location.href).href;
+    const seen=new Set();
+    const summary=Array.from(document.querySelectorAll('[data-copy-label]')).filter(el=>{if(seen.has(el.dataset.key))return false;seen.add(el.dataset.key);return true;}).map(el=>`${el.dataset.copyLabel}: ${round10(el.dataset.key==='E'?M.compute(p).E:p[el.dataset.key])}${el.dataset.copyUnit?' '+el.dataset.copyUnit:''}`).join('\n')+'\n'+url;
+    try { await navigator.clipboard.writeText(summary); $('copy-status').textContent='Settings copied.'; }
+    catch (_) { $('copy-status').textContent='Could not copy settings. Copy the address from your browser.'; }
+  });
   document.addEventListener('click',event=>{
     if(event.target.closest('[data-reset]')) {p=M.state();experimentBase=null;update();}
     const link=event.target.closest('a[href="#workings"]');if(link){event.preventDefault();setTab('workings',true);}
@@ -316,7 +346,7 @@
   $('scenarios').innerHTML=groups.map((group,g)=>`<section aria-labelledby="scenario-group-${g}"><h3 id="scenario-group-${g}">${group}</h3><ul>${cases.map((c,i)=>{
     if(c.group!==g)return '';
     const state=scenario(i),result=M.inverse(state);
-    const text=result.status==='wall'?`Never reaches ${times(state.X)}: stops at ${times(result.X_max)}`:inverseText(result,true);
+    const text=result.status==='wall'?`Never reaches ${times(state.X)}: approaches a ceiling of ${times(result.X_max)}`:inverseText(result,true);
     return `<li><button class="scenario-row" type="button" data-case="${i}" aria-label="${group}: ${c.name}" aria-describedby="scenario-gloss-${i} scenario-result-${i}"><span class="scenario-copy"><span class="scenario-name">${c.name}</span><span class="scenario-gloss quiet" id="scenario-gloss-${i}">${c.gloss}</span></span><span class="result" id="scenario-result-${i}">${text}</span></button></li>`;
   }).join('')}</ul></section>`).join('');
   $('scenarios').addEventListener('click',event=>{const button=event.target.closest('[data-case]');if(button){const index=Number(button.dataset.case);p=scenario(index);const solved=M.inverse(p);p.L=solved.status==='wall'?6.25:solved.L_needed===0?Number($('work-L').min):solved.L_needed??6.25;experimentBase=cases[index].E?{k:M.defaults.k,phi1:M.defaults.phi1,E:1}:null;update();}});
@@ -327,5 +357,6 @@
   const target=location.hash.slice(1);
   setTab(isWorkingsHash(target)?'workings':'machine',false,true);update();
   $('script-note').hidden=true;
+  if(badLink) $('link-warning').hidden=false;
   if(target && !['machine','workings'].includes(target))$(target)?.scrollIntoView?.();
 })();

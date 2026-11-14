@@ -73,7 +73,8 @@ const entries = {
   },
   "sigma": {
     "name": "Elasticity of substitution",
-    "meaning": "How far more research labour can stand in for more experiments. 1 is Cobb-Douglas.",
+    "meaning": "How far more research labour can stand in for more experiments. 1 is Cobb-Douglas. This is about research labour against experiment computing. It does not capture bottlenecks between tasks inside research, such as research judgement against coding.",
+    "scope": "This is about research labour against experiment computing. It does not capture bottlenecks between tasks inside research, such as research judgement against coding.",
     "turn": "Labour and experiments swap more easily."
   },
   "rho": {
@@ -202,7 +203,7 @@ Object.assign(entries, {
  X_max:{name:'Index speedup ceiling',meaning:'The index speedup at the software speedup ceiling.',turn:''}
 });
 const plain = {
-  "final-sector": "A model gets better in two ways: more training compute, or better methods. The two multiply, so doubling either one doubles effective compute. In growth rates the multiplying becomes adding: growth in effective compute equals growth in C plus growth in S. That lets us split baseline growth: s to software, 1 − s to training. Tejas supposes two-thirds and one-third. No research labour appears in this equation. Research labour comes in one step earlier, in the research lab. Methods are non-rival: each run uses all of S.",
+  "final-sector": "A model gets better in two ways: more training compute, or better methods. The two multiply, so doubling either one doubles effective compute. In growth rates the multiplying becomes adding: growth in effective compute equals growth in C plus growth in S. That lets us split baseline growth: s to software, 1 − s to training. Tejas supposes two-thirds and one-third. No research labour appears in this equation. Research labour comes in one step earlier, in the research lab. Methods are non-rival: each run uses all of S. This assumes every training run can use every method at once, with no cost of adapting it. Older models stay available even if new runs get weaker.",
   "research": "This equation makes new methods. Its output is a pace: how fast S grows. Its inputs are research labour, human or AI, and experiment compute. With equal weights and λ = 1, neither input can do the work alone: four times the labour only doubles the pace. A scales the whole result. If ideas get harder to find, A falls and the same lab finds less. Cobb-Douglas builds in one fixed answer to how far more research labour can stand in for more experiments, so no symbol for it appears here. Choose CES below to set it yourself.",
   "compute-link": "A lab has one pool of compute and two uses for it: experiments and training. φ₀ and φ₁ are the shares that go to experiments before and after the change. If the pool stays the same, more for experiments means less for training. If the pool doubles and the split stays the same, both double. Experiments use a change at once. We assume training's effect on models arrives over W years. So E measures compute in use now, and <var>C</var><sub>r</sub> measures the training-compute effect, relative to baseline, at the end of W years. During those years the two need not add up to the pool. The experiment dial on The machine holds <var>C</var><sub>r</sub> fixed.",
   "index-link": "The model works in effective compute, but METR reports a benchmark index. This card turns one into the other. With h and b both at 1, the two speedups are the same. h says how much of the speedup AI caused. b says how the index speedup relates to the effective compute speedup. Only b × h enters. Lowering h means more of the reported speedup comes from outside AI, so the same inputs report a larger speedup. With h below 1, the labour figure covers only the part attributed to AI. The target X enters through <var>X</var><sub>e</sub> = 1 + <var>b</var> × <var>h</var> × (<var>X</var> − 1).",
@@ -325,7 +326,7 @@ function init() {
    clearTimeout(scrollTimer);scrollTimer=setTimeout(finishScroll,150);
   }else close();
  },true);
- document.querySelectorAll('#all-controls input[data-key]').forEach(input=>{
+ document.querySelectorAll('#all-controls input[type=range][data-key]').forEach(input=>{
  const label=input.closest('label'), text=label.querySelector('.label-line > span');
  // Keep buttons outside labels so help never activates the slider.
  const span=document.createElement('span');span.className='assumption-label';

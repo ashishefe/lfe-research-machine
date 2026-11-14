@@ -49,3 +49,15 @@ test('approved card links target the card and include its caveats',()=>{
  assert.match(page,/href="#garicano-imas"/);assert.match(page,/Their caveats\./);assert.ok(!page.includes(cards[1].title));
  const app=fs.readFileSync(path.join(hub,'app.js'),'utf8');assert.match(app,/target\.open=true/);assert.match(app,/scrollIntoView/);
 });
+
+
+test('public record is filtered and supports rebuilding without private cards',()=>{
+ const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'hub-record-'));
+ const dir=path.join(tmp,'site/experiments/intelligence-explosion');fs.mkdirSync(dir,{recursive:true});fs.mkdirSync(path.join(tmp,'site/experiments/spending-puzzle'),{recursive:true});
+ fs.copyFileSync(path.join(root,'site/experiments/spending-puzzle/index.html'),path.join(tmp,'site/experiments/spending-puzzle/index.html'));
+ const cards=JSON.parse(fs.readFileSync(cardsFile));cards[0].approved=true;writeCards(tmp,cards);
+ const run=()=>cp.execFileSync('python3',[path.join(root,'scripts/build-hub.py')],{cwd:tmp});run();
+ const record=JSON.parse(fs.readFileSync(path.join(dir,'record.json')));assert.deepEqual(record,cards.filter(c=>c.approved));
+ fs.unlinkSync(path.join(tmp,'planning/hub-cards.json'));run();assert.match(fs.readFileSync(path.join(dir,'index.html'),'utf8'),/id="garicano-imas"/);
+ fs.unlinkSync(path.join(dir,'record.json'));assert.throws(run, error=>{assert.match(error.stderr.toString(),/No card source found: expected planning\/hub-cards\.json or site\/experiments\/intelligence-explosion\/record\.json/);return true;});
+});
