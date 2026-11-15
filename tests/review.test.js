@@ -22,7 +22,7 @@ test('review bundle is self-contained, safely escaped, with no network APIs; pub
  assert.match(html,/<a href="https:\/\/lfe.econforeverybody.com\/experiments\/intelligence-explosion\/" aria-current="page">Intelligence explosion<\/a>/);
  assert.doesNotMatch(html,/<script[^>]+src=|<link[^>]+href=|(?:src|href)="(?:\.\.?\/|index\.html|[^"#:]+\.(?:js|css))"|@import|url\(['"]?(?:https?:|\.\.?\/)/i);
  assert.doesNotMatch(html,/\b(?:fetch\s*\(|XMLHttpRequest|sendBeacon|WebSocket|EventSource|importScripts)\b/);
- const scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];assert.equal(scripts.length,5);
+ const scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];assert.equal(scripts.length,6);
  scripts.forEach(([,code])=>new vm.Script(code));
  const publicHtml=fs.readFileSync(path.resolve(__dirname,'../site/experiments/research-machine/index.html'),'utf8');
  assert.doesNotMatch(publicHtml,/review-feedback|feedback\.(?:js|css)|Add a comment|review-panel/);
@@ -162,5 +162,5 @@ test('reviewer names retain replacement metacharacters literally',async()=>{
  const reviewer="$& $` $' $$ </script><script>";
  const html=buildReviewCopy(new Date(base.date),reviewer).html;
  assert.ok(html.includes("Private review copy for $&amp; $` $' $$ &lt;/script&gt;&lt;script&gt;. This page is not public yet."));
- assert.equal([...html.matchAll(/<script>/g)].length,5);
+ assert.equal([...html.matchAll(/<script>/g)].length,6);
 });

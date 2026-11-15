@@ -11,7 +11,8 @@ export function buildReviewCopy(date=new Date(), reviewer='') {
  reviewer=reviewer.trim();
  let html=read(resolve(page,'index.html'));
  html=html.replace(/<script src="([^"]+)"><\/script>/g,(_,src)=>`<script>${script(read(resolve(page,src.split("?")[0])))}</script>`)
-  .replace(/<link rel="stylesheet" href="([^"]+)">/g,(_,src)=>`<style>${read(resolve(page,src.split("?")[0]))}</style>`);
+  .replace(/<link rel="stylesheet" href="([^"]+)">/g,(_,src)=>`<style>${read(resolve(page,src.split("?")[0]))}</style>`)
+  .replace(/<link rel="(?:icon|apple-touch-icon)"[^>]*>/g,'');
  html=html.replace(/(<(?:header|div) class="(?:site-bar|topic-bar)">)[\s\S]*?(<\/(?:header|div)>)/g,part=>part.replace(/href="([^"]+)"/g,(_,href)=>`href="${(href==='index.html'||href.includes('/research-machine/'))?'#':href==='../spending-puzzle/'?'https://lfe.econforeverybody.com/experiments/spending-puzzle/':href==='../intelligence-explosion/'?'https://lfe.econforeverybody.com/experiments/intelligence-explosion/':new URL(href,'https://lfe.econforeverybody.com/').href}"`));
  html=html.replaceAll('href="../intelligence-explosion/"','href="https://lfe.econforeverybody.com/experiments/intelligence-explosion/"');
  html=html.replaceAll('href="../research-machine/"','href="https://lfe.econforeverybody.com/experiments/research-machine/"');

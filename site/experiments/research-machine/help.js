@@ -89,7 +89,7 @@ const entries = {
   },
   "beta": {
     "name": "Ideas getting harder",
-    "meaning": "Each extra doubling of S multiplies A by 2<sup>−<var>β</var></sup>. 0 means ideas do not get harder.",
+    "meaning": "Each extra doubling of S multiplies A by 2<sup>−<var>θ</var></sup>. 0 means ideas do not get harder.",
     "turn": "Labour needed climbs faster over time."
   },
   "k": {
@@ -205,15 +205,15 @@ Object.assign(entries, {
 const plain = {
   "final-sector": "A model gets better in two ways: more training compute, or better methods. The two multiply, so doubling either one doubles effective compute. In growth rates the multiplying becomes adding: growth in effective compute equals growth in C plus growth in S. That lets us split baseline growth: s to software, 1 − s to training. Tejas supposes two-thirds and one-third. No research labour appears in this equation. Research labour comes in one step earlier, in the research lab. Methods are non-rival: each run uses all of S. This assumes every training run can use every method at once, with no cost of adapting it. Older models stay available even if new runs get weaker.",
   "research": "This equation makes new methods. Its output is a pace: how fast S grows. Its inputs are research labour, human or AI, and experiment compute. With equal weights and λ = 1, neither input can do the work alone: four times the labour only doubles the pace. A scales the whole result. If ideas get harder to find, A falls and the same lab finds less. Cobb-Douglas builds in one fixed answer to how far more research labour can stand in for more experiments, so no symbol for it appears here. Choose CES below to set it yourself.",
-  "compute-link": "A lab has one pool of compute and two uses for it: experiments and training. φ₀ and φ₁ are the shares that go to experiments before and after the change. If the pool stays the same, more for experiments means less for training. If the pool doubles and the split stays the same, both double. Experiments use a change at once. We assume training's effect on models arrives over W years. So E measures compute in use now, and <var>C</var><sub>r</sub> measures the training-compute effect, relative to baseline, at the end of W years. During those years the two need not add up to the pool. The experiment dial on The machine holds <var>C</var><sub>r</sub> fixed.",
+  "compute-link": "A lab has one pool of compute and two uses for it: experiments and training. q₀ and q₁ are the shares that go to experiments before and after the change. If the pool stays the same, more for experiments means less for training. If the pool doubles and the split stays the same, both double. Experiments use a change at once. We assume training's effect on models arrives over W years. So E measures compute in use now, and <var>C</var><sub>r</sub> measures the training-compute effect, relative to baseline, at the end of W years. During those years the two need not add up to the pool. The experiment dial on The machine holds <var>C</var><sub>r</sub> fixed.",
   "index-link": "The model works in effective compute, but METR reports a benchmark index. This card turns one into the other. With h and b both at 1, the two speedups are the same. h says how much of the speedup AI caused. b says how the index speedup relates to the effective compute speedup. Only b × h enters. Lowering h means more of the reported speedup comes from outside AI, so the same inputs report a larger speedup. With h below 1, the labour figure covers only the part attributed to AI. The target X enters through <var>X</var><sub>e</sub> = 1 + <var>b</var> × <var>h</var> × (<var>X</var> − 1).",
-  "time-link": "S is software, whose excess doublings enter through D(t). D(t) is how many more doublings S has had by year t than on the baseline path. It is negative if S has fallen behind. If D is negative, A rises above its starting ratio. If the other inputs beat the target with no labour, the lab keeps the faster growth. A change in training compute makes labour jump once, at year W: down after a cut, up after an increase. Read the shape of the line. Its size depends on β and on g₀, which comes from T₀. Both are our illustrative numbers."
+  "time-link": "S is software, whose excess doublings enter through D(t). D(t) is how many more doublings S has had by year t than on the baseline path. It is negative if S has fallen behind. If D is negative, A rises above its starting ratio. If the other inputs beat the target with no labour, the lab keeps the faster growth. A change in training compute makes labour jump once, at year W: down after a cut, up after an increase. Read the shape of the line. Its size depends on θ and on g₀, which comes from T₀. Both are our illustrative numbers."
 };
 const researchCES = "This equation makes new methods. Its output is a pace: how fast S grows. Its inputs are research labour, human or AI, and experiment compute. A scales the whole result. If ideas get harder to find, A falls and the same lab finds less. σ says how far more research labour can stand in for more experiments. ρ is the same number rewritten for the formula. Below σ = 1 they are hard to swap, and past some point more labour adds little. Above 1, either input can do it alone.";
 const why = ["Start from the target speedup. Adjust it for how much AI caused and for how the index relates to effective compute.", "Take away what training compute supplies. Software must supply the rest.", "Divide by research productivity, then undo the power λ. This gives what the lab's research labour and experiment compute must produce.", "Undo the production function to find the labour that produces it."];
 const charts = {
   "chart-forward-help": "Moving right multiplies labour. The line shows the speedup that labour gives, with everything else as set. The shaded band is what METR would not be surprised by.",
-  "chart-time-help": "Growth above baseline makes ideas harder to find; growth below baseline lets A rise. Unless β is 0, the labour needed changes with this accumulated difference. Equal steps up the chart multiply labour by the same amount. The dashed line shows the case where ideas do not get harder. Each ratio compares with the baseline workforce at that date."
+  "chart-time-help": "Growth above baseline makes ideas harder to find; growth below baseline lets A rise. Unless θ is 0, the labour needed changes with this accumulated difference. Equal steps up the chart multiply labour by the same amount. The dashed line shows the case where ideas do not get harder. Each ratio compares with the baseline workforce at that date."
 };
 const escape=text=>String(text).replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;');
 function button(key,content,slider=false) {
@@ -225,9 +225,9 @@ function equation(html) {
  let first=true;
  return html.replace(/<span>log<\/span><sub>2<\/sub>|\b(?:inner|max|min)\b|<var>([^<]+)<\/var>(?:<sub>([^<]+)<\/sub>|\(<var>t<\/var>\))?/g,(whole,base,sub)=>{
  if(['inner','max','min'].includes(whole)||whole.startsWith('<span>')) {const out=button(whole.startsWith('<span>')?'log2':whole,whole).replace(' data-help=',` tabindex="${first?0:-1}" data-help=`);first=false;return out;}
- const map={'φ':'phi','σ':'sigma','ρ':'rho','λ':'lambda','β':'beta'};
+ const map={'φ':'phi','σ':'sigma','ρ':'rho','λ':'lambda','θ':'beta'};
  const key=whole.includes('(<var>t')?base+'(t)':sub?(base==='X'&&sub==='out'?'X_out':(['max','out','required','actual','floor'].includes(sub)?base+'_'+sub:base+sub)):map[base]||base;
- const normalized=key==='D'?'D(t)':key==='Tg'||key==='Xe'||key==='Cr'?key:key.replace('φ','phi');
+ const normalized=/^q[01]$/.test(key)?'phi'+key[1]:key==='D'?'D(t)':key==='Tg'||key==='Xe'||key==='Cr'?key:key.replace('φ','phi');
  const out=button(normalized,whole).replace(' data-help=',` tabindex="${first?0:-1}" data-help=`);first=false;return out;
  });
 }

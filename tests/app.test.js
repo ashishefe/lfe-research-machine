@@ -69,7 +69,7 @@ test('every control endpoint renders finite markup, wide and narrow, motion and 
   const diagram=app.nodes.get('diagram-machine').innerHTML;
   assert.match(diagram,/class="dot" data-rate=/);
   assert.doesNotMatch(diagram,/animateMotion/);
-  if(mobile)assert.match(app.nodes.get('diagram-workings').innerHTML,/φ₀/);
+  if(mobile)assert.match(app.nodes.get('diagram-workings').innerHTML,/q₀/);
  }
 });
 test('large finite time-path chart, initial wall, and G below one',()=>{
@@ -89,7 +89,7 @@ test('equations and derivation use true mathematical markup, including CES and z
   app.input('sigma',sigma);
   const html=app.nodes.get('equations').innerHTML, steps=app.nodes.get('derivation').innerHTML;
   assert.doesNotMatch(textOf((html+steps).replace(/<(?:sub|sup)>[\s\S]*?<\/(?:sub|sup)>/g,'')),/[\^_]|φ[01]|\b(?:T0|g0|c0|L0|K0|Xe|Cr)\b/);
-  assert.match(html,/<sup>/);assert.match(html,/<sub>0<\/sub>/);assert.match(html,/<var>φ<\/var><sub>1<\/sub>/);
+  assert.match(html,/<sup>/);assert.match(html,/<sub>0<\/sub>/);assert.match(html,/<var>q<\/var><sub>1<\/sub>/);
   assert.doesNotMatch(textOf(steps),/\. ≈/);
   if(sigma===.5)assert.match(textOf(steps),/No finite L reaches the target/);
   else assert.match(textOf(steps),/L ≈ [\d.]+×/);
@@ -352,7 +352,7 @@ test('explanations preserve every supplied word and start closed',()=>{
  const keys=['S','C','Cr','L','E','A','g','g0','c','c0','G','F','Tg','a','sigma','rho','lambda','beta','k','phi0','W','T0','s','X','Xe','X_out','h','b','D(t)','A(t)','L0'];
  const rows=guideCopy.split('\n').filter(l=>l.startsWith('| ')).slice(1);
  const overridden=new Set(['L','E','a','sigma','lambda','phi0','W','L0']);
- rows.forEach((row,i)=>{if(overridden.has(keys[i]))return;const [,symbol,name,meaning,turn]=row.split('|').map(s=>s.trim());const entry=H.entries[keys[i]];assert.equal(entry.name,name,symbol);assert.equal(entry.meaning.replace('2<sup>−<var>β</var></sup>','2^−β'),meaning,symbol);assert.equal(entry.turn,turn,symbol);});
+ rows.forEach((row,i)=>{if(overridden.has(keys[i]))return;const [,symbol,name,meaning,turn]=row.split('|').map(s=>s.trim());const entry=H.entries[keys[i]];assert.equal(entry.name,name,symbol);assert.equal(entry.meaning.replace('2<sup>−<var>θ</var></sup>','2^−θ'),meaning,symbol);assert.equal(entry.turn,turn,symbol);});
  const html=fs.readFileSync(dir+'index.html','utf8'),eq=app.nodes.get('equations').innerHTML;
  assert.equal((eq.match(/<summary>In plain English<\/summary>/g)||[]).length,5);
  assert.equal((eq.match(/<h4>Symbols<\/h4>/g)||[]).length,5);
@@ -387,7 +387,7 @@ function helpHarness(mobile=false) {
 test('focus then click stays open; live values, one popover, Close and Esc restore focus',()=>{
  const a=helpHarness(),L=a.trigger('L',true);L.focus();a.click(L);
  assert.equal(a.popover.hidden,false);assert.match(a.content.innerHTML,/Now: 6.25/);assert.match(a.content.innerHTML,/Turn it up: A faster pace of new methods\. With default weights and λ = 1, each extra unit adds less\./);
- const beta=a.trigger('beta',true);beta.focus();a.click(beta);assert.equal(L.attrs['aria-expanded'],'false');assert.equal(beta.attrs['aria-expanded'],'true');assert.match(a.content.innerHTML,/2<sup>−<var>β<\/var><\/sup>/);
+ const beta=a.trigger('beta',true);beta.focus();a.click(beta);assert.equal(L.attrs['aria-expanded'],'false');assert.equal(beta.attrs['aria-expanded'],'true');assert.match(a.content.innerHTML,/2<sup>−<var>θ<\/var><\/sup>/);
  const close={closest:s=>s==='[data-help-close]'?{}:null};a.click(close);assert.equal(a.popover.hidden,true);assert.equal(a.document.activeElement,beta);
  L.focus();a.events.keydown({key:'Escape'});assert.equal(a.popover.hidden,true);assert.equal(a.document.activeElement,L);
  const h=a.trigger('h',true);h.focus();assert.doesNotMatch(a.content.innerHTML,/Turn it up/);a.click(a.outside);assert.equal(a.popover.hidden,true);
@@ -610,7 +610,7 @@ test('one masthead message, quiet credit and static model origin',()=>{
  const message=boot().nodes.get('takeaway-lead').innerHTML;
  assert.ok(spec.includes(message));
  assert.match(hero,/<h1>The research machine<\/h1>[\s\S]*?<p id="takeaway-lead" class="subheading">/);
- assert.equal((hero.match(/<p\b/g)||[]).length,3);
+ assert.equal((hero.match(/<p\b/g)||[]).length,5);
  assert.equal((html.match(/id="takeaway-lead"/g)||[]).length,1);
  const credit=hero.match(/<p class="quiet source-credit">([\s\S]*?)<\/p>/)[1];
  assert.equal(credit,"Based on <a href=\"https://x.com/TejasReal/status/2118873231872643552\">a short model</a> by Tejas Subramaniam, using METR's estimate that Anthropic's models are improving about twice as fast as before on well-specified tasks.");
@@ -644,7 +644,7 @@ test('exact form-specific copy, visible CES definition and persistent sections',
   }
  }
  const holding=textOf(a.nodes.get('equations').innerHTML);
- assert.ok(holding.includes('Read the shape of the line. Its size depends on β and on g₀, which comes from T₀. Both are our illustrative numbers.'));
+ assert.ok(holding.includes('Read the shape of the line. Its size depends on θ and on g₀, which comes from T₀. Both are our illustrative numbers.'));
 });
 
 test('all card and derivation explanations name visible symbols or explain their entry',()=>{
@@ -652,7 +652,7 @@ test('all card and derivation explanations name visible symbols or explain their
  const symbols=html=>new Set([...html.matchAll(/<var>([^<]+)<\/var>(?:<sub>([^<]+)<\/sub>)?/g)].map(m=>m[1]+(m[2]||'')));
  const references=html=>{
   const refs=symbols(html),plain=normalize(textOf(html)).replace(/\bA (?:model|lab|change|cut)\b/g,'');
-  for(const m of plain.matchAll(/(?<![\p{L}\p{N}_'’])(?:X_out|[A-Z](?:[012])?|g0|c0|[σρλβφ](?:[01])?|g|b|h|s)(?![\p{L}\p{N}_])/gu))refs.add(m[0]);
+  for(const m of plain.matchAll(/(?<![\p{L}\p{N}_'’])(?:X_out|[A-Z](?:[012])?|g0|c0|[σρλθq](?:[01])?|g|b|h|s)(?![\p{L}\p{N}_])/gu))refs.add(m[0]);
   return refs;
  };
  // Each permitted indirect symbol must state its route to a symbol in this equation.
@@ -774,7 +774,7 @@ test('outside review copy appears verbatim in live and static views',()=>{
  for(const copy of [
  "Old pace means METR's baseline, March 2024 to October 2025. We assume that trend would have continued. It is not an observed world without AI.",
  'Every ratio compares with the assumed continuation of METR\'s baseline trend at the same date.',
- "The compute split, the bridge and the time path are this page's own extensions. The paper does not calibrate β here.",
+ "The compute split, the bridge and the time path are this page's own extensions. The paper does not calibrate θ here.",
  'This is a sensitivity exercise. We did not estimate these parameters for Anthropic, and the chart does not predict labour supply or model AI feeding back into research labour.'
  ])assert.ok(html.includes(copy),copy);
  assert.ok(html.includes('href="https://doi.org/10.1257/aer.20180338"'));
@@ -1071,4 +1071,10 @@ test('displayed training growth uses a singular unit when the displayed value is
  assert.doesNotMatch(read(),/\b1 doublings\/year/);
  a.input('s',0.5);a.input('T0',4);
  assert.match(read(),/2 doublings\/year/);
+});
+test('renamed display symbols keep their original help and URL keys',()=>{
+ const a=boot(), html=a.nodes.get('equations').innerHTML;
+ for(const [key,symbol] of [['phi0','q'],['phi1','q'],['beta','θ']])assert.match(html,new RegExp(`data-help="${key}"[^>]*><var>${symbol}</var>`));
+ assert.match(a.nodes.get('diagram-workings').innerHTML,/q₀/);
+ assert.ok(a.window.ResearchHelp.plain['compute-link'].includes('q₀ and q₁'));
 });

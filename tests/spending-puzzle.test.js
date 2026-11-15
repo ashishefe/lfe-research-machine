@@ -22,15 +22,15 @@ function boot(search=''){
  const location={search,pathname:'/p/',hash:''};vm.runInNewContext(script,{window:{ResearchMachine:m},document,location,URLSearchParams,history:{replaceState(a,b,u){url=u}},localStorage:{setItem(){},removeItem(){},getItem(){return ''}},Math,Number});return {el,inputs,tries,values,get url(){return url}};
 }
 test('static default panel results and bound prose match the computed page',()=>{
- const b=boot();for(const i of [1,4]){const match=html.match(new RegExp(`<p id="result${i}"[^>]*>([^<]+)</p>`));assert.equal(match[1],b.el('result'+i).textContent)}
+ const b=boot();for(const i of [1]){const match=html.match(new RegExp(`<p id="result${i}"[^>]*>([^<]+)</p>`));assert.equal(match[1],b.el('result'+i).textContent)}
  for(const v of b.values){const match=[...html.matchAll(new RegExp(`<span data-value="${v.dataset.value}">([^<]+)</span>`,'g'))];assert.ok(match.every(x=>x[1]===String(v.textContent)),v.dataset.value)}
 });
-test('remaining panel settings round trip through the URL',()=>{const b=boot('?p2=3');for(const [i,v] of [[1,1],[4,2]]){const e=b.inputs.find(x=>x.name===`panel${i}`&&x.value===String(v));e.events.change()}b.el('kitchen-slider').events.input({target:{value:'20'}});const c=boot(b.url.slice(b.url.indexOf('?')));assert.match(c.el('result1').textContent,/did not speed up/);assert.equal(c.el('kitchen-slider').value,'20');assert.equal(c.el('kitchen-price-value').textContent,'0.67×');assert.match(c.el('result4').textContent,/2.2 trillion/);assert.doesNotMatch(b.url,/p2=/)});
+test('remaining panel settings round trip through the URL',()=>{const b=boot('?p2=3');for(const [i,v] of [[1,1]]){const e=b.inputs.find(x=>x.name===`panel${i}`&&x.value===String(v));e.events.change()}b.el('kitchen-slider').events.input({target:{value:'20'}});const c=boot(b.url.slice(b.url.indexOf('?')));assert.match(c.el('result1').textContent,/did not speed up/);assert.equal(c.el('kitchen-slider').value,'20');assert.equal(c.el('kitchen-price-value').textContent,'0.67×');assert.doesNotMatch(b.url,/p2=/)});
 test('kitchen calculation holds at every slider step and the three named positions',()=>{for(let i=0;i<=20;i++){const k=m.kitchen(1-i/20);close(k.meals,3);close(k.budget/k.price,k.ingredients);close(k.ingredients*k.skill,3)}for(const [c,expected] of [[1,[1,2,1.5]],[.5,[.82,2.45,1.22]],[0,[.67,3,1]]]){const k=m.kitchen(c);[k.price,k.ingredients,k.skill].forEach((v,i)=>close(v,expected[i],.005))}});
 test('static kitchen chart contains the middle values and exact new copy',()=>{for(const [key,value] of Object.entries({budget:'2.00',price:'0.82',ingredients:'2.45',skill:'1.22',meals:'3.00'}))assert.match(html,new RegExp(`id="kitchen-${key}-value">${value}×`));assert.match(html,/Story three: a bit of both/);assert.match(html,/different causes that leave the same marks in the data/);assert.doesNotMatch(html,/Two worlds, same numbers|name="panel3"/);});
 test('six static trend charts, labels and tests appear in groups',()=>{const panel=html.match(/<div class="panel" id="panel2">([\s\S]*?)<p id="explain2">/)[1];assert.equal((panel.match(/class="trend-card"/g)||[]).length,6);const groups=panel.split('Using figures from after the bend');assert.equal((groups[0].match(/class="trend-card"/g)||[]).length,3);assert.equal((groups[1].match(/class="trend-card"/g)||[]).length,3);for(let i=1;i<=6;i++)assert.match(panel,new RegExp(`Trend ${i}:`));assert.equal((panel.match(/Spending in early 2026 was/g)||[]).length,6);assert.equal((panel.match(/Test:/g)||[]).length,6);assert.doesNotMatch(html,/Reading (one|two|three|four)|Try it/)});
 test('quarterly figures and worked predictions are bound to engine',()=>{const x=m.spendingPuzzle(),b=boot(), v=k=>b.values.find(e=>e.dataset.value===k).textContent;[x.data.year2023/4,x.data.year2024/4,x.data.h1/2,x.quarters[0],x.quarters[1],x.data.actual/2].forEach((n,i)=>assert.equal(v('quarter'+i),(n/1000).toFixed(2)));assert.deepEqual(['growth1','growth2','prediction1','prediction2','quarter5'].map(v),['5.4','1.95','10','1.80','4.87']);for(let i=0;i<2;i++)close(x.projected[i]*x.ratios[i],x.data.actual);});
-test('static cases and review corrections remain present',()=>{assert.equal((html.match(/class="static-case"/g)||[]).length,2);assert.match(html,/id="opening-dollar"/);assert.match(html,/final score still falls inside the margin of error/);assert.match(html,/Gemini Carbon, Fable 5.2 and Astra/)});
+test('static cases and review corrections remain present',()=>{assert.equal((html.match(/class="static-case"/g)||[]).length,1);assert.match(html,/id="opening-dollar"/);assert.match(html,/final score still falls inside the margin of error/);assert.match(html,/Gemini Carbon, Fable 5.2 and Astra/)});
 
 test('opening bars use one scale for all three quantities',()=>{
  const b=boot(), x=m.spendingPuzzle(), start=45, scale=445/5.3;
@@ -86,22 +86,18 @@ test('appendix percentages retain their matching windows and delays',()=>{
  assert.deepEqual(Object.values(x.appendixFalls.janSep).map(v=>Math.round(v*100)),[64,10]);
  close(x.quarters[2],19240-9741);
 });
-test('workforce scenarios retain their comparator and match the powers within rounding',()=>{
- const x=m.spendingPuzzle(),b=boot();
- for(let i=0;i<3;i++) { const e=b.inputs.find(v=>v.name==='panel4'&&v.value===String(i)); e.events.change(); assert.match(b.el('result4').textContent,/the workforce the old path would have had by then\.$/); close(x.labour[i],x.labourBase*x.labourPowers[i],.001); }
- close(x.labourBase*Math.round(x.labourPowers[0]),x.labour[0],4);
- close(x.labourBase*(Math.round(x.labourPowers[1]/1e5)*1e5),x.labour[1],400000);
+test('worked example agrees with the five-year model and is on the optional page',()=>{
+ const x=m.spendingPuzzle(), page=fs.readFileSync(path.join(__dirname,'../site/experiments/research-machine/index.html'),'utf8');
+ assert.match(html,/research-machine\/#worked-example/); assert.doesNotMatch(html,/id="panel4"/);
+ assert.match(page,/id="worked-example"/); close(x.labour[0],m.timePoint(m.defaults,5).L_needed);
+ for(let i=0;i<3;i++)close(x.labour[i],x.labourBase*x.labourPowers[i],.001);
+ const values={}; const document={readyState:'complete',getElementById(id){return values[id]||(values[id]={})}};
+ vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../site/experiments/research-machine/example.js'),'utf8'),{window:{ResearchMachine:m},document,Math});
+ assert.equal(values['example-total'].textContent,(Math.round(x.labour[0]/10)*10).toLocaleString('en-GB'));
+ assert.equal(values['example-slow-power'].textContent,(x.labourPowers[1]/1e6).toFixed(1)+' million');
+ assert.equal(values['example-slow-total'].textContent,(x.labour[1]/1e6).toFixed(0)+' million');
+ assert.equal(values['example-spending'].textContent,x.annual.toFixed(1));
 });
-
- test('each panel 4 link reproduces its five-year result',()=>{
- const b=boot(), x=m.spendingPuzzle();
- for(let i=0;i<3;i++){ const e=b.inputs.find(v=>v.name==='panel4'&&v.value===String(i)); e.events.change();
- const query=b.el('machine-link').href.split('?')[1], params=new URLSearchParams(query);
- const settings=Object.fromEntries(Object.keys(m.defaults).map(k=>[k,Number(params.get(k))]));
- assert.equal([...params.keys()].length,Object.keys(m.defaults).length);
- close(m.timePoint(settings,5).L_needed/x.labour[i],1,1e-8);
- }
- });
 
 test('trend four yearly prediction comes from its fitted path',()=>{
  const b=boot(), x=m.spendingPuzzle();
