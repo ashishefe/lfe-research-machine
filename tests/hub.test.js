@@ -76,3 +76,9 @@ test('Dwarkesh card preserves its conditions and links to illustrative stories',
  assert.match(page,/Last updated 15 November 2026/);
  assert.match(page,/<a href="\.\.\/fiddling-with-asi\/#stories">stories 4 and 5 in Fiddling with ASI<\/a>/);
 });
+
+test('hub keeps its own body class', () => {
+  const fs = require('fs');
+  const h = fs.readFileSync('site/experiments/intelligence-explosion/index.html', 'utf8');
+  assert.match(h, /<body class="hub">/);
+});

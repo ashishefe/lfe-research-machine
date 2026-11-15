@@ -95,3 +95,5 @@ h3.regimes{font-weight:400;font-size:1.7rem}
 #map-presets{transition:opacity .2s}
 @media(prefers-reduced-motion:reduce){#map-presets{transition:none}}
 .map-figure svg text.phi-region{font-size:19px}
+/* Quieter strip labels (Ashish, 2026-11-15) */
+.infographic svg text{font-size:12px;fill:var(--muted)}

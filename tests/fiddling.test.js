@@ -91,7 +91,7 @@ test('static examples and source bundle follow the engine',()=>{
  const entries=require('../data/sources.json').entries;
  for(const entry of context.window.ASI_SOURCES.entries) assert.equal(entry.value,entries.find(e=>e.id===entry.id).value);
  const info=html.match(/<div class="infographic"[\s\S]*?<aside class="note">/)[0],svgs=[...info.matchAll(/<svg\b[\s\S]*?<\/svg>/g)];
- [.01,.41,.6].forEach((psi,i)=>{const p={...L.defaults,phi:.59,psi},values=[...svgs[i][0].matchAll(/>(\d+\.\d) mo<\/text>/g)].map(m=>m[1]);assert.deepEqual(values,L.doublingGaps(p).map(x=>(x*12).toFixed(1)));});
+ [.01,.41,.6].forEach((psi,i)=>{const p={...L.defaults,phi:.59,psi},values=[...svgs[i][0].matchAll(/>(\d+\.\d)(?: mo)?<\/text>/g)].map(m=>m[1]);assert.deepEqual(values,L.doublingGaps(p).map(x=>(x*12).toFixed(1)));});
  assert.ok(html.includes(L.liveSentence(L.defaults)));assert.match(html,/sources\.js\?v=\d+/);
 });
 

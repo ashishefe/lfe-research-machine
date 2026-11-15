@@ -93,3 +93,20 @@ section:first-child{border-top:0}
 .hub-map{margin:1.5rem 0}.hub-map svg{width:100%;max-width:460px;display:block}.hub-map svg text{font:15px system-ui,sans-serif;fill:var(--ink)}.hub-map a:focus-visible svg{outline:2px solid var(--red);outline-offset:4px}.hub-map figcaption{font:16px/1.5 system-ui,sans-serif;color:var(--muted);max-width:52ch;margin-top:.6rem}
 .questions .try{font:15px/1.5 system-ui,sans-serif;margin-top:.4rem}.questions .try a{color:var(--red)}
 @media(min-width:1100px){.hub-map{display:grid;grid-template-columns:minmax(0,460px) minmax(0,1fr);gap:2.5rem;align-items:end}.hub-map figcaption{margin:0 0 3rem}}
+/* Hub new top (Fable teaching plan, 2026-11-15) */
+.hub .takeaway-box{border-top:2px solid var(--red);border-bottom:1px solid var(--rule);padding:.8rem 0 .4rem;margin:2rem 0;max-width:70ch}
+.hub .takeaway-box p{font:clamp(20px,1.6vw,24px)/1.5 Georgia,serif;margin:.2rem 0 .6rem}
+.hub .takeaway-box .takeaway-label{font:600 13px/1.4 system-ui,sans-serif;color:var(--red);margin:0}
+.hub-shapes{display:grid;gap:1.2rem;margin:1rem 0 2rem}
+.hub-shapes .shape{margin:0;min-width:0}
+.hub-shapes figcaption{font:16px/1.5 system-ui,sans-serif;max-width:60ch}
+.hub-shapes svg{width:100%;max-width:640px;display:block}
+.hub-shapes svg text{font:15px system-ui,sans-serif;fill:currentColor}
+.hub-shapes .r-below{font-weight:400;color:var(--muted)}.hub-shapes .r-at{font-weight:700}.hub-shapes .r-above{font-weight:700;font-style:italic;color:var(--red)}
+.start-here li{font:18px/1.5 Georgia,serif;margin:.4rem 0}
+@media(min-width:1100px){.hub-shapes .shape{display:grid;grid-template-columns:minmax(0,640px) minmax(0,1fr);gap:2rem;align-items:center}.hub-shapes figcaption{order:2}}
+.hub .lede{font:clamp(20px,1.7vw,25px)/1.5 Georgia,serif;max-width:70ch}
+.hub .takeaway-box{max-width:none}.hub .takeaway-box p{max-width:52ch}
+.hub-shapes figcaption{font-size:17px}
+@media(min-width:1100px){.hub-shapes .shape{grid-template-columns:minmax(0,19rem) minmax(0,640px)}.hub-shapes figcaption{order:0}}
+.hub-shapes svg text{font-size:12px;fill:var(--muted)}
