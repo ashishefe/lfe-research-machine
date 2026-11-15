@@ -1062,3 +1062,13 @@ test('large machine values use number words',()=>{
  const m=boot().window.ResearchMachine;
  assert.equal(m.format(29500000),'29.5 million');assert.equal(m.format(2200000000000),'2.2 trillion');assert.doesNotMatch(m.format(Number.MAX_VALUE),/e\+/);
 });
+
+
+test('displayed training growth uses a singular unit when the displayed value is one',()=>{
+ const a=boot();
+ const read=()=>[a.nodes.get('equations').innerHTML,a.nodes.get('diagram-workings').innerHTML].join(' ');
+ assert.match(read(),/1 doubling\/year/);
+ assert.doesNotMatch(read(),/\b1 doublings\/year/);
+ a.input('s',0.5);a.input('T0',4);
+ assert.match(read(),/2 doublings\/year/);
+});

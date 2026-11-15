@@ -6,11 +6,11 @@ The starting model comes from [Tejas Subramaniam’s post](https://x.com/TejasRe
 
 Live at **https://lfe.econforeverybody.com/experiments/research-machine/**, part of the [Experiments](https://lfe.econforeverybody.com/experiments/) on Learn For Everybody.
 
-This repository also holds two companion pages:
+This repository also holds three companion pages:
 
 - **Is there an intelligence explosion?** ([live](https://lfe.econforeverybody.com/experiments/intelligence-explosion/), `site/experiments/intelligence-explosion/`): the work worth reading on that question, explained in plain words.
 - **The spending puzzle** ([live](https://lfe.econforeverybody.com/experiments/spending-puzzle/), `site/experiments/spending-puzzle/`): what Anthropic's research spending can and cannot tell us about whether AI is speeding up its own research.
-- **Fiddling with ASI** ([live](https://lfe.econforeverybody.com/experiments/fiddling-with-asi/), `site/experiments/fiddling-with-asi/`): the Jones / Aghion–Jones–Jones research model with an AI feedback loop, as fitted by Garicano and Imas, with dials, a map of φ and ψ, and stories to try. The engine is a closed-form solution in `loop.js`, tested against numerical integration in `tests/fiddling.test.js`.
+- **Fiddling with ASI** ([live](https://lfe.econforeverybody.com/experiments/fiddling-with-asi/), `site/experiments/fiddling-with-asi/`): the Jones / Aghion–Jones–Jones research model with an AI feedback loop, as fitted by Garicano and Imas, with dials, a map of φ and ψ, and stories to try. Its default calibration uses Garicano and Imas’s before-and-after R&D spending comparison in appendix F8, with λ = 1. The engine is a closed-form solution in `loop.js`, tested against numerical integration in `tests/fiddling.test.js`.
 
 To run them locally, open `http://localhost:8000/experiments/intelligence-explosion/` or `.../spending-puzzle/` or `.../fiddling-with-asi/` after the command below.
 
@@ -67,4 +67,4 @@ This creates `dist/research-machine-review.html`, a self-contained offline page 
 
 Code: [MIT](LICENSE), © 2026 Ashish Kulkarni. Words: [CC BY 4.0](LICENSE-TEXT.md). Third-party source material remains under its publishers’ terms.
 
-The intelligence-explosion hub reads its record from `planning/hub-cards.json`, kept out of this repository so unapproved drafts never ship (without it, the page builds with no record section; `tests/fixtures/hub-cards.json` shows the format). After changing the data, run `python3 scripts/build-hub.py` to regenerate the page. Cards appear on the ordinary page only when `approved` is `true`; open `dist/hub-drafts-preview.html` to inspect all cards locally. The public page contains approved cards only.
+The intelligence-explosion hub reads its record from `planning/hub-cards.json`, kept out of this repository so unapproved drafts never ship (when it is absent, the build uses the approved public cards in `site/experiments/intelligence-explosion/record.json`; `tests/fixtures/hub-cards.json` shows the format). After changing the data, run `python3 scripts/build-hub.py` to regenerate the page. Cards appear on the ordinary page only when `approved` is `true`; open `dist/hub-drafts-preview.html` to inspect all cards locally. The public page contains approved cards only.

@@ -65,3 +65,14 @@ test('public record is filtered and supports rebuilding without private cards',(
  fs.unlinkSync(path.join(tmp,'planning/hub-cards.json'));run();assert.match(fs.readFileSync(path.join(dir,'index.html'),'utf8'),/id="garicano-imas"/);
  fs.unlinkSync(path.join(dir,'record.json'));assert.throws(run, error=>{assert.match(error.stderr.toString(),/No card source found: expected planning\/hub-cards\.json or site\/experiments\/intelligence-explosion\/record\.json/);return true;});
 });
+
+
+test('Dwarkesh card preserves its conditions and links to illustrative stories',()=>{
+ const card=JSON.parse(fs.readFileSync(cardsFile)).find(c=>c.id==='dwarkesh-rsi');
+ assert.equal(card.approved,true);assert.match(card.who,/13 November 2026/);
+ assert.match(card.claim,/assuming labs do not intentionally slow down/);
+ assert.match(card.tag,/88 hours[\s\S]*17 more hours[\s\S]*OpenAI researchers[\s\S]*130 billion output tokens/);
+ const page=fs.readFileSync(path.join(hub,'index.html'),'utf8');
+ assert.match(page,/Last updated 15 November 2026/);
+ assert.match(page,/<a href="\.\.\/fiddling-with-asi\/#stories">stories 4 and 5 in Fiddling with ASI<\/a>/);
+});

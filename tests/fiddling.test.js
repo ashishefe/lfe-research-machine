@@ -39,7 +39,7 @@ test('dial strips track values and keep label rows apart',()=>{
  vm.runInNewContext(fs.readFileSync('site/experiments/fiddling-with-asi/app.js','utf8'),{window:{AsiLoop:L},document,location:{search:'',pathname:'/',hash:''},history:{replaceState(){}},localStorage:{getItem(){return ''},setItem(){}},URLSearchParams,Math,Number,String});
  const markers=id=>[...node('context-'+id).innerHTML.matchAll(/<circle cx="([\d.]+)%"/g)].map(m=>Number(m[1]));
  const close=(a,b)=>assert.ok(Math.abs(a-b)<1e-8,`${a} != ${b}`);
- close(markers('phi')[1],L.breakModel.phi/1.5*100);close(markers('psi')[1],L.defaults.psi*100);close(markers('psi')[2],L.needed(L.defaults)*100);close(markers('lambda')[1],.8/1.3*100);close(markers('boost')[0],.85/9*100);close(markers('spending')[2],(L.multiplier(L.breakModel)-1)/7*100);
+ close(markers('phi')[1],L.breakModel.phi/1.5*100);close(markers('psi')[1],L.defaults.psi*100);close(markers('psi')[2],L.needed(L.defaults)*100);close(markers('lambda')[1],.8/1.3*100);close(markers('boost')[0],.85/9*100);close(markers('spending')[1],(L.multiplier(L.breakModel)-1)/7*100);
  for(const id of ['phi','psi','lambda','boost','spending']){const html=node('context-'+id).innerHTML;const labels=[...html.matchAll(/class="strip-label" style="--position:([\d.]+)%;--row:(\d+)">([^<]+)<\/span>/g)];const dots=markers(id);assert.equal(labels.length,dots.length);labels.forEach((label,i)=>{close(Number(label[1]),dots[i]);assert.equal(Number(label[2]),i);assert.ok(label[3].length>0)});}
 
  handlers.spendinginput({target:{value:2}});assert.match(node('spending-map-message').textContent,/Spending is growing 2× a year/);handlers.spendinginput({target:{value:1}});assert.equal(node('spending-map-message').textContent,'');handlers.phiinput({target:{value:1.1}});assert.match(node('forces').innerHTML,/Pull: none \(φ above 1\)/);
@@ -114,3 +114,20 @@ test('map estimate markers follow the shared source coefficients',()=>{
 });
 
 test('boost lesson and story five carry the requested caveat',()=>{const h=fs.readFileSync('site/experiments/fiddling-with-asi/index.html','utf8'),app=fs.readFileSync('site/experiments/fiddling-with-asi/app.js','utf8');assert.match(app,/Permanent productivity step \(applied once\)/);assert.ok(h.includes('Below the line, with spending unchanged, a permanent rise in research productivity gives a jump in growth that then fades; above the line it brings the explosion forward.'));assert.match(h,/data-preset="4"[^]*?This model has no limit on computing for experiments or for running the AI itself; section 7 covers that\.[^]*?<\/button>/);});
+
+
+test('spark figure is bound to the actual first-year model output',()=>{
+ const h=fs.readFileSync('site/experiments/fiddling-with-asi/index.html','utf8'), js=fs.readFileSync('site/experiments/fiddling-with-asi/app.js','utf8');
+ const years=L.solve(L.presets[3],1).abilities/(L.delta/Math.LN2);
+ assert.ok(years>1.9 && years<2.1);
+ assert.match(h,new RegExp(`data-derived="spark-years">${Math.abs(years-Math.round(years))<.15?['zero','one','two','three'][Math.round(years)]:years.toFixed(1)}`));
+ assert.match(js,/L\.solve\(L\.presets\[3\],1\)\.abilities\/\(L\.delta\/Math\.LN2\)/);
+});
+
+test('Fiddling evidence and takeaway wording stays scoped to the sources',()=>{
+ const h=fs.readFileSync('site/experiments/fiddling-with-asi/index.html','utf8'), js=fs.readFileSync('site/experiments/fiddling-with-asi/app.js','utf8');
+ for(const text of ['How much more research output does better AI get from the same paid-for inputs?', 'one noisy signal, to read alongside prices, delays and how fast inputs grow', 'matched research tasks', 'The model has no point marked ASI.', 'not a measure of general intelligence', 'appendix, section C', 'By 2014']) assert.ok(h.includes(text),text);
+ assert.doesNotMatch(h,/research was bought, not done by AI|Was the research bought, or done by AI/);
+ assert.doesNotMatch(js,/about 3×: world AI chip/);
+ assert.match(js,/not found in the fields studied/);
+});
