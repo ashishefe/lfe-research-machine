@@ -225,6 +225,15 @@
       "source": "https://www.dropbox.com/scl/fi/jz1zaj2fk741g2len97q9/Online-Appendix-to-Garicano-and-Imas-AI-ideas-getting-harder-to-find.pdf?rlkey=narofum32aiq105vrcwcx92vy&dl=0",
       "location": "Appendix illustration of research spending needed to sustain progress",
       "transformation": "Approximate annual spending multiplier under the authors\u2019 assumptions."
+    },
+    {
+      "id": "pointsPerDoubling",
+      "value": 5,
+      "units": "AECI points per doubling of task length",
+      "period": "conversion assumption",
+      "source": "https://www.siliconcontinent.com/p/are-we-approaching-an-intelligence",
+      "location": "Online appendix",
+      "transformation": "Assumed conversion."
     }
   ]
 }

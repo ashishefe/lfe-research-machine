@@ -1,0 +1,91 @@
+.equation{font:clamp(1.1rem,2.5vw,1.5rem)/2 Georgia,serif;overflow-wrap:anywhere;margin:2rem 0}.equation sup{font-size:.7em}.loop-figure svg,.charts svg,.map-figure svg{max-width:none}.loop-figure svg text,.charts svg text,.map-figure svg text{font:16px system-ui,sans-serif}.loop-arrows{stroke-dasharray:8 5;animation:flow 3s linear infinite;animation-play-state:paused}.visible .loop-arrows{animation-play-state:running}@keyframes flow{to{stroke-dashoffset:-26}}@media(prefers-reduced-motion:reduce){.loop-arrows{animation:none}}.machine{border-block:1px solid var(--rule);padding:1rem 0}.dial{display:grid;grid-template-columns:minmax(0,1fr) minmax(140px,1fr) 5rem;gap:1rem;align-items:center;margin:.6rem 0;font:16px system-ui,sans-serif}.dial input{min-width:0;min-height:44px;accent-color:var(--ink)}.dial input[type=number]{width:100%;color:var(--ink);background:var(--paper);border:1px solid var(--rule);padding:.4rem}.strength{font-family:system-ui,sans-serif}.strength span{color:var(--red)}.charts{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.charts figure{min-width:0}.charts figcaption{font:600 17px system-ui,sans-serif}.charts small{display:block;font:14px/1.4 system-ui,sans-serif}.map-figure{max-width:600px}.map-figure circle{cursor:grab;touch-action:none}.preset-controls button{display:block;background:transparent;color:var(--ink);border:0;border-bottom:1px solid var(--rule);min-height:44px;text-align:left;font:16px/1.4 system-ui,sans-serif;width:100%;cursor:pointer}.preset-controls button:hover{text-decoration:underline}#input-message{font:14px system-ui,sans-serif}.note{clear:both}@media(max-width:700px){.charts{grid-template-columns:1fr}.dial{grid-template-columns:1fr 5rem;gap:.3rem}.dial label{grid-column:1/-1}.map-figure svg text{font-size:14px}}
+
+.js .static-stories{display:none}.map-key,.qualification{font:14px/1.5 system-ui,sans-serif;color:var(--muted)}
+.equation{overflow-wrap:normal}.factor{white-space:nowrap;display:inline-block}.equation sup{vertical-align:super;line-height:0}.map-figure{max-width:440px}.map-figure svg{width:100%}#map-grid line{stroke:var(--rule);stroke-width:1}.map-figure svg text,#map-grid text,#map-presets text{font-size:20px}#map-presets circle{fill:none;stroke:var(--ink);stroke-width:2}#map-presets{pointer-events:none}.map-figure .region,.map-figure .estimate-label{font-size:20px}.preset-controls button{display:inline-block;width:auto;border:1px solid var(--rule);padding:.45rem .7rem;margin:.2rem;min-height:44px}.preset-controls button[aria-pressed=true]{border-color:var(--ink);background:var(--ruling);font-weight:600}.js .preset-controls{display:flex;flex-wrap:wrap}.charts svg text{font-size:16px}.charts{grid-template-columns:repeat(2,minmax(340px,1fr))}@media(max-width:899px){.charts{grid-template-columns:minmax(0,1fr)}}@media(min-width:900px){section:has(.machine){max-width:1000px}}
+/* Two charts side by side only where the text column is wide enough; never cross the margin line. */
+@media(max-width:1099px){.charts{grid-template-columns:minmax(0,1fr)}}
+.charts figure{max-width:520px}
+
+.words{font-size:clamp(.9rem,1.8vw,1.2rem);line-height:2.5}.word-factor{display:inline-block;white-space:nowrap;text-align:center;vertical-align:top}.words sup{display:inline-block;vertical-align:top;line-height:1.2;font-size:.65em}.symbol{display:block;border-top:1px dotted var(--muted);margin:.15em auto 0;width:max-content;padding:.1em .5em;font-style:italic}.infographic{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.infographic h4{font:600 16px system-ui}.infographic svg{width:100%}.infographic svg text{font:15px system-ui;fill:currentColor}.infographic p{font-size:.9rem}.dial-context{grid-column:2/4;font:13px/1.5 system-ui;color:var(--muted);border-top:5px solid var(--ruling);padding-top:.3rem}.forces{font:14px system-ui;margin:1rem 0}.force-row{display:flex;justify-content:space-between}.force-bars{display:grid;gap:3px;margin:.4rem 0}.force-bars i,.force-bars b{display:block;background:var(--ink);height:7px}.force-bars b{background:var(--red)}@media(max-width:700px){.infographic{grid-template-columns:1fr}.dial-context{grid-column:1/-1}.words{line-height:2.2}.word-factor{white-space:normal;max-width:100%}.words sup .word-factor{max-width:13rem}}
+.story-gallery,.takeaways{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.story{display:flex;flex-direction:column;gap:.7rem;min-width:0;text-align:left;font:15px/1.45 system-ui;color:var(--ink);background:var(--paper);border:1px solid var(--rule);padding:1rem;cursor:pointer}.story:hover,.story[aria-pressed=true]{border-color:var(--ink);background:var(--ruling)}.story-figures{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}.story svg{width:100%;min-width:0}.extension-equation{border-block:1px solid var(--rule);padding:1rem 0;font:15px/2 Georgia,serif}.extension-equation b{color:var(--red)}.extension-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.extension-grid article,.takeaways article{border-bottom:1px solid var(--rule);min-width:0}.extension-grid h3,.takeaways h3{font-size:1.1rem}.extension-grid p,.takeaways p,.takeaways li{font-size:.95rem}.points{color:var(--red);font:14px system-ui}.takeaways svg{width:150px;max-width:100%;height:65px;fill:none;stroke:currentColor;stroke-width:2}.takeaways svg text{fill:currentColor;stroke:none;font:10px system-ui}@media(max-width:850px){.story-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}.takeaways{grid-template-columns:1fr}}@media(max-width:600px){.story-gallery,.extension-grid{grid-template-columns:1fr}}
+/* The strip's 600 units cover the slider thumb's travel, not the number box. */
+.dial-context{grid-column:2;grid-row:auto;border:0;padding:0;margin:0 8px;min-width:0}.dial-context svg{display:block;width:100%;overflow:visible}.dial-context rect.band{fill:var(--ruling)}.dial-context rect.danger{fill:var(--red);opacity:.15}.dial-context line{stroke:var(--ink);stroke-width:1.5}.dial-context circle{fill:var(--ink)}.dial-context text{font:13px system-ui,sans-serif;fill:var(--ink)}.dial input[type=range]{width:100%;margin:0}
+.extensions{position:relative}.extension-leaders{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}.extension-leaders line{stroke:var(--muted);stroke-width:1}.extension-grid{position:relative;padding-top:3rem}.extension-grid article{background:var(--paper)}.extension-equation{position:relative}.js .extension-grid .points{display:none}
+@media(max-width:700px){.dial-context{grid-column:1;grid-row:auto}.dial-context text{font-size:13px}}
+@media(max-width:600px){.extension-leaders{display:none}.extension-grid{padding-top:0}.js .extension-grid .points{display:block;font-size:.8rem}}
+/* Word equation: each phrase that stands for a symbol carries its symbol beneath, on a dotted drop line. */
+.weq{margin:2rem 0 2.4rem}
+.weq-line{display:flex;flex-wrap:wrap;align-items:flex-start;gap:.5rem .55rem;margin:0 0 1.8rem;max-width:none;font:clamp(1.05rem,2.1vw,1.3rem)/1.35 Georgia,serif}
+.weq-term{display:inline-flex;align-items:flex-start}
+.weq-box,.weq-pow{display:inline-flex;flex-direction:column;align-items:center;text-align:center}
+.weq-box{max-width:13em}
+.weq-pow{font:15px/1.3 system-ui,sans-serif;max-width:12.5em;margin:-.9em 0 0 .2em}
+.weq-sym{font:italic 1.2rem/1 Georgia,serif;color:var(--red)}
+.weq-sym::before{content:"";display:block;width:0;height:1rem;border-left:1.5px dotted currentColor;margin:.25rem auto .2rem}
+.weq-op{padding:0 .1rem}
+.weq-line{row-gap:1.9rem}
+
+/* Fix 5: full-width timelines and controls. */
+.infographic{grid-template-columns:1fr}.infographic h4{margin-bottom:.3rem}.infographic p{margin-top:.3rem}.infographic svg{display:block}
+.dial{grid-template-columns:minmax(0,1fr) 5rem;gap:.2rem .8rem;margin:1.5rem 0}.dial label{grid-column:1;grid-row:1}.dial input[type=number]{grid-column:2;grid-row:1}.dial input[type=range]{grid-column:1/-1;grid-row:2}.dial-context{grid-column:1/-1;grid-row:3;margin:0 8px}.strip-labels{position:relative;height:calc(var(--rows) * 2.5rem)}.strip-label{position:absolute;top:calc(var(--row) * 2.5rem);left:clamp(0px,calc(var(--position) - 6rem),calc(100% - min(12rem, 100%)));width:min(12rem,100%);font:12px/1.2 system-ui,sans-serif;color:var(--ink)}
+.extension-equation .weq{margin:1rem 0}.extension-equation .weq-line{font-size:1rem}.extension-equation .weq-pow{font-size:.8rem}.ext-mark{text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:3px}.ext-number{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--red);border-radius:50%;color:var(--red);font:11px/1 system-ui;width:1.25em;height:1.25em;margin-left:.2em;vertical-align:super}.extension-grid{padding-top:0}.js .extension-grid .points{display:block}.points .ext-number{vertical-align:baseline;margin:0 .3em 0 0}.extension-grid h3{margin-top:.3rem}
+.takeaways h3{font-size:1.4rem}.takeaways svg{width:225px;height:97.5px}
+@media(max-width:1099px){.takeaways,.extension-grid{grid-template-columns:1fr}}
+/* Width (Keshav): layout fills a laptop screen; running text keeps its line length */
+.machine-out{min-width:0}.map-row{display:block}
+@media(min-width:1100px){
+.sheet{max-width:1500px}
+section,section:has(.machine){max-width:none}
+section>p,section>ul,section>h2,.weq+p{max-width:65ch}
+.machine{display:grid;grid-template-columns:minmax(300px,380px) minmax(0,1fr);gap:0 3rem;align-items:start}
+.machine-out{position:sticky;top:3.5rem}
+.charts{grid-template-columns:minmax(0,1fr)}.charts figure{max-width:none}
+.map-row{display:grid;grid-template-columns:minmax(0,520px) minmax(0,1fr);gap:3rem;align-items:center}.map-row .map-figure{max-width:none;margin:0}
+.loop-figure{max-width:760px}
+.extension-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(min-width:1100px){.charts{gap:.5rem}.charts figure{max-width:500px;margin:0}.charts figcaption small{display:inline;margin-left:.5rem}}
+@media(min-width:1100px){.map-text p{max-width:60ch}}
+@media(min-width:1100px){.infographic>div{display:grid;grid-template-columns:minmax(0,640px) minmax(0,1fr);column-gap:2.5rem;align-items:center}.infographic>div>h4{grid-column:1/-1}.infographic>div>svg{max-width:none}.infographic>div>p{max-width:40ch;margin:0}}
+@media(min-width:1100px){.infographic>div>p{font-size:18px}}
+/* One line per equation on laptop screens (Ashish, 2026-11-15); fonts scale with the screen so the line always fits */
+@media(min-width:1300px){.weq-line{flex-wrap:nowrap;gap:.5rem .4rem}.weq-term,.weq-lhs,.weq-op{flex:none}.weq-lhs,.weq-base,.weq-box{white-space:nowrap}.weq-pow{flex:none}section>.weq .weq-line{font-size:min(1.2rem,calc((100vw - 304px)*.0164))}section>.weq .weq-pow{font-size:min(14px,calc((100vw - 304px)*.0121));max-width:12.5em}.extension-equation .weq-line{font-size:min(1rem,calc((100vw - 304px)*.0137))}.extension-equation .weq-pow{font-size:min(.8rem,calc((100vw - 304px)*.011));max-width:12.5em}}
+.loop-speed{font:14px/1.5 system-ui,sans-serif;color:var(--muted);max-width:60ch;margin-top:.3rem}#loop-clock{display:block;color:var(--ink);font-variant-numeric:tabular-nums;min-height:1.5em}
+@media(prefers-reduced-motion:reduce){#loop-runner{display:none}}
+/* Revisions 2026-11-15 (Ashish notes 1-9) */
+.lede{font:clamp(20px,1.7vw,25px)/1.5 Georgia,serif;max-width:70ch}
+.lede-lines .lede{margin:0 0 .7rem;position:relative}
+.lede-mark{position:absolute;left:-1.4em;top:0;font:inherit;line-height:inherit}
+.lede-pull{color:var(--red)}
+.noted>.lede-lines{grid-column:2;grid-row:1}
+.weq-numbered{position:relative;border:1px solid var(--rule);padding:1.2rem 4.5rem .4rem 1.2rem}
+.weq-numbered::after{content:attr(data-eq);position:absolute;right:1.1rem;top:1.2rem;font:18px Georgia,serif;color:var(--muted)}
+.weq .weq-numbered{margin:0 0 1rem}
+.equation.weq-numbered{padding:.8rem 4.5rem .8rem 1.2rem}.equation.weq-numbered::after{top:50%;transform:translateY(-50%)}
+.big-claim{font-size:clamp(1.8rem,3.4vw,2.6rem);line-height:1.1;margin:3rem 0 .4rem;padding-top:1rem;border-top:2px solid var(--red);max-width:none}
+.regimes .r-below,h4.r-below{font-weight:400;color:var(--muted)}
+.regimes .r-at,h4.r-at{font-weight:700;color:var(--ink)}
+.regimes .r-above,h4.r-above{font-weight:700;font-style:italic;color:var(--red)}
+@media(max-width:700px){.weq-numbered{padding-right:2.6rem}.weq-numbered::after{right:.6rem;font-size:15px}.lede-mark{left:-1.1em}}
+@media(min-width:1100px){
+.terms,.history{display:grid;gap:1.2rem 3rem;max-width:none;list-style:none;padding:0}
+.terms{grid-template-columns:repeat(2,minmax(0,1fr))}
+.history{grid-template-columns:repeat(3,minmax(0,1fr))}
+.terms li,.history li{max-width:none}
+}
+@media(min-width:1300px){section>.weq .weq-line{font-size:min(1.15rem,calc((100vw - 304px)*.0148))}section>.weq .weq-pow{font-size:min(13.5px,calc((100vw - 304px)*.0109))}}
+.lede-push,.lede-pull{padding-left:1.6em}.lede-mark{left:0}
+@media(max-width:700px){.lede-mark{left:0}}
+.lede-push .lede-mark{font-size:1.25em;line-height:1.2}.lede-lines{margin-top:1.4rem}
+.push-pull li{max-width:none}
+@media(min-width:1100px){.push-pull{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem 3rem;list-style:none;padding:0;max-width:none}.push-pull li{border-top:3px solid var(--ink);padding-top:.6rem}.push-pull li:last-child{border-top-color:var(--red)}}
+h3.regimes{font-weight:400;font-size:1.7rem}
+/* Section 7: circled numbers sit above the underlined words, so brackets never wrap (Ashish, 2026-11-15) */
+.extension-equation .ext-mark{position:relative;white-space:nowrap}
+.extension-equation .ext-nums{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);display:flex;gap:.15em;line-height:1;margin-bottom:.15em}
+.extension-equation .ext-nums .ext-number{margin:0;vertical-align:baseline}
+.extension-equation .weq-box,.extension-equation .weq-base{white-space:nowrap}
+.extension-equation .weq-line{padding-top:1.1rem}
+.weq-txt{display:block;text-align:center}
+.extension-equation .weq-pow .ext-mark{white-space:normal}.extension-equation .weq-pow{max-width:11em}
+#needed-label{paint-order:stroke;stroke:var(--paper);stroke-width:6px;stroke-linejoin:round;fill:var(--red)}

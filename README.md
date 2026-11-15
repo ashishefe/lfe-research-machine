@@ -10,8 +10,9 @@ This repository also holds two companion pages:
 
 - **Is there an intelligence explosion?** ([live](https://lfe.econforeverybody.com/experiments/intelligence-explosion/), `site/experiments/intelligence-explosion/`): the work worth reading on that question, explained in plain words.
 - **The spending puzzle** ([live](https://lfe.econforeverybody.com/experiments/spending-puzzle/), `site/experiments/spending-puzzle/`): what Anthropic's research spending can and cannot tell us about whether AI is speeding up its own research.
+- **Fiddling with ASI** ([live](https://lfe.econforeverybody.com/experiments/fiddling-with-asi/), `site/experiments/fiddling-with-asi/`): the Jones / Aghion–Jones–Jones research model with an AI feedback loop, as fitted by Garicano and Imas, with dials, a map of φ and ψ, and stories to try. The engine is a closed-form solution in `loop.js`, tested against numerical integration in `tests/fiddling.test.js`.
 
-To run them locally, open `http://localhost:8000/experiments/intelligence-explosion/` or `.../spending-puzzle/` after the command below.
+To run them locally, open `http://localhost:8000/experiments/intelligence-explosion/` or `.../spending-puzzle/` or `.../fiddling-with-asi/` after the command below.
 
 ## Run locally
 

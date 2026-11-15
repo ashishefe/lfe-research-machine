@@ -8,3 +8,4 @@ require('./spending-puzzle.test.js');
 require('./hub.test.js');
 
 require("./sources.test.js");
+require('./fiddling.test.js');

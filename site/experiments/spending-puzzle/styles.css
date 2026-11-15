@@ -68,3 +68,24 @@ section:first-child{border-top:0}
 /* Match the opening figure: labels above bars, clear of the reference. */
 .kitchen-chart:before{left:33.333%}.kitchen-reference{margin-left:33.333%}.kitchen-row{display:block;min-height:0;margin:1.2rem 0}.kitchen-label{margin-left:calc(33.333% + 6px);padding-right:0}.kitchen-track{margin-top:.4rem}
 .opening-fig .fig-title{font:600 17px/1.4 system-ui,sans-serif;margin:0 0 .6rem;max-width:520px}.opening-fig .fig-cap{font:14px/1.5 system-ui,sans-serif;color:var(--muted);max-width:520px;margin-top:.4rem}
+/* Width (Keshav, 2026-11-15): on laptop screens the layout fills the width; running text keeps its line length */
+.questions .q{min-width:0}
+@media(min-width:1100px){
+.puzzle .sheet,.hub .sheet{max-width:1500px}
+.puzzle section,.hub section{max-width:none}
+.puzzle .opening-fig{display:grid;grid-template-columns:minmax(0,820px) minmax(0,22rem);column-gap:2.5rem;align-items:start}
+.puzzle .opening-fig>svg{grid-column:1;grid-row:2}
+.puzzle .opening-fig .fig-title{grid-column:1/-1;grid-row:1;max-width:none}
+.puzzle .opening-fig .fig-cap{grid-column:2;grid-row:2;align-self:end;margin:0 0 1rem}
+.puzzle .panel:not(#panel2){display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);column-gap:3rem;align-items:start;max-width:1200px}
+.puzzle .panel:not(#panel2)>*{grid-column:2}
+.puzzle .panel:not(#panel2)>h3{grid-column:1/-1}
+.puzzle .panel:not(#panel2)>.controls{grid-column:1;grid-row:2/span 6}
+.puzzle .panel:not(#panel2) .controls label{max-width:none}
+#panel2{width:auto}
+#chapter-7 .noted>ol,#chapter-8 .noted>ul,#chapter-10>ul{columns:2;column-gap:3rem}
+#chapter-7 li,#chapter-8 li,#chapter-10 li{break-inside:avoid;max-width:none}
+.questions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem 2.5rem}
+.questions h3{font-size:1.25rem;margin-top:1.5rem}
+.questions p{font-size:18px}
+}
