@@ -105,3 +105,4 @@ h3.regimes{font-weight:400;font-size:1.7rem}
 .js .challenges{display:block}
 /* Narrow screens: growth chart directly above the dials, task-length chart below (Claude, 2026-11-15) */
 @media(max-width:1099px){.machine .machine-out,.machine .charts{display:contents}.machine #input-message,.machine .strength,.machine #compute-caveat,.machine #forces{order:1}.machine .charts figure:nth-child(2){order:2;margin:.5rem 0}.machine #dials{order:3}.machine .charts figure:nth-child(1){order:4;margin:1rem 0 .5rem}.machine #chart-message{order:5}}
+.infographic>div>svg text{font-size:16px;fill:var(--muted);opacity:.75}

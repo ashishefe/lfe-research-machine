@@ -110,3 +110,6 @@ section:first-child{border-top:0}
 .hub-shapes figcaption{font-size:17px}
 @media(min-width:1100px){.hub-shapes .shape{grid-template-columns:minmax(0,19rem) minmax(0,640px)}.hub-shapes figcaption{order:0}}
 .hub-shapes svg text{font-size:12px;fill:var(--muted)}
+/* Quieter strip labels, for real this time: #chapter-1 svg text (20px) was overriding (Ashish, 2026-11-15) */
+#chapter-1 .hub-shapes svg text{font-size:16px;fill:var(--muted);opacity:.75}
+.shapes-key{font:15px/1.5 system-ui,sans-serif;color:var(--muted);max-width:60ch}
