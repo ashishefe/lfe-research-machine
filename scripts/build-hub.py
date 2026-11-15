@@ -27,7 +27,8 @@ opening='An intelligence explosion would mean AI improving AI research so strong
 # Replace inherited social metadata with the hub's own opening.
 import re
 header=re.sub(r'<meta (?:name="description"|property="og:(?:title|description)")[^>]*>','',header)
-header=header.replace('</head>',f'<meta name="description" content="{esc(opening,quote=True)}"><meta property="og:title" content="Is there an intelligence explosion?"><meta property="og:description" content="{esc(opening,quote=True)}"></head>')
+header=re.sub(r'<meta (property="og:(?:image|image:width|image:height|image:alt|url|type)"|name="twitter:card")[^>]*>','',header)
+header=header.replace('</head>',f'<meta name="description" content="{esc(opening,quote=True)}"><meta property="og:title" content="Is there an intelligence explosion?"><meta property="og:description" content="{esc(opening,quote=True)}"><meta property="og:image" content="https://lfe.econforeverybody.com/experiments/intelligence-explosion/share.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Is there an intelligence explosion? Three shapes a speed-up can take."><meta name="twitter:card" content="summary_large_image"><meta property="og:url" content="https://lfe.econforeverybody.com/experiments/intelligence-explosion/"><meta property="og:type" content="article"></head>')
 g=ref('garicano-imas','Garicano and Imas'); ch=ref('chalmers','Chalmers')
 import re as _re
 _fp=Path('site/experiments/fiddling-with-asi/index.html')
