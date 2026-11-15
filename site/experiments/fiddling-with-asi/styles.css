@@ -89,3 +89,9 @@ h3.regimes{font-weight:400;font-size:1.7rem}
 .weq-txt{display:block;text-align:center}
 .extension-equation .weq-pow .ext-mark{white-space:normal}.extension-equation .weq-pow{max-width:11em}
 #needed-label{paint-order:stroke;stroke:var(--paper);stroke-width:6px;stroke-linejoin:round;fill:var(--red)}
+
+.map-figure svg text.phi-region{font-size:13px}.map-figure figcaption{font:16px/1.5 system-ui,sans-serif}.map-figure figcaption span:not(:empty){display:block;margin-top:.5em}
+
+#map-presets{transition:opacity .2s}
+@media(prefers-reduced-motion:reduce){#map-presets{transition:none}}
+.map-figure svg text.phi-region{font-size:19px}

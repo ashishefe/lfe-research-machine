@@ -1,11 +1,12 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path'),cp=require('node:child_process');
 const root=path.resolve(__dirname,'..'), hub=path.join(root,'site/experiments/intelligence-explosion');
-const cardsFile=fs.existsSync(path.join(root,'planning/hub-cards.json'))?path.join(root,'planning/hub-cards.json'):path.join(__dirname,'fixtures/hub-cards.json');
+const cardsFile=fs.existsSync(path.join(root,'planning/hub-cards.json'))?path.join(root,'planning/hub-cards.json'):path.join(hub,'record.json');
 const fixtureFile=path.join(__dirname,'fixtures/hub-cards.json');
+const copyLedger=tmp=>{fs.mkdirSync(path.join(tmp,'data'),{recursive:true});fs.copyFileSync(path.join(root,'data/sources.json'),path.join(tmp,'data/sources.json'))};
 const writeCards=(tmp,cards)=>{fs.mkdirSync(path.join(tmp,'planning'),{recursive:true});fs.writeFileSync(path.join(tmp,'planning/hub-cards.json'),JSON.stringify(cards));};
 test('draft cards stay out of static record and new approved cards build from data',()=>{
  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'hub-test-'));const dir=path.join(tmp,'site/experiments/intelligence-explosion');fs.mkdirSync(dir,{recursive:true});fs.mkdirSync(path.join(tmp,'site/experiments/spending-puzzle'),{recursive:true});
- fs.copyFileSync(path.join(root,'site/experiments/spending-puzzle/index.html'),path.join(tmp,'site/experiments/spending-puzzle/index.html'));
+ fs.copyFileSync(path.join(root,'site/experiments/spending-puzzle/index.html'),path.join(tmp,'site/experiments/spending-puzzle/index.html'));copyLedger(tmp);
  const cards=JSON.parse(fs.readFileSync(fixtureFile));assert.ok(cards.every(c=>!c.approved));cards.push({...cards[0],id:'new-card',title:'A new approved card',approved:true});writeCards(tmp,cards);
  cp.execFileSync('python3',[path.join(root,'scripts/build-hub.py')],{cwd:tmp});const page=fs.readFileSync(path.join(dir,'index.html'),'utf8').split('<script type="application/json"')[0];assert.match(page,/id="new-card"/);assert.doesNotMatch(page,/id="chalmers"|id="garicano-imas"/);
 });
@@ -45,7 +46,7 @@ test('public page contains no draft data and local preview contains every draft'
 test('approved card links target the card and include its caveats',()=>{
  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'hub-approved-'));
  const dir=path.join(tmp,'site/experiments/intelligence-explosion');fs.mkdirSync(dir,{recursive:true});fs.mkdirSync(path.join(tmp,'site/experiments/spending-puzzle'),{recursive:true});
- fs.copyFileSync(path.join(root,'site/experiments/spending-puzzle/index.html'),path.join(tmp,'site/experiments/spending-puzzle/index.html'));
+ fs.copyFileSync(path.join(root,'site/experiments/spending-puzzle/index.html'),path.join(tmp,'site/experiments/spending-puzzle/index.html'));copyLedger(tmp);
  const cards=JSON.parse(fs.readFileSync(fixtureFile));cards[0].approved=true;writeCards(tmp,cards);
  cp.execFileSync('python3',[path.join(root,'scripts/build-hub.py')],{cwd:tmp});
  const page=fs.readFileSync(path.join(dir,'index.html'),'utf8');
@@ -57,7 +58,7 @@ test('approved card links target the card and include its caveats',()=>{
 test('public record is filtered and supports rebuilding without private cards',()=>{
  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'hub-record-'));
  const dir=path.join(tmp,'site/experiments/intelligence-explosion');fs.mkdirSync(dir,{recursive:true});fs.mkdirSync(path.join(tmp,'site/experiments/spending-puzzle'),{recursive:true});
- fs.copyFileSync(path.join(root,'site/experiments/spending-puzzle/index.html'),path.join(tmp,'site/experiments/spending-puzzle/index.html'));
+ fs.copyFileSync(path.join(root,'site/experiments/spending-puzzle/index.html'),path.join(tmp,'site/experiments/spending-puzzle/index.html'));copyLedger(tmp);
  const cards=JSON.parse(fs.readFileSync(cardsFile));cards[0].approved=true;writeCards(tmp,cards);
  const run=()=>cp.execFileSync('python3',[path.join(root,'scripts/build-hub.py')],{cwd:tmp});run();
  const record=JSON.parse(fs.readFileSync(path.join(dir,'record.json')));assert.deepEqual(record,cards.filter(c=>c.approved));

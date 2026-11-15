@@ -23,7 +23,7 @@
       "id": "h1",
       "value": 1850,
       "units": "USD millions, R&D expense",
-      "period": "January\u2013June 2025",
+      "period": "January–June 2025",
       "source": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026067168/anthropicpbc-sx1.htm",
       "location": "Supplemental Operating Expense Information, research and development",
       "transformation": "None; value as reported."
@@ -32,7 +32,7 @@
       "id": "nine2025",
       "value": 3594,
       "units": "USD millions, R&D expense",
-      "period": "January\u2013September 2025",
+      "period": "January–September 2025",
       "source": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026068676/anthropicpbc-sx1ax1.htm",
       "location": "Supplemental Operating Expense Information, research and development",
       "transformation": "None; value as reported."
@@ -50,7 +50,7 @@
       "id": "actual",
       "value": 9741,
       "units": "USD millions, R&D expense",
-      "period": "January\u2013June 2026",
+      "period": "January–June 2026",
       "source": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026067168/anthropicpbc-sx1.htm",
       "location": "Supplemental Operating Expense Information, research and development",
       "transformation": "None; value as reported."
@@ -59,7 +59,7 @@
       "id": "nine2026",
       "value": 19240,
       "units": "USD millions, R&D expense",
-      "period": "January\u2013September 2026",
+      "period": "January–September 2026",
       "source": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026068676/anthropicpbc-sx1ax1.htm",
       "location": "Supplemental Operating Expense Information, research and development",
       "transformation": "None; value as reported."
@@ -68,7 +68,7 @@
       "id": "q3_2025",
       "value": 1744,
       "units": "USD millions, R&D expense",
-      "period": "July\u2013September 2025",
+      "period": "July–September 2025",
       "source": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026068676/anthropicpbc-sx1ax1.htm",
       "location": "Supplemental Operating Expense Information, research and development table",
       "transformation": "3,594 nine months less 1,850 first half."
@@ -77,7 +77,7 @@
       "id": "q4_2025",
       "value": 2744,
       "units": "USD millions, R&D expense",
-      "period": "October\u2013December 2025",
+      "period": "October–December 2025",
       "source": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026068676/anthropicpbc-sx1ax1.htm",
       "location": "Supplemental Operating Expense Information, research and development table",
       "transformation": "6,338 full year less 3,594 nine months."
@@ -86,7 +86,7 @@
       "id": "q3_2026",
       "value": 9499,
       "units": "USD millions, R&D expense",
-      "period": "July\u2013September 2026",
+      "period": "July–September 2026",
       "source": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026068676/anthropicpbc-sx1ax1.htm",
       "location": "Supplemental Operating Expense Information, research and development table",
       "transformation": "19,240 nine months less 9,741 first half."
@@ -134,7 +134,7 @@
       "period": "METR matched periods, immediate",
       "source": "https://www.dropbox.com/scl/fi/jz1zaj2fk741g2len97q9/Online-Appendix-to-Garicano-and-Imas-AI-ideas-getting-harder-to-find.pdf?rlkey=narofum32aiq105vrcwcx92vy&dl=0",
       "location": "Section C, Allowing time for research to produce results",
-      "transformation": "A fall in percent is 100 \u00d7 (1 \u2212 ratio)."
+      "transformation": "A fall in percent is 100 × (1 − ratio)."
     },
     {
       "id": "matched_yearDelay",
@@ -143,25 +143,25 @@
       "period": "METR matched periods, one-year delay",
       "source": "https://www.dropbox.com/scl/fi/jz1zaj2fk741g2len97q9/Online-Appendix-to-Garicano-and-Imas-AI-ideas-getting-harder-to-find.pdf?rlkey=narofum32aiq105vrcwcx92vy&dl=0",
       "location": "Section C, Allowing time for research to produce results",
-      "transformation": "A fall in percent is 100 \u00d7 (1 \u2212 ratio)."
+      "transformation": "A fall in percent is 100 × (1 − ratio)."
     },
     {
       "id": "janSep_immediate",
       "value": 0.36,
       "units": "ratio of later to earlier progress per dollar",
-      "period": "January\u2013September comparison, immediate",
+      "period": "January–September comparison, immediate",
       "source": "https://www.dropbox.com/scl/fi/jz1zaj2fk741g2len97q9/Online-Appendix-to-Garicano-and-Imas-AI-ideas-getting-harder-to-find.pdf?rlkey=narofum32aiq105vrcwcx92vy&dl=0",
       "location": "Section C, Allowing time for research to produce results",
-      "transformation": "A fall in percent is 100 \u00d7 (1 \u2212 ratio)."
+      "transformation": "A fall in percent is 100 × (1 − ratio)."
     },
     {
       "id": "janSep_yearDelay",
       "value": 0.9,
       "units": "ratio of later to earlier progress per dollar",
-      "period": "January\u2013September comparison, one-year delay",
+      "period": "January–September comparison, one-year delay",
       "source": "https://www.dropbox.com/scl/fi/jz1zaj2fk741g2len97q9/Online-Appendix-to-Garicano-and-Imas-AI-ideas-getting-harder-to-find.pdf?rlkey=narofum32aiq105vrcwcx92vy&dl=0",
       "location": "Section C, Allowing time for research to produce results",
-      "transformation": "A fall in percent is 100 \u00d7 (1 \u2212 ratio)."
+      "transformation": "A fall in percent is 100 × (1 − ratio)."
     },
     {
       "id": "preciseSlopeOld",
@@ -224,7 +224,7 @@
       "period": "illustrative sustained pace",
       "source": "https://www.dropbox.com/scl/fi/jz1zaj2fk741g2len97q9/Online-Appendix-to-Garicano-and-Imas-AI-ideas-getting-harder-to-find.pdf?rlkey=narofum32aiq105vrcwcx92vy&dl=0",
       "location": "Appendix illustration of research spending needed to sustain progress",
-      "transformation": "Approximate annual spending multiplier under the authors\u2019 assumptions."
+      "transformation": "Approximate annual spending multiplier under the authors’ assumptions."
     },
     {
       "id": "pointsPerDoubling",
@@ -234,6 +234,33 @@
       "source": "https://www.siliconcontinent.com/p/are-we-approaching-an-intelligence",
       "location": "Online appendix",
       "transformation": "Assumed conversion."
+    },
+    {
+      "id": "betaBefore",
+      "value": 0.064,
+      "units": "coefficient",
+      "period": "before-and-after comparison",
+      "source": "https://www.dropbox.com/scl/fi/jz1zaj2fk741g2len97q9/Online-Appendix-to-Garicano-and-Imas-AI-ideas-getting-harder-to-find.pdf?rlkey=narofum32aiq105vrcwcx92vy&dl=0",
+      "location": "Appendix F8, R&D spending, λ = 1",
+      "transformation": "Converted using κ = ln(2) / 5."
+    },
+    {
+      "id": "betaAfter",
+      "value": 0.062,
+      "units": "coefficient",
+      "period": "before-and-after comparison",
+      "source": "https://www.dropbox.com/scl/fi/jz1zaj2fk741g2len97q9/Online-Appendix-to-Garicano-and-Imas-AI-ideas-getting-harder-to-find.pdf?rlkey=narofum32aiq105vrcwcx92vy&dl=0",
+      "location": "Appendix F8, R&D spending, λ = 1",
+      "transformation": "Converted using κ = ln(2) / 5."
+    },
+    {
+      "id": "betaBreak",
+      "value": 0.057,
+      "units": "coefficient",
+      "period": "break model",
+      "source": "https://www.dropbox.com/scl/fi/jz1zaj2fk741g2len97q9/Online-Appendix-to-Garicano-and-Imas-AI-ideas-getting-harder-to-find.pdf?rlkey=narofum32aiq105vrcwcx92vy&dl=0",
+      "location": "Appendix F8, R&D spending, λ = 1",
+      "transformation": "Converted using κ = ln(2) / 5."
     }
   ]
 }
