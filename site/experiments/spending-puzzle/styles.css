@@ -89,3 +89,7 @@ section:first-child{border-top:0}
 .questions h3{font-size:1.25rem;margin-top:1.5rem}
 .questions p{font-size:18px}
 }
+/* Hub: small map linking into Fiddling with ASI; "Try it" links under each question (2026-11-15) */
+.hub-map{margin:1.5rem 0}.hub-map svg{width:100%;max-width:460px;display:block}.hub-map svg text{font:15px system-ui,sans-serif;fill:var(--ink)}.hub-map a:focus-visible svg{outline:2px solid var(--red);outline-offset:4px}.hub-map figcaption{font:16px/1.5 system-ui,sans-serif;color:var(--muted);max-width:52ch;margin-top:.6rem}
+.questions .try{font:15px/1.5 system-ui,sans-serif;margin-top:.4rem}.questions .try a{color:var(--red)}
+@media(min-width:1100px){.hub-map{display:grid;grid-template-columns:minmax(0,460px) minmax(0,1fr);gap:2.5rem;align-items:end}.hub-map figcaption{margin:0 0 3rem}}
