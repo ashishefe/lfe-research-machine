@@ -1,5 +1,18 @@
 [
   {
+    "id": "davidson-starting-stock",
+    "approved": true,
+    "title": "Tom Davidson: the speed-up may not be mostly money",
+    "who": "Tom Davidson, senior research fellow at Forethought. Thread on X, 15 November 2026, with a reply from Alex Imas the same day.",
+    "claim": "Garicano and Imas conclude that the faster progress at Anthropic is mostly explained by faster growth in research spending, so we are no closer to an explosion. Davidson argues this rests on how much research Anthropic is assumed to have had before 2024. Using the spending in Anthropic's filings, he finds cumulative spending grew about 3.3 times a year before October 2025 and 4.4 times after, while progress went from about 15 to 29 points a year. So each doubling of cumulative spending bought more progress than before: about 9 points, then about 14. On that reading, returns to research rose, which is a step towards the threshold. In his figures, φ rises from about 0.45 to 0.65.",
+    "kind": "A re-analysis of Garicano and Imas's model with different starting figures. No new data.",
+    "questions": "How much of the speedup is money, and how much is AI? Are ideas getting harder to find in AI?",
+    "caveats": "Davidson says he may have missed something. Imas replied that the right starting figure is not what Anthropic spent but the cumulative research behind everything it began with, including what it inherited from the field, and that this cannot be read from the filings. Their fits put it at $1.0 to $2.1 billion. Near $2 billion, returns look the same before and after October 2025; nearer $1 billion, either returns rose or productivity jumped once. Imas agreed the paper should have been clearer about this.",
+    "fits": "It turns the question on this site into one about a single assumption: how much past research Anthropic was building on in early 2024. It bears directly on Fiddling with ASI, whose settings come from Garicano and Imas's fits; Davidson points out that their separate before-and-after fits let that starting figure reset between periods. The spending puzzle explains why spending figures alone cannot separate rising returns from a one-time jump.",
+    "tag": "Claimed. A disagreement about one input to the model, with both sides' figures shown.",
+    "link": "https://x.com/TomDavidsonX/status/2121674261924323772"
+  },
+  {
     "id": "dwarkesh-rsi",
     "approved": true,
     "title": "Dwarkesh Patel: the case that AI research will soon automate itself",
