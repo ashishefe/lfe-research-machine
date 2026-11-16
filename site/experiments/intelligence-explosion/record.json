@@ -10,7 +10,10 @@
     "caveats": "Davidson says he may have missed something. Imas replied that the right starting figure is not what Anthropic spent but the cumulative research behind everything it began with, including what it inherited from the field, and that this cannot be read from the filings. Their fits put it at $1.0 to $2.1 billion. Near $2 billion, returns look the same before and after October 2025; nearer $1 billion, either returns rose or productivity jumped once. Imas agreed the paper should have been clearer about this.",
     "fits": "It turns the question on this site into one about a single assumption: how much past research Anthropic was building on in early 2024. It bears directly on Fiddling with ASI, whose settings come from Garicano and Imas's fits; Davidson points out that their separate before-and-after fits let that starting figure reset between periods. The spending puzzle explains why spending figures alone cannot separate rising returns from a one-time jump.",
     "tag": "Claimed. A disagreement about one input to the model, with both sides' figures shown.",
-    "link": "https://x.com/TomDavidsonX/status/2121674261924323772"
+    "link": "https://x.com/TomDavidsonX/status/2121674261924323772",
+    "date": "2026-11-15",
+    "kicker": "A re-analysis",
+    "glance": "Davidson argues that returns to research rose when he uses cumulative spending from Anthropic’s filings."
   },
   {
     "id": "dwarkesh-rsi",
@@ -23,7 +26,10 @@
     "caveats": "He gives a 25% chance that full automation comes after 2032, mainly because AI may still be unable to learn on the job. He grants that experiments, data and choosing what to measure are real bottlenecks that make the fastest takeoff less likely. His probabilities are personal judgements.",
     "fits": "The strongest case for an explosion on this page, and the closest to its framing: stories 4 and 5 in Fiddling with ASI show the shape of his two outcomes, though story 4's spark is smaller than his. It answers Chalmers directly, arguing that research judgement can partly be checked and trained; Toby Ord, whom he quotes, doubts that AI can yet ask the deep questions. It supplies the half our research machine leaves out: the machine works out how much research labour holding the pace would need, and Dwarkesh argues AI researchers will supply it. Like Garicano and Imas, he notes that labs must roughly quadruple their research computing each year just to hold the pace. Where Garicano and Imas find no clear sign yet of AI feeding its own research in the public data, his evidence is what the labs report from inside.",
     "tag": "Claimed. A forecast built on an argument. We checked four figures he cites against their sources: METR's guess that about 80% of Anthropic's October 2026 speedup came from AI, which METR calls subjective; Anthropic's report that Claude ‘leads’ 26% of its AI research work as of August 2026, up from under 1% in February, where ‘leads’ means completing most of a task end to end while a human supervises; OpenAI's report that its 90th-percentile researcher uses more than $7,000 of AI tokens a day; and OpenAI's report that its agents found a proof for the Navier–Stokes Millennium Prize problem about 88 hours after the first agents started, followed by about 17 more hours for formalization and verification in Lean. OpenAI researchers directed groups of agents, moved resources between problems and shared intermediate findings; the Navier–Stokes work used about 130 billion output tokens. We did not check his other figures.",
-    "link": "https://www.dwarkesh.com/p/rsi"
+    "link": "https://www.dwarkesh.com/p/rsi",
+    "date": "2026-11-13",
+    "kicker": "A forecast",
+    "glance": "Patel’s median forecast puts automated researchers matching the best human AI researchers in 2028, assuming labs do not intentionally slow down."
   },
   {
     "id": "garicano-imas",
@@ -36,7 +42,10 @@
     "fits": "The fullest analysis of the spending puzzle we have found. Its broad reading sits near Krier's, with a one-time boost that the per-dollar chart could not show. It does not contradict METR's guess about AI's share, which concerns a later date.",
     "tag": "Claimed. Arithmetic checked against the filings; the model was not refitted by us.",
     "link": "https://www.siliconcontinent.com/p/are-we-approaching-an-intelligence",
-    "caveats": "Staff numbers are their estimates from published shares; the final score falls inside their effort-only forecast's margin of error; the most generous jump estimate is not statistically clear; with a one-year research delay the per-dollar fall shrinks from about 69% to about 40% (from 64% to 10% in a January-to-September comparison); in their broadest test of measurement error, about one in eleven re-runs of their model meet its explosion condition, which is not a probability, independent of their model, that one has begun; results are model comparisons, not measured effects of AI tools. Their appendix says they worked with Gemini Carbon, Fable 5.2 and Astra."
+    "caveats": "Staff numbers are their estimates from published shares; the final score falls inside their effort-only forecast's margin of error; the most generous jump estimate is not statistically clear; with a one-year research delay the per-dollar fall shrinks from about 69% to about 40% (from 64% to 10% in a January-to-September comparison); in their broadest test of measurement error, about one in eleven re-runs of their model meet its explosion condition, which is not a probability, independent of their model, that one has begun; results are model comparisons, not measured effects of AI tools. Their appendix says they worked with Gemini Carbon, Fable 5.2 and Astra.",
+    "date": "2026-11-13",
+    "kicker": "A fitted model",
+    "glance": "Garicano and Imas find that more inputs explain part of the speedup, with the rest looking like a one-time jump in research effectiveness."
   },
   {
     "id": "chalmers",
@@ -48,6 +57,81 @@
     "questions": "Is AI starting to do its own research? What would an explosion need?",
     "fits": "It gives a name to a gap the economics leaves open. Garicano and Imas find a one-time jump in research effectiveness \"consistent with\" coding agents. Chalmers's picture would predict gains of that kind if they come in G and not F. He also allows that G could improve itself fast, a \"subexplosion\" below general intelligence. The research machine cannot show this directly: its σ setting is about research labour against computing, not about one research skill against another. Chalmers's F is a bottleneck of the second kind. Replies push back. Daniel Kokotajlo: many candidate Fs have been proposed before and overtaken quickly. One reply suggests strong G could let AI build F itself, and Chalmers grants the point. Peli Grietzer offers a reading Chalmers endorses: METR's report is evidence for \"if general ASI is coming soon then general ASI is coming very soon\".",
     "tag": "Claimed. An argument about what the evidence shows; no new data.",
-    "link": "https://x.com/davidchalmers42/status/2120551211195642338"
+    "link": "https://x.com/davidchalmers42/status/2120551211195642338",
+    "date": "2026-11-11",
+    "kicker": "An argument",
+    "glance": "Chalmers asks whether the speedup comes from other research skills, such as coding, while a key capacity like research vision stays out of reach."
+  },
+  {
+    "id": "metr-anthropic-assessment",
+    "approved": true,
+    "title": "METR: Anthropic’s AI research has sped up",
+    "who": "METR, an independent AI evaluation organisation. Assessment of Anthropic, 5 November 2026.",
+    "claim": "METR estimates that, since October 2025, Anthropic’s model scores have improved at 1.9 times their earlier pace on its capability index. Its 95% interval runs from 1.5 to 2.8 times. Looking across more evidence, METR judges that progress on well-specified tasks was running at about twice its earlier rate in October 2026, and that AI use probably caused most of the acceleration by then: perhaps about 80%, a figure METR calls subjective.",
+    "kind": "An assessment of private lab data, interviews and model scores.",
+    "questions": "Is AI research speeding up? How much of the speedup is money, and how much is AI?",
+    "caveats": "The wider judgement is uncertain: METR says it would not be surprised by 1.3 or 3 times. Anthropic removed most of the evidence METR found most informative from the public report. METR says other causes probably played a large role in the acceleration in late 2025.",
+    "fits": "This is the observation the spending puzzle tries to explain. Its estimate of the pace is distinct from its judgement about how much AI contributed.",
+    "tag": "Claimed. The interval describes the score-based estimate; the wider assessment uses other evidence too.",
+    "link": "https://metr.org/blog/2026-11-05-anthropic-ai-rd-acceleration-assessment/",
+    "verified": true,
+    "source_read": "METR assessment, executive summary and redaction summary, opened at the source.",
+    "date": "2026-11-05",
+    "kicker": "An assessment",
+    "glance": "METR estimates that Anthropic's models have improved about twice as fast since October 2025, and judges that AI use probably caused most of that."
+  },
+  {
+    "id": "ai-futures-timelines",
+    "approved": true,
+    "title": "AI Futures Project: a shorter timeline after METR",
+    "who": "Eli Lifland, Brendan Halstead, Daniel Kokotajlo and colleagues at the AI Futures Project. Timelines update, 10 November 2026.",
+    "claim": "After METR’s assessment, all the authors forecast that AI researchers a company would prefer to a top human research team working without AI will likely arrive in 2027, assuming no substantial deliberate slowdown. They estimate that METR’s report implies that AI made the current pace 1.7 times its historical level. They use several approaches, including projecting research ability and the share of research tasks that AI can automate.",
+    "kind": "A forecast based on METR’s assessment and several models and extrapolations.",
+    "questions": "Is AI starting to do its own research? What would an explosion need, and what would we see first?",
+    "caveats": "This is a forecast, not a measurement of when full automation will arrive. The authors say the METR report was their biggest update; its AI-attribution judgement is uncertain, and much of the underlying evidence is private. They also warn that their modelling may contain errors.",
+    "fits": "It shows how one group moves from a present speedup to a near-term forecast. It complements Dwarkesh’s separate forecast with the authors’ own routes from the evidence to their timeline.",
+    "tag": "Claimed. A conditional forecast and the authors’ interpretation of METR.",
+    "link": "https://blog.aifutures.org/p/q35-timelines-update-looks-like-the",
+    "verified": true,
+    "source_read": "AI Futures Project timelines update, summary and listed forecasting approaches, opened at the source.",
+    "date": "2026-11-10",
+    "kicker": "A forecast",
+    "glance": "The AI Futures Project authors forecast AI researchers preferred to a top human team without AI will likely arrive in 2027, assuming no substantial deliberate slowdown."
+  },
+  {
+    "id": "whitfill-wu-compute",
+    "approved": true,
+    "title": "Whitfill and Wu: can more AI researchers work with the same computing?",
+    "who": "Parker Whitfill and Cheryl Wu. “Will Compute Bottlenecks Prevent an Intelligence Explosion?”, 2025.",
+    "claim": "AI research needs both research work and computing for experiments. If extra researchers cannot make up much for limited computing, a fixed supply of computing can slow the feedback from AI researchers. The authors fit two versions of a model to data from four AI labs. One suggests research work and computing can substitute for each other; the other, which accounts for the scale of frontier experiments, suggests extra research work cannot easily replace computing.",
+    "kind": "A model and an empirical comparison using lab data from 2014 to 2024.",
+    "questions": "What would an explosion need, and what would we see first?",
+    "caveats": "The two ways of describing research produce different answers, so the data do not settle how tightly computing will constrain future AI research. Both depend on the model and the available data.",
+    "fits": "It gives a concrete reason why adding AI research work might eventually do less when experiment computing is fixed. The research machine lets readers explore that possibility.",
+    "tag": "Claimed. The results depend on which of the two specifications is used.",
+    "link": "https://arxiv.org/abs/2507.23181",
+    "verified": true,
+    "source_read": "Whitfill and Wu, paper version 2, abstract, introduction and model, opened on arXiv.",
+    "date": "2025-07-31",
+    "kicker": "A fitted model",
+    "glance": "Whitfill and Wu find that two versions of their model give different answers about whether extra research work can replace computing."
+  },
+  {
+    "id": "davidson-innovation-networks",
+    "approved": true,
+    "title": "Davidson and colleagues: two routes by which AI research can feed back",
+    "who": "Tom Davidson, Basil Halperin, Thomas Houlden and Anton Korinek. “When Does Automating AI Research Produce Explosive Growth?”, 2026.",
+    "claim": "Their model links research in different sectors. Better AI can help research directly, while higher economic output can finance more research. The authors find that growth becomes explosive in their model when the combined strength of these feedback routes overcomes the drag from ideas getting harder to find.",
+    "kind": "A mathematical model of research and the economy.",
+    "questions": "What would an explosion need, and what would we see first?",
+    "caveats": "This is a condition within their model, not evidence that the condition holds today. Its results depend on how research sectors, automation and spending interact.",
+    "fits": "The fixed-spending map on this site shows the research route. This paper adds a route through economic output and research funding, and asks how the routes interact across sectors.",
+    "tag": "Claimed. A model result, not a forecast of when an explosion will begin.",
+    "link": "https://doi.org/10.3386/w35155",
+    "verified": true,
+    "source_read": "Authors’ April 2026 paper, abstract, hosted on Thomas Houlden’s site; NBER working-paper abstract also checked.",
+    "date": "2026-04-01",
+    "kicker": "A model",
+    "glance": "Davidson and colleagues find that growth becomes explosive in their model when combined feedback overcomes the drag from ideas getting harder to find."
   }
 ]

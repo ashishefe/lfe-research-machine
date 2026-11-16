@@ -12,11 +12,11 @@ approved={c['id']:c for c in cards if c['approved']}
 record_path.write_text(json.dumps(list(approved.values()), indent=2, ensure_ascii=False)+'\n')
 LINKS={'garicano-imas':'https://www.siliconcontinent.com/p/are-we-approaching-an-intelligence','chalmers':'https://x.com/davidchalmers42/status/2120551211195642338'}
 def ref(id,text):
- return f'<a href="{("#"+id) if id in approved else esc(LINKS[id],quote=True)}">{text}</a>'
+ return f'<a href="{("record/#"+id) if id in approved else esc(LINKS[id],quote=True)}">{text}</a>'
 def field_text(c,key):
- text=esc(c[key])
+ text=esc(c.get(key, ""))
  if c['id']=='dwarkesh-rsi' and key=='fits':
-  text=text.replace('stories 4 and 5 in Fiddling with ASI', '<a href="../fiddling-with-asi/#stories">stories 4 and 5 in Fiddling with ASI</a>')
+  text=text.replace('stories 4 and 5 in Fiddling with ASI', '<a href="../../fiddling-with-asi/#stories">stories 4 and 5 in Fiddling with ASI</a>')
  return text
 def card(c):
  fields=[('What they claim.','claim'),('Kind of evidence.','kind'),('Questions.','questions'),('Their caveats.','caveats'),('How it fits.','fits'),('How sure.','tag')]
@@ -71,10 +71,42 @@ body+='''<div class="noted"><p class="summary-note-row" aria-hidden="true"></p><
 <div class="q"><h3>What would reduce the uncertainty?</h3><p>Model-by-model scores with their uncertainty, the research bill broken into its parts, how long spending takes to show up, and comparisons fixed in advance. → <a href="../spending-puzzle/#chapter-7">our spending puzzle, section 7</a>.</p><p class="try"><a href="../fiddling-with-asi/#takeaway">Try it: what would move the answer either way →</a></p></div></div></section>
 '''
 end='<p class="next-page">Next: <a href="../spending-puzzle/">The spending puzzle →</a></p><footer class="colophon">Built by Ashish Kulkarni with Claude and Codex. Claude is made by Anthropic. <a href="https://github.com/ashishefe/lfe-research-machine">Code and text are open.</a> Built to be argued with. Design craft learned from <a href="https://x.com/Keshavatearth">Keshav Jindal</a>.</footer></main><script src="app.js"></script></body></html>'
-record_open='<section><h2>The record</h2><p>Each entry: who and when, what they claim, the kind of evidence, and how it fits with the rest. Newest first.</p><div id="record">'
-record_close='</div></section>'
+record_open='<section><h2>The record</h2><p>These entries gather claims and caveats from work on the intelligence explosion.</p><ul id="record">'
+record_close='</ul><p><a href="record/">Read the record, one card at a time →</a></p></section>'
+def teaser(c):
+ return '<li id="'+esc(c['id'],quote=True)+'"><a href="record/#'+esc(c['id'],quote=True)+'">'+esc(c['title'])+'</a></li>'
 for key,value in {'ax':60+220*phi_a,'ay':330-300*psi_a,'bx':60+220*phi_b,'by':330}.items(): body=body.replace('{'+key+':.2f}',f'{value:.2f}')
-(root/'index.html').write_text(header+body+((record_open+''.join(card(c) for c in approved.values())+record_close) if approved else '')+end)
-# Preview lives outside the public site; absolute file URLs retain local assets and links.
-preview=(header+body+record_open+''.join(card(c) for c in cards)+record_close+end).replace('<head>','<head><base href="'+root.resolve().as_uri()+'/">')
+ordered=sorted(approved.values(), key=lambda c:c.get('date',''), reverse=True)
+(root/'index.html').write_text(header+body+((record_open+''.join(teaser(c) for c in ordered)+record_close) if approved else '')+end)
+preview=(header+body+'<section><h2>The record</h2><div id="record">'+''.join(('<p>Draft, not approved</p>' if not c['approved'] else '')+card(c) for c in cards)+'</div></section>'+end).replace('../../fiddling-with-asi/#stories', '../fiddling-with-asi/#stories').replace('<head>','<head><base href="'+root.resolve().as_uri()+'/">')
 Path('dist').mkdir(exist_ok=True); Path('dist/hub-drafts-preview.html').write_text(preview)
+
+# The header is shared with the overview; paths are one level deeper here.
+record_header=header.replace('<title>Is there an intelligence explosion? · Learn For Everybody</title>', '<title>The record · Is there an intelligence explosion?</title>')
+record_header=record_header.replace('../../assets/', '../../../assets/').replace('../spending-puzzle/', '../../spending-puzzle/').replace('../intelligence-explosion/', '../').replace('../fiddling-with-asi/', '../../fiddling-with-asi/').replace('../research-machine/', '../../research-machine/')
+record_header=record_header.replace('href="../" aria-current="page">Overview', 'href="../">Overview')
+record_header=record_header.replace('<body class="hub">','<body class="record-page">').replace('</head>', '<link rel="stylesheet" href="record.css?v=3"></head>')
+description='Claims, evidence and caveats from work on the intelligence explosion, one card at a time.'
+record_header=re.sub(r'<meta name="description"[^>]*>', '<meta name="description" content="'+description+'">',record_header)
+record_header=re.sub(r'<meta property="og:description"[^>]*>', '<meta property="og:description" content="'+description+'">',record_header)
+record_header=record_header.replace('content="Is there an intelligence explosion?"','content="The record · Is there an intelligence explosion?"').replace('intelligence-explosion/"><meta property="og:type"','intelligence-explosion/record/"><meta property="og:type"')
+def deck_card(c):
+ e=lambda k:esc(c.get(k,''))
+ questions=[q.strip()+'?' for q in c['questions'].split('?') if q.strip()]
+ draft='<p class="draft">Draft, not approved</p>' if not c['approved'] else ''
+ facts='<div class="facts"><h2>Questions</h2><ul>'+''.join('<li>'+esc(q)+'</li>' for q in questions)+'</ul><h2>Kind of evidence</h2><p>'+e('kind')+'</p><h2>How sure</h2><p>'+e('tag')+'</p></div>'
+ read='<div class="reading" id="read-'+e('id')+'"><h2>What they claim</h2><p>'+field_text(c,'claim')+'</p>'+(('<h2>Their caveats</h2><p>'+field_text(c,'caveats')+'</p>') if c.get('caveats') else '')+'<h2>How it fits</h2><p>'+field_text(c,'fits')+'</p><p><a href="'+esc(c['link'],quote=True)+'">Read the original →</a></p></div>'
+ return '<article class="deck-card" id="'+e('id')+'" tabindex="-1"><div class="card-inner"><div class="glance"><p class="kicker">'+e('kicker')+'</p>'+draft+'<div class="question"><span>Q.</span><p>'+esc(questions[0])+'</p></div><h2 class="card-title">'+e('title')+'</h2><p class="who">'+e('who')+'</p><p>'+e('glance')+'</p><a class="read-on" href="#read-'+e('id')+'">Read on ↓</a></div><div class="depth"><aside class="sure">'+esc(c['tag'].split('.')[0].strip().upper())+'</aside>'+facts+read+'</div></div></article>'
+def tile(c):
+ return '<a href="#'+esc(c['id'],quote=True)+'"><span>'+esc(c.get('kicker',''))+'</span><strong>'+esc(c['title'])+'</strong><span>'+esc(c['who'])+'</span>'+(' <span>Draft, not approved</span>' if not c['approved'] else '')+'</a>'
+def deck_page(collection, preview=False):
+ collection=sorted(collection,key=lambda c:c.get('date',''),reverse=True)
+ mast='<div class="deck-mast"><span>The record · <span id="position">1</span> of '+str(len(collection))+' · <button id="open-grid" type="button">All cards</button></span><span class="arrows"><button id="previous" type="button" aria-label="Previous card">←</button><button id="next" type="button" aria-label="Next card">→</button></span></div>'
+ grid='<div id="grid" class="grid-overlay" role="dialog" aria-modal="true" aria-label="All cards" hidden><div class="grid-head">All cards <button id="close-grid" type="button">Close</button></div><div class="grid-tiles">'+''.join(tile(c) for c in collection)+'</div></div>'
+ footer=end[end.index('<footer'):end.index('</footer>')+9]
+ page=record_header+mast+'<main><h1 class="visually-hidden">The record: work on whether there is an intelligence explosion</h1><div class="deck" id="deck">'+''.join(deck_card(c) for c in collection)+'</div>'+footer+'</main>'+grid+'<script src="record.js?v=3"></script></body></html>'
+ if preview: page=page.replace('<head>','<head><base href="'+(root/'record').resolve().as_uri()+'/">')
+ return page
+(root/'record').mkdir(exist_ok=True)
+(root/'record/index.html').write_text(deck_page(ordered))
+Path('dist/record-drafts-preview.html').write_text(deck_page(cards,True))

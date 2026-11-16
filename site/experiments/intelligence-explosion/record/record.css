@@ -1,0 +1,26 @@
+/* Notebook paper, blue-black ink, one red margin line, and the teacher's notes in the margin. */
+.record-page .deck-mast{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin:1rem 2rem 0;padding-bottom:.7rem;border-bottom:2px solid var(--ink);font:13px ui-monospace,monospace}.deck-mast button,.grid-head button{border:0;background:none;color:inherit;font:inherit;cursor:pointer;text-decoration:underline}.arrows button{font-size:1.5rem;text-decoration:none;padding:0 .7rem}.deck-card{position:relative;max-width:none;margin:0;border:0;padding:0}.card-inner{position:relative;padding:2rem 2rem 4rem 3.5rem}.card-inner:before{content:'';position:absolute;left:2rem;top:0;bottom:0;width:2px;background:var(--red)}.glance{min-height:70svh}.glance h1{font:clamp(2.3rem,5vw,4.5rem)/1.05 Georgia,serif;max-width:20ch;letter-spacing:-.025em}.glance p,.reading p{max-width:65ch}.kicker,.who,.draft{font:14px/1.5 ui-monospace,monospace}.question span{font:italic 19px Georgia,serif;color:var(--red)}.question p{font:16px/1.4 system-ui,sans-serif}.read-on{font:16px system-ui,sans-serif}.depth{position:relative}.facts{border-top:2px solid var(--ink);border-bottom:1px solid var(--rule);padding:1rem 0}.facts h2,.reading h2{font:600 16px/1.4 system-ui,sans-serif;margin:1.5rem 0 .4rem}.facts p,.facts li{font:16px/1.5 system-ui,sans-serif}.facts ul{padding-left:1.2rem}.sure{font:12px ui-monospace,monospace;color:var(--muted);margin:1rem 0}.record-page .colophon{padding:2rem;max-width:80ch}.grid-overlay{position:fixed;inset:0;z-index:100;background:var(--paper);overflow:auto;padding:2rem}.grid-overlay[hidden]{display:none}.grid-head{display:flex;justify-content:space-between;border-bottom:2px solid var(--ink);padding-bottom:1rem;font:14px ui-monospace,monospace}.grid-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2rem 1rem;margin-top:2rem}.grid-tiles a{border-top:1px solid var(--ink);padding-top:.7rem;text-decoration:none}.grid-tiles span,.grid-tiles strong{display:block}.grid-tiles span{font:13px/1.5 ui-monospace,monospace;margin-bottom:.6rem}.grid-tiles strong{font:22px/1.2 Georgia,serif;margin-bottom:.7rem}.record-page :focus-visible{outline:2px solid var(--red);outline-offset:3px}.record-page .deck-mast,.record-page .read-on{display:none}.deck-ready .deck-mast,.deck-ready .read-on{display:flex}.deck-ready .deck{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;overscroll-behavior-x:contain}.deck-ready .deck-card{flex:0 0 100%;height:calc(100svh - 12rem);min-height:22rem;overflow-y:auto;scroll-snap-align:start;scroll-snap-stop:always;overscroll-behavior-y:contain}.deck-ready .glance{min-height:calc(100svh - 15rem)}
+@media(min-width:600px){.grid-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(min-width:900px){.card-inner{padding-left:17rem}.card-inner:before{left:15rem}.question{position:absolute;left:2rem;width:10rem;text-align:right}.question span{position:static}.question p{font-size:14px}.depth{display:grid;grid-template-columns:minmax(12rem, .7fr) minmax(0,1.3fr);gap:3rem}.sure{position:absolute;right:calc(100% + 3rem);top:0}.grid-tiles{grid-template-columns:repeat(4,minmax(0,1fr))}.glance{max-width:70rem}}
+@media(max-width:599px){.record-page .deck-mast{margin:1rem 1rem 0}.arrows{display:none}.card-inner{padding-left:2.4rem;padding-right:1rem}.card-inner:before{left:1.2rem}.question span{display:block}.question p{margin-top:.3rem}.grid-overlay{padding:1rem}}
+@media(prefers-reduced-motion:reduce){.deck{scroll-behavior:auto!important}}
+/* 16 Nov fixes: kicker in sentence case; deck fits the screen; no visible sideways scrollbar; wide screens put the facts beside the glance. */
+.record-page .kicker{text-transform:none;letter-spacing:0;font-size:14px;color:var(--muted)}
+.deck-ready .deck{scrollbar-width:none}.deck-ready .deck::-webkit-scrollbar{display:none}
+.deck-ready .deck-card{height:var(--deck-h,calc(100svh - 14rem))}
+.deck-ready .glance{min-height:calc(var(--deck-h,calc(100svh - 14rem)) - 6rem)}
+@media(min-width:1100px){
+ .card-inner{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(16rem,.6fr);column-gap:4rem;align-items:start}
+ .glance{grid-column:1;grid-row:1}
+ .depth{display:contents}
+ .facts{grid-column:2;grid-row:1/span 2;margin-top:2.2rem}
+ .reading{grid-column:1;grid-row:2;border-top:2px solid var(--ink);padding-top:.5rem}
+ .sure{position:static;grid-column:1;grid-row:2;align-self:start;width:12rem;margin:1.6rem 0 0 -15rem;text-align:right;z-index:1}
+ .deck-ready .glance{min-height:0;padding-bottom:3rem}
+}
+
+/* Review fixes: card titles are h2 (one h1 per page); disabled arrows look disabled; page behind the grid stays still. */
+.glance h2.card-title{font:clamp(2.3rem,5vw,4.5rem)/1.05 Georgia,serif;max-width:20ch;letter-spacing:-.025em;margin:.4rem 0 1rem}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.arrows button:disabled{opacity:.3;cursor:default}
+.grid-open{overflow:hidden}

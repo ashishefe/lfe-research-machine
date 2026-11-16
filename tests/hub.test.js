@@ -50,7 +50,7 @@ test('approved card links target the card and include its caveats',()=>{
  const cards=JSON.parse(fs.readFileSync(fixtureFile));cards[0].approved=true;writeCards(tmp,cards);
  cp.execFileSync('python3',[path.join(root,'scripts/build-hub.py')],{cwd:tmp});
  const page=fs.readFileSync(path.join(dir,'index.html'),'utf8');
- assert.match(page,/href="#garicano-imas"/);assert.match(page,/Their caveats\./);assert.ok(!page.includes(cards[1].title));
+ assert.match(page,/href="record\/#garicano-imas"/);const deck=fs.readFileSync(path.join(dir,'record/index.html'),'utf8');assert.match(deck,/Their caveats/);assert.ok(!page.includes(cards[1].title));
  const app=fs.readFileSync(path.join(hub,'app.js'),'utf8');assert.match(app,/target\.open=true/);assert.match(app,/scrollIntoView/);
 });
 
@@ -74,11 +74,18 @@ test('Dwarkesh card preserves its conditions and links to illustrative stories',
  assert.match(card.tag,/88 hours[\s\S]*17 more hours[\s\S]*OpenAI researchers[\s\S]*130 billion output tokens/);
  const page=fs.readFileSync(path.join(hub,'index.html'),'utf8');
  assert.match(page,/Last updated 15 November 2026/);
- assert.match(page,/<a href="\.\.\/fiddling-with-asi\/#stories">stories 4 and 5 in Fiddling with ASI<\/a>/);
+ const deck=fs.readFileSync(path.join(hub,'record/index.html'),'utf8');
+ assert.match(deck,/<a href="\.\.\/\.\.\/fiddling-with-asi\/#stories">stories 4 and 5 in Fiddling with ASI<\/a>/);
 });
 
 test('hub keeps its own body class', () => {
   const fs = require('fs');
   const h = fs.readFileSync('site/experiments/intelligence-explosion/index.html', 'utf8');
   assert.match(h, /<body class="hub">/);
+});
+
+ test('no draft id or title appears anywhere under site',()=>{
+ const drafts=JSON.parse(fs.readFileSync(cardsFile)).filter(c=>!c.approved);
+ function walk(dir){for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const f=path.join(dir,entry.name);if(entry.isDirectory())walk(f);else {const b=fs.readFileSync(f);if(b.includes(0))continue;const text=b.toString('utf8');for(const c of drafts){assert.ok(!text.includes(c.id),`${c.id} in ${f}`);assert.ok(!text.includes(c.title),`${c.title} in ${f}`)}}}}
+ walk(path.join(root,'site'));
 });
