@@ -15,7 +15,7 @@ test('hub margin notes each share a row with their text',()=>{
  const html=fs.readFileSync(path.join(hub,'index.html'),'utf8');
  const rows=[...html.matchAll(/<div class="noted">([\s\S]*?)<aside class="note">([\s\S]*?)<\/aside><\/div>/g)];
  assert.equal(rows.length,(html.match(/<aside class="note">/g)||[]).length);
- assert.equal(rows.filter(([,body])=>/^<p>[1-5]\. /.test(body)).length,5);
+ assert.equal(rows.filter(([,body])=>/^<p>[1-6]\. /.test(body)).length,6);
  const css=fs.readFileSync(path.join(root,'site/experiments/spending-puzzle/styles.css'),'utf8');
  assert.match(css,/\.noted\{display:grid;grid-template-columns:12rem minmax\(0,1fr\)/);
  assert.match(css,/\.noted>\.note\{grid-column:1;grid-row:1;float:none/);
@@ -73,7 +73,7 @@ test('Dwarkesh card preserves its conditions and links to illustrative stories',
  assert.match(card.claim,/assuming labs do not intentionally slow down/);
  assert.match(card.tag,/88 hours[\s\S]*17 more hours[\s\S]*OpenAI researchers[\s\S]*130 billion output tokens/);
  const page=fs.readFileSync(path.join(hub,'index.html'),'utf8');
- assert.match(page,/Last updated 15 November 2026/);
+ assert.match(page,/Last updated 21 November 2026/);
  const deck=fs.readFileSync(path.join(hub,'record/index.html'),'utf8');
  assert.match(deck,/<a href="\.\.\/\.\.\/fiddling-with-asi\/#stories">stories 4 and 5 in Fiddling with ASI<\/a>/);
 });
